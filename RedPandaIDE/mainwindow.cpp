@@ -471,10 +471,16 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionIA_32_Assembly_Language_Reference_Manual->setVisible(false);
         ui->actionx86_Assembly_Language_Reference_Manual->setVisible(false);
 #endif
-    ui->actionEGE_Manual->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionOI_Wiki->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionTurtle_Graphics_Manual->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionDocument->setVisible(pSettings->environment().language()=="zh_CN");
+    // ui->actionEGE_Manual->setVisible(pSettings->environment().language()=="zh_CN");
+    // ui->actionOI_Wiki->setVisible(pSettings->environment().language()=="zh_CN");
+    // ui->actionTurtle_Graphics_Manual->setVisible(pSettings->environment().language()=="zh_CN");
+    // ui->actionDocument->setVisible(pSettings->environment().language()=="zh_CN");
+
+    ui->actionEGE_Manual->setVisible(false);   //让ege帮助文件不可见
+    //ui->actionOI_Wiki->setVisible(pSettings->environment().language()=="zh_CN"); //任何语言环境都显示OI-WIKI帮助
+    ui->actionTurtle_Graphics_Manual->setVisible(false); //让海归作图帮助文件不可见
+    //ui->actionDocument->setVisible(pSettings->environment().language()=="zh_CN"); //任何语言环境都显示帮助
+    ui->actionRaylib_Manual->setVisible(false);//屏蔽Raylib帮助  <<<新增>>>
 
     connect(ui->EditorTabsLeft, &EditorsTabWidget::middleButtonClicked,
             this, &MainWindow::on_EditorTabsLeft_tabCloseRequested);
@@ -10187,11 +10193,19 @@ void MainWindow::on_actionSubmit_Issues_triggered()
 }
 
 
-void MainWindow::on_actionDocument_triggered()
-{
-    QDesktopServices::openUrl(QUrl("http://royqh.net/redpandacpp//docsy/docs/usage"));
+// void MainWindow::on_actionDocument_triggered()
+// {
+//     QDesktopServices::openUrl(QUrl("http://royqh.net/redpandacpp//docsy/docs/usage"));
+// }
+    void MainWindow::on_actionDocument_triggered() {
+	QFileInfo fileInfo{includeTrailingPathDelimiter(pSettings->dirs().appDir()) +
+	                   QString{"RedPandaIDE.pdf"}};
+	if (fileInfo.exists()) {
+		QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
+		return;
+	}
+	QDesktopServices::openUrl(QUrl("http://royqh.net/redpandacpp/docsy/docs/usage"));
 }
-
 
 void MainWindow::on_actionNew_GAS_File_triggered()
 {
