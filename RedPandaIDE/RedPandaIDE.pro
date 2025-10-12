@@ -118,6 +118,7 @@ SOURCES += \
     codesnippetsmanager.cpp \
     colorscheme.cpp \
     compiler/compilerinfo.cpp \
+    compiler/nasmfilecompiler.cpp \
     compiler/ojproblemcasesrunner.cpp \
     compiler/projectcompiler.cpp \
     compiler/runner.cpp \
@@ -146,6 +147,8 @@ SOURCES += \
     projectoptions.cpp \
     projecttemplate.cpp \
     settingsdialog/compilerautolinkwidget.cpp \
+    settingsdialog/compilernasmwidget.cpp \
+    settingsdialog/compilergaswidget.cpp \
     settingsdialog/debuggeneralwidget.cpp \
     settingsdialog/editorautosavewidget.cpp \
     settingsdialog/editorcodecompletionwidget.cpp \
@@ -258,6 +261,7 @@ HEADERS += \
     compiler/compilermanager.h \
     compiler/executablerunner.h \
     compiler/filecompiler.h \
+    compiler/nasmfilecompiler.h \
     compiler/ojproblemcasesrunner.h \
     compiler/projectcompiler.h \
     compiler/runner.h \
@@ -282,6 +286,8 @@ HEADERS += \
     projectoptions.h \
     projecttemplate.h \
     settingsdialog/compilerautolinkwidget.h \
+    settingsdialog/compilernasmwidget.h \
+    settingsdialog/compilergaswidget.h \
     settingsdialog/debuggeneralwidget.h \
     settingsdialog/editorautosavewidget.h \
     settingsdialog/editorcodecompletionwidget.h \
@@ -383,6 +389,8 @@ HEADERS += \
 
 FORMS += \
     settingsdialog/compilerautolinkwidget.ui \
+    settingsdialog/compilernasmwidget.ui \
+    settingsdialog/compilergaswidget.ui \
     settingsdialog/debuggeneralwidget.ui \
     settingsdialog/editorautosavewidget.ui \
     settingsdialog/editorcodecompletionwidget.ui \
