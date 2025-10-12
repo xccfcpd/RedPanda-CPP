@@ -379,15 +379,22 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onProblemCaseIndexChanged);
     connect(mOJProblemSetModel, &OJProblemSetModel::problemNameChanged,
             this , &MainWindow::onProblemNameChanged);
+    connect(mOJProblemSetModel, &OJProblemSetModel::problemSetNameChanged,
+            this , &MainWindow::updateProblemSetName);
     ui->pbProblemCases->setVisible(false);
     connect(&mCCHandler, &CompetitiveCompanionHandler::newProblemReceived,
             this, &MainWindow::onNewProblemReceived);
 
     connect(mOJProblemModel, &OJProblemModel::dataChanged,
             this, &MainWindow::updateProblemTitle);
+    connect(mOJProblemModel, &OJProblemModel::problemModified,
+            this, &MainWindow::updateProblemTitle);
     try {
         int currentIndex=-1;
-        mOJProblemSetModel->load(currentIndex);
+        QDir dir(pSettings->dirs().config());
+        QString filename=dir.filePath(DEV_PROBLEM_SET_FILE);
+        if (fileExists(filename))
+            mOJProblemSetModel->loadFromFile(filename,false,currentIndex);
         if (currentIndex>=0) {
             QModelIndex index = mOJProblemSetModel->index(currentIndex,0);
             ui->lstProblemSet->setCurrentIndex(index);
@@ -2234,7 +2241,8 @@ void MainWindow::updateActionIcons()
     mProblemSet_New->setIcon(pIconsManager->getIcon(IconsManager::ACTION_PROBLEM_SET));
     mProblemSet_AddProblem->setIcon(pIconsManager->getIcon(IconsManager::ACTION_MISC_ADD));
     mProblemSet_RemoveProblem->setIcon(pIconsManager->getIcon(IconsManager::ACTION_MISC_CROSS));
-    mProblemSet_Save->setIcon(pIconsManager->getIcon(IconsManager::ACTION_FILE_SAVE_AS));
+    mProblemSet_Save->setIcon(pIconsManager->getIcon(IconsManager::ACTION_FILE_SAVE));
+    mProblemSet_SaveAs->setIcon(pIconsManager->getIcon(IconsManager::ACTION_FILE_SAVE_AS));
     mProblemSet_Load->setIcon(pIconsManager->getIcon(IconsManager::ACTION_FILE_OPEN_FOLDER));
     mProblemSet_ImportFPS->setIcon(pIconsManager->getIcon(IconsManager::ACTION_CODE_BACK));
     mProblemSet_ExportFPS->setIcon(pIconsManager->getIcon(IconsManager::ACTION_CODE_FORWARD));
@@ -2489,7 +2497,7 @@ void MainWindow::runExecutable(
         POJProblem problem = mOJProblemModel->problem();
         if (problem) {
             mCompilerManager->runProblem(exeName,params,QFileInfo(exeName).absolutePath(),
-                                         problem->cases,
+                                         problem->cases(),
                                          problem);
             stretchMessagesPanel(true);
             ui->tabMessages->setCurrentWidget(ui->tabProblem);
@@ -2961,6 +2969,12 @@ void MainWindow::createCustomActions()
     connect(mProblemSet_Save,&QAction::triggered,
             this, &MainWindow::onSaveProblemSet);
 
+    mProblemSet_SaveAs = createAction(
+                tr("Save Problem Set As"),
+                ui->tabProblemSet);
+    connect(mProblemSet_SaveAs,&QAction::triggered,
+            this, &MainWindow::onSaveProblemSetAs);
+
     mProblemSet_Load = createAction(
                 tr("Load Problem Set"),
                 ui->tabProblemSet);
@@ -3338,6 +3352,7 @@ void MainWindow::initToolButtons()
     //problem set toolbuttons
     ui->btnNewProblemSet->setDefaultAction(mProblemSet_New);
     ui->btnSaveProblemSet->setDefaultAction(mProblemSet_Save);
+    ui->btnSaveProblemSetAs->setDefaultAction(mProblemSet_SaveAs);
     ui->btnLoadProblemSet->setDefaultAction(mProblemSet_Load);
     ui->btnImportFPS->setDefaultAction(mProblemSet_ImportFPS);
     ui->btnExportFPS->setDefaultAction(mProblemSet_ExportFPS);
@@ -4327,6 +4342,7 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
     menu.addAction(mProblemSet_New);
     menu.addAction(mProblemSet_Load);
     menu.addAction(mProblemSet_Save);
+    menu.addAction(mProblemSet_SaveAs);
     menu.addAction(mProblemSet_ImportFPS);
     menu.addAction(mProblemSet_ExportFPS);
     menu.addAction(mProblemSet_AddProblem);
@@ -4347,14 +4363,14 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
             action->setCheckable(true);
             action->setActionGroup(actionGroup);
 
-            if (filename.compare(problem->answerProgram, PATH_SENSITIVITY)==0) {
+            if (filename.compare(problem->answerProgram(), PATH_SENSITIVITY)==0) {
                 action->setChecked(true);
                 answerFound = true;
             }
             menuSetAnswer->addAction(action);
         }
-        if (!answerFound && !problem->answerProgram.isEmpty()) {
-            QAction* action = new QAction(problem->answerProgram,menuSetAnswer);
+        if (!answerFound && !problem->answerProgram().isEmpty()) {
+            QAction* action = new QAction(problem->answerProgram(),menuSetAnswer);
             action->setCheckable(true);
             action->setChecked(true);
             action->setActionGroup(actionGroup);
@@ -4362,13 +4378,13 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
         }
         connect(actionGroup, &QActionGroup::triggered,
                 [problem,this](QAction* action) {
-            if (action->text().compare(problem->answerProgram, PATH_SENSITIVITY)
+            if (action->text().compare(problem->answerProgram(), PATH_SENSITIVITY)
                     !=0)
-                problem->answerProgram = action->text();
+                problem->setAnswerProgram(action->text());
             else
-                problem->answerProgram = "";
+                problem->setAnswerProgram("");
             if (problem == mOJProblemModel->problem()) {
-                ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram.isEmpty());
+                ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram().isEmpty());
             }
         });
         QAction * action = new QAction(tr("select other file..."),menuSetAnswer);
@@ -4382,16 +4398,16 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
                         nullptr);
             if (!filename.isEmpty()) {
                 QDir::setCurrent(extractFileDir(filename));
-                problem->answerProgram = filename;
+                problem->setAnswerProgram(filename);
                 if (problem == mOJProblemModel->problem()) {
-                    ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram.isEmpty());
+                    ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram().isEmpty());
                 }
             }
         });
         menuSetAnswer->addAction(action);
         menu.addMenu(menuSetAnswer);
-        mProblem_GotoUrl->setEnabled(!problem->url.isEmpty());
-        mProblem_OpenSource->setEnabled(!problem->answerProgram.isEmpty());
+        mProblem_GotoUrl->setEnabled(!problem->url().isEmpty());
+        mProblem_OpenSource->setEnabled(!problem->answerProgram().isEmpty());
     } else {
         mProblem_GotoUrl->setEnabled(false);
         mProblem_OpenSource->setEnabled(false);
@@ -4444,8 +4460,8 @@ void MainWindow::onProblemSetIndexChanged(const QModelIndex &current, const QMod
         mProblemSet_RemoveProblem->setEnabled(true);
         POJProblem problem = mOJProblemSetModel->problem(idx.row());
         if (mFullInitialized) {
-            if (problem && !problem->answerProgram.isEmpty()) {
-                openFile(problem->answerProgram);
+            if (problem && !problem->answerProgram().isEmpty()) {
+                openFile(problem->answerProgram());
             }
         }
         mOJProblemModel->setProblem(problem);
@@ -4458,7 +4474,7 @@ void MainWindow::onProblemSetIndexChanged(const QModelIndex &current, const QMod
         stretchMessagesPanel(true);
         ui->tabMessages->setCurrentWidget(ui->tabProblem);
         ui->tabProblem->setEnabled(true);
-        ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram.isEmpty());
+        ui->btnOpenProblemAnswer->setEnabled(!problem->answerProgram().isEmpty());
     }
 }
 
@@ -4467,14 +4483,14 @@ void MainWindow::onProblemCaseIndexChanged(const QModelIndex &current, const QMo
     QModelIndex idx = current;
     if (previous.isValid()) {
         POJProblemCase problemCase = mOJProblemModel->getCase(previous.row());
-        if (problemCase->inputFileName.isEmpty())
-            problemCase->input = ui->txtProblemCaseInput->toPlainText();
+        if (problemCase->inputFileName().isEmpty())
+            problemCase->setInput( ui->txtProblemCaseInput->toPlainText());
         else
-            problemCase->input = QString();
-        if (problemCase->expectedOutputFileName.isEmpty())
-            problemCase->expected = ui->txtProblemCaseExpected->toPlainText();
+            problemCase->setInput( QString());
+        if (problemCase->expectedOutputFileName().isEmpty())
+            problemCase->setExpected( ui->txtProblemCaseExpected->toPlainText());
         else
-            problemCase->expected = QString();
+            problemCase->setExpected(QString());
     }
     if (idx.isValid()) {
         POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
@@ -4554,17 +4570,17 @@ void MainWindow::onProblemBatchSetCases()
     mOJProblemModel->removeCases();
     foreach (const QString& filename, files) {
         POJProblemCase problemCase = std::make_shared<OJProblemCase>();
-        problemCase->name = QFileInfo(filename).baseName();
+        problemCase->setName( QFileInfo(filename).baseName());
+        problemCase->setInputFileName(filename);
         problemCase->testState = ProblemCaseTestState::NotTested;
-        problemCase->inputFileName = filename;
         QString expectedFileName;
         expectedFileName = filename.mid(0,filename.length()-2)+"ans";
         if (fileExists(expectedFileName)) {
-            problemCase->expectedOutputFileName = expectedFileName;
+            problemCase->setExpectedOutputFileName( expectedFileName );
         } else {
             expectedFileName = filename.mid(0,filename.length()-2)+"out";
             if (fileExists(expectedFileName))
-                problemCase->expectedOutputFileName = expectedFileName;
+                problemCase->setExpectedOutputFileName( expectedFileName );
         }
         mOJProblemModel->addCase(problemCase);
     }
@@ -4572,10 +4588,10 @@ void MainWindow::onProblemBatchSetCases()
 
 void MainWindow::onNewProblemReceived(int num, int total, POJProblem newProblem)
 {
-    if (mOJProblemSetModel->problemNameUsed(newProblem->name))
+    if (mOJProblemSetModel->problemNameUsed(newProblem->name()))
         return;
     updateStatusbarMessage(tr("Problem '%1' received (%2/%3).")
-                              .arg(newProblem->name).arg(num).arg(total));
+                              .arg(newProblem->name()).arg(num).arg(total));
     mOJProblemSetModel->addProblem(newProblem);
     ui->tabExplorer->setCurrentWidget(ui->tabProblemSet);
     ui->lstProblemSet->setCurrentIndex(mOJProblemSetModel->index(
@@ -4814,8 +4830,8 @@ void MainWindow::onProblemOpenSource()
     POJProblem problem=mOJProblemSetModel->problem(idx.row());
     if (!problem)
         return;
-    if (!problem->answerProgram.isEmpty()) {
-        openFile(problem->answerProgram);
+    if (!problem->answerProgram().isEmpty()) {
+        openFile(problem->answerProgram());
     }
 }
 
@@ -4835,8 +4851,8 @@ void MainWindow::onProblemGotoUrl()
     POJProblem problem=mOJProblemSetModel->problem(idx.row());
     if (!problem)
         return;
-    if (!problem->url.isEmpty()) {
-        QDesktopServices::openUrl(problem->url);
+    if (!problem->url().isEmpty()) {
+        QDesktopServices::openUrl(problem->url());
     }
 }
 
@@ -4851,7 +4867,7 @@ void MainWindow::onRenameProblemSet()
     newName = newName.trimmed();
     if (!newName.isEmpty()){
         mOJProblemSetModel->rename(newName);
-        ui->lblProblemSet->setText(mOJProblemSetModel->name());
+        //updateProblemSetName();
     }
 }
 
@@ -5843,7 +5859,9 @@ void MainWindow::closeEvent(QCloseEvent *event) {
             int currentIndex=-1;
             if (ui->lstProblemSet->currentIndex().isValid())
                 currentIndex = ui->lstProblemSet->currentIndex().row();
-            mOJProblemSetModel->save(currentIndex);
+            QDir dir(pSettings->dirs().config());
+            QString filename=dir.filePath(DEV_PROBLEM_SET_FILE);
+            mOJProblemSetModel->saveToFile(filename, false, currentIndex);
         } catch (FileError& e) {
             QMessageBox::warning(nullptr,
                              tr("Save Error"),
@@ -7787,45 +7805,45 @@ void MainWindow::newProjectUnitFile(const QString& suffix)
 void MainWindow::fillProblemCaseInputAndExpected(const POJProblemCase &problemCase)
 {
     ui->btnProblemCaseInputFileName->setEnabled(true);
-    if (!problemCase->inputFileName.isEmpty()) {
+    if (!problemCase->inputFileName().isEmpty()) {
         ui->txtProblemCaseInput->setReadOnly(true);
-        if (fileExists(problemCase->inputFileName)) {
-            QFileInfo inputFileInfo{problemCase->inputFileName};
+        if (fileExists(problemCase->inputFileName())) {
+            QFileInfo inputFileInfo{problemCase->inputFileName()};
             if (pSettings->executor().maxCaseInputFileSize() > 0
                     && inputFileInfo.size() > pSettings->executor().maxCaseInputFileSize()*1024*1024) {
                 ui->txtProblemCaseInput->setPlainText(tr("Input Data File is too large to display!"));
             } else {
-                ui->txtProblemCaseInput->setPlainText(readFileToByteArray(problemCase->inputFileName));
+                ui->txtProblemCaseInput->setPlainText(readFileToByteArray(problemCase->inputFileName()));
             }
         } else {
             ui->txtProblemCaseInput->setPlainText(tr("File doesn't exist!"));
         }
         ui->btnProblemCaseClearInputFileName->setVisible(true);
-        ui->txtProblemCaseInputFileName->setText(extractFileName(problemCase->inputFileName));
-        ui->txtProblemCaseInputFileName->setToolTip(problemCase->inputFileName);
+        ui->txtProblemCaseInputFileName->setText(extractFileName(problemCase->inputFileName()));
+        ui->txtProblemCaseInputFileName->setToolTip(problemCase->inputFileName());
     } else {
         ui->txtProblemCaseInput->setReadOnly(false);
-        ui->txtProblemCaseInput->setPlainText(problemCase->input);
+        ui->txtProblemCaseInput->setPlainText(problemCase->input());
         ui->btnProblemCaseClearInputFileName->setVisible(false);
         ui->txtProblemCaseInputFileName->clear();
         ui->txtProblemCaseInputFileName->setToolTip("");
     }
     ui->btnProblemCaseExpectedOutputFileName->setEnabled(true);
-    if (!problemCase->expectedOutputFileName.isEmpty()) {
+    if (!problemCase->expectedOutputFileName().isEmpty()) {
         ui->txtProblemCaseExpected->setReadOnly(true);
         ui->txtProblemCaseExpected->clearAll();
-        if (fileExists(problemCase->expectedOutputFileName)) {
-            ui->txtProblemCaseExpected->setPlainText(readFileToByteArray(problemCase->expectedOutputFileName));
+        if (fileExists(problemCase->expectedOutputFileName())) {
+            ui->txtProblemCaseExpected->setPlainText(readFileToByteArray(problemCase->expectedOutputFileName()));
         } else {
             ui->txtProblemCaseInput->setPlainText(tr("File doesn't exist!"));
         }
         ui->btnProblemCaseClearExpectedOutputFileName->setVisible(true);
-        ui->txtProblemCaseExpectedOutputFileName->setText(extractFileName(problemCase->expectedOutputFileName));
-        ui->txtProblemCaseExpectedOutputFileName->setToolTip(problemCase->inputFileName);
+        ui->txtProblemCaseExpectedOutputFileName->setText(extractFileName(problemCase->expectedOutputFileName()));
+        ui->txtProblemCaseExpectedOutputFileName->setToolTip(problemCase->inputFileName());
     } else {
         ui->txtProblemCaseExpected->setReadOnly(false);
         ui->txtProblemCaseExpected->clearAll();
-        ui->txtProblemCaseExpected->setPlainText(problemCase->expected);
+        ui->txtProblemCaseExpected->setPlainText(problemCase->expected());
         ui->btnProblemCaseClearExpectedOutputFileName->setVisible(false);
         ui->txtProblemCaseExpectedOutputFileName->clear();
         ui->txtProblemCaseExpectedOutputFileName->setToolTip("");
@@ -8049,6 +8067,32 @@ void MainWindow::validateCompilerSet(int index)
         } else {
             mCompilerSet->setItemIcon(index, QIcon());
         }
+    }
+}
+
+void MainWindow::updateProblemSetName()
+{
+    QString name = mOJProblemSetModel->name();
+    if (mOJProblemSetModel->problemSet()->isModified()) {
+        name += "[*]";
+    }
+    if (!mOJProblemSetModel->filePath().isEmpty()) {
+        name += QString("(%1)").arg(QFileInfo(mOJProblemSetModel->filePath()).fileName());
+    }
+    ui->lblProblemSet->setText(name);
+}
+
+void MainWindow::saveProblemSet(const QString &filePath)
+{
+    try {
+        applyCurrentProblemCaseChanges();
+        int currentIndex=-1;
+        if (ui->lstProblemSet->currentIndex().isValid())
+            currentIndex = ui->lstProblemSet->currentIndex().row();
+        mOJProblemSetModel->saveToFile(filePath, true, currentIndex);
+    } catch (FileError& error) {
+        QMessageBox::critical(this,tr("Save Error"),
+                              error.reason());
     }
 }
 
@@ -8546,9 +8590,9 @@ void MainWindow::applyCurrentProblemCaseChanges()
     if (idx.isValid()) {
         POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
         if (problemCase) {
-            if (!fileExists(problemCase->inputFileName))
-                problemCase->input = ui->txtProblemCaseInput->toPlainText();
-            problemCase->expected = ui->txtProblemCaseExpected->toPlainText();
+            if (!fileExists(problemCase->inputFileName()))
+                problemCase->setInput( ui->txtProblemCaseInput->toPlainText());
+            problemCase->setExpected( ui->txtProblemCaseExpected->toPlainText());
         }
     }
 }
@@ -8880,12 +8924,12 @@ void MainWindow::onNewProblemSet()
                              +"<br />"
                              +tr("Do you want to save it?"),
                              QMessageBox::Yes | QMessageBox::No)==QMessageBox::Yes) {
-            onSaveProblemSet();
+            onSaveProblemSetAs();
         }
     }
     mOJProblemSetNameCounter++;
     mOJProblemSetModel->create(tr("Problem Set %1").arg(mOJProblemSetNameCounter));
-    ui->lblProblemSet->setText(mOJProblemSetModel->name());
+    //updateProblemSetName();
     onProblemSetIndexChanged(QModelIndex(),QModelIndex());
 }
 
@@ -8900,7 +8944,7 @@ void MainWindow::onAddProblem()
             break;
     }
     POJProblem problem = std::make_shared<OJProblem>();
-    problem->name = name;
+    problem->setName(name);
     mOJProblemSetModel->addProblem(problem);
     ui->lstProblemSet->setCurrentIndex(mOJProblemSetModel->index(mOJProblemSetModel->count()-1));
     mProblem_Properties->trigger();
@@ -8932,8 +8976,17 @@ void MainWindow::onRemoveProblem()
     }
 }
 
-
 void MainWindow::onSaveProblemSet()
+{
+    if (mOJProblemSetModel->filePath().isEmpty())
+        onSaveProblemSetAs();
+    else {
+        saveProblemSet(mOJProblemSetModel->filePath());
+    }
+}
+
+
+void MainWindow::onSaveProblemSetAs()
 {
     QFileDialog dialog(this);
     dialog.setWindowTitle(tr("Save Problem Set"));
@@ -8955,16 +9008,7 @@ void MainWindow::onSaveProblemSet()
             fileName.append(".pbs");
         }
         QDir::setCurrent(extractFileDir(fileName));
-        try {
-            applyCurrentProblemCaseChanges();
-            int currentIndex=-1;
-            if (ui->lstProblemSet->currentIndex().isValid())
-                currentIndex = ui->lstProblemSet->currentIndex().row();
-            mOJProblemSetModel->saveToFile(fileName,currentIndex);
-        } catch (FileError& error) {
-            QMessageBox::critical(this,tr("Save Error"),
-                                  error.reason());
-        }
+        saveProblemSet(fileName);
     }
 }
 
@@ -8980,7 +9024,7 @@ void MainWindow::onLoadProblemSet()
         QDir::setCurrent(extractFileDir(fileName));
         try {
             int currentIndex;
-            mOJProblemSetModel->loadFromFile(fileName,currentIndex);
+            mOJProblemSetModel->loadFromFile(fileName,true,currentIndex);
             if (currentIndex>=0) {
                 if (currentIndex>=0) {
                     QModelIndex index = mOJProblemSetModel->index(currentIndex,0);
@@ -8993,7 +9037,7 @@ void MainWindow::onLoadProblemSet()
                                   error.reason());
         }
     }
-    ui->lblProblemSet->setText(mOJProblemSetModel->name());
+    //updateProblemSetName();
     ui->lstProblemSet->setCurrentIndex(mOJProblemSetModel->index(0,0));
 }
 
@@ -9008,7 +9052,7 @@ void MainWindow::onAddProblemCase()
             break;
     }
     POJProblemCase problemCase = std::make_shared<OJProblemCase>();
-    problemCase->name = name;
+    problemCase->setName(name);
     problemCase->testState = ProblemCaseTestState::NotTested;
     mOJProblemModel->addCase(problemCase);
     ui->tblProblemCases->setCurrentIndex(mOJProblemModel->index(mOJProblemModel->count()-1,0));
@@ -9058,9 +9102,9 @@ void MainWindow::onRemoveProblemCases()
 void MainWindow::onOpenProblemAnswerFile()
 {
     POJProblem problem = mOJProblemModel->problem();
-    if (!problem || problem->answerProgram.isEmpty())
+    if (!problem || problem->answerProgram().isEmpty())
         return;
-    Editor *e = openFile(problem->answerProgram);
+    Editor *e = openFile(problem->answerProgram());
     if (e) {
         e->activate();
     }
@@ -9840,20 +9884,20 @@ void MainWindow::on_btnProblemCaseInputFileName_clicked()
         POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
         if (!problemCase)
             return;
-        if (problemCase->inputFileName == fileName)
+        if (problemCase->inputFileName() == fileName)
             return;
-        problemCase->inputFileName = fileName;
-        if (problemCase->expectedOutputFileName.isEmpty()
-                && problemCase->expected.isEmpty()
+        problemCase->setInputFileName(fileName);
+        if (problemCase->expectedOutputFileName().isEmpty()
+                && problemCase->expected().isEmpty()
                 && QFileInfo(fileName).suffix()=="in") {
             QString expectedFileName;
             expectedFileName = fileName.mid(0,fileName.length()-2)+"ans";
             if (fileExists(expectedFileName)) {
-                problemCase->expectedOutputFileName = expectedFileName;
+                problemCase->setExpectedOutputFileName(expectedFileName);
             } else {
                 expectedFileName = fileName.mid(0,fileName.length()-2)+"out";
                 if (fileExists(expectedFileName))
-                    problemCase->expectedOutputFileName = expectedFileName;
+                    problemCase->setExpectedOutputFileName(expectedFileName);
             }
         }
         fillProblemCaseInputAndExpected(problemCase);
@@ -9867,7 +9911,7 @@ void MainWindow::on_btnProblemCaseClearExpectedOutputFileName_clicked()
     POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
     if (!problemCase)
         return;
-    problemCase->expectedOutputFileName = "";
+    problemCase->setExpectedOutputFileName( "");
     fillProblemCaseInputAndExpected(problemCase);
 }
 
@@ -9878,7 +9922,7 @@ void MainWindow::on_btnProblemCaseClearInputFileName_clicked()
     POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
     if (!problemCase)
         return;
-    problemCase->inputFileName = "";
+    problemCase->setInputFileName("");
     fillProblemCaseInputAndExpected(problemCase);
 }
 
@@ -9895,9 +9939,9 @@ void MainWindow::on_btnProblemCaseExpectedOutputFileName_clicked()
         POJProblemCase problemCase = mOJProblemModel->getCase(idx.row());
         if (!problemCase)
             return;
-        if (problemCase->expectedOutputFileName == fileName)
+        if (problemCase->expectedOutputFileName() == fileName)
             return;
-        problemCase->expectedOutputFileName = fileName;
+        problemCase->setExpectedOutputFileName(fileName);
         fillProblemCaseInputAndExpected(problemCase);
     }
 }
@@ -10160,7 +10204,7 @@ void MainWindow::onImportFPSProblemSet()
         try {
             QList<POJProblem> problems = importFreeProblemSet(fileName);
             mOJProblemSetModel->addProblems(problems);
-            ui->lblProblemSet->setText(mOJProblemSetModel->name());
+            //updateProblemSetName();
             ui->lstProblemSet->setCurrentIndex(mOJProblemSetModel->index(0,0));
         } catch (FileError& error) {
             QMessageBox::critical(this,tr("Load Error"),

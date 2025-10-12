@@ -114,36 +114,38 @@ void CompetitiveCompanionThread::onNewProblemConnection(QTcpSocket* clientConnec
     QString name = obj["name"].toString();
 
     POJProblem problem = std::make_shared<OJProblem>();
-    problem->name = name;
-    problem->url = obj["url"].toString();
+    problem->setName(name);
+    problem->setUrl(obj["url"].toString());
     if (obj.contains("timeLimit")) {
-        problem->timeLimit = obj["timeLimit"].toInt();
-        problem->timeLimitUnit = ProblemTimeLimitUnit::Milliseconds;
+        problem->setTimeLimit(obj["timeLimit"].toInt());
+        problem->setTimeLimitUnit(ProblemTimeLimitUnit::Milliseconds);
     }
     if (obj.contains("memoryLimit")) {
-        problem->memoryLimit = obj["memoryLimit"].toInt();
-        problem->memoryLimitUnit = ProblemMemoryLimitUnit::MB;
+        problem->setMemoryLimit(obj["memoryLimit"].toInt());
+        problem->setMemoryLimitUnit(ProblemMemoryLimitUnit::MB);
     }
     QJsonArray caseArray = obj["tests"].toArray();
     for (const QJsonValue& val : caseArray) {
         QJsonObject caseObj = val.toObject();
         POJProblemCase problemCase = std::make_shared<OJProblemCase>();
         problemCase->testState = ProblemCaseTestState::NotTested;
-        problemCase->name = tr("Problem Case %1").arg(problem->cases.count()+1);
+        problemCase->setName( tr("Problem Case %1").arg(problem->cases().count()+1) );
         if (pSettings->executor().convertHTMLToTextForInput()) {
             QTextDocument doc;
             doc.setHtml(caseObj["input"].toString());
-            problemCase->input = doc.toPlainText();
+            problemCase->setInput( doc.toPlainText() );
         } else
-            problemCase->input = caseObj["input"].toString();
+            problemCase->setInput( caseObj["input"].toString() );
         if (pSettings->executor().convertHTMLToTextForExpected()) {
             QTextDocument doc;
             doc.setHtml(caseObj["output"].toString());
-            problemCase->expected = doc.toPlainText();
+            problemCase->setExpected(doc.toPlainText());
         } else
-            problemCase->expected = caseObj["output"].toString();
-        problem->cases.append(problemCase);
+            problemCase->setExpected(caseObj["output"].toString());
+        problemCase->setModified(false);
+        problem->addCase(problemCase);
     }
+    problem->setModified(false);
     mBatchProblemsRecieved++;
     emit newProblemReceived(mBatchProblemsRecieved, mBatchCount, problem);
     // if (mBatchProblemsRecieved == mBatchCount) {
