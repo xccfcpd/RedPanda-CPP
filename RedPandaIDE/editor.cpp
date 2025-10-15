@@ -39,7 +39,7 @@
 #include <QTemporaryFile>
 #include <qsynedit/document.h>
 #include <qsynedit/syntaxer/cpp.h>
-#include <qsynedit/syntaxer/asm.h>
+#include <qsynedit/syntaxer/gas.h>
 #include <qsynedit/syntaxer/nasm.h>
 #include <qsynedit/exporter/rtfexporter.h>
 #include <qsynedit/exporter/htmlexporter.h>
@@ -1020,14 +1020,15 @@ void Editor::keyPressEvent(QKeyEvent *event)
                     handled=true;
                     return;
                 }
-            } else if (syntaxer()->language()==QSynedit::ProgrammingLanguage::ATTAssembly) {
+            } else if (syntaxer()->language()==QSynedit::ProgrammingLanguage::GNU_Assembly) {
                 if ((idCharPressed==0) && (ch=='.')) {
                     processCommand(QSynedit::EditCommand::Char,ch,nullptr);
                     showCompletion("",false,CodeCompletionType::KeywordsOnly);
                     handled=true;
                     return;
                 }
-                if ((idCharPressed==0) && (ch=='%')) {
+                if ((idCharPressed==0) && (ch=='%')
+                        && std::dynamic_pointer_cast<QSynedit::GASSyntaxer>(syntaxer())->prefixRegisterNames()) {
                     processCommand(QSynedit::EditCommand::Char,ch,nullptr);
                     showCompletion("",false,CodeCompletionType::KeywordsOnly);
                     handled=true;
@@ -1093,7 +1094,7 @@ void Editor::mouseMoveEvent(QMouseEvent *event)
     if(event->modifiers() == Qt::ControlModifier && event->buttons() == Qt::NoButton) {
         QSynedit::BufferCoord p;
         TipType reason = getTipType(event->pos(),p);
-        if (reason == TipType::Preprocessor) {
+        if (reason == TipType::Include) {
             QString sLine = lineText(p.line);
             if (mParser->isIncludeNextLine(sLine) || mParser->isIncludeLine(sLine))
                 updateHoverLink(p.line);
@@ -1269,6 +1270,16 @@ void Editor::onPreparePaintHighlightToken(int line, int aChar, const QString &to
                             p.line);
                 while (statement && statement->kind == StatementKind::Alias)
                     statement = mParser->findAliasedStatement(statement);
+                if (statement && statement->kind == StatementKind::Constructor) {
+                    QString s=document()->getLine(line-1);
+                    int pos  = aChar+token.length()-1;
+                    while(pos<s.length() && CppParser::isSpaceChar(s[pos])) {
+                        pos++;
+                    }
+                    if (pos >= s.length() || (s[pos]!='(' && s[pos]!='{')) {
+                        statement = statement->parentScope.lock();
+                    }
+                }
                 kind = getKindOfStatement(statement);
                 mIdentCache.insert(QString("%1 %2").arg(aChar).arg(token),kind);
             }
@@ -1925,7 +1936,7 @@ void Editor::onStatusChanged(QSynedit::StatusChanges changes)
 void Editor::onGutterClicked(Qt::MouseButton button, int , int , int line)
 {
     if (button == Qt::LeftButton) {
-        if (isC_CPPSourceFile(mFileType)
+        if (isC_CPP_ASMSourceFile(mFileType)
                 || isC_CPPHeaderFile(mFileType))
             toggleBreakpoint(line);
     }
@@ -2015,21 +2026,13 @@ void Editor::onTooltipTimer()
 
 
     // Get subject
-    bool isIncludeLine = false;
-    bool isIncludeNextLine = false;
     QSynedit::BufferCoord pBeginPos,pEndPos;
     QString s;
     QStringList expression;
     switch (reason) {
-    case TipType::Preprocessor:
-        // When hovering above a preprocessor line, determine if we want to show an include or a identifier hint
+    case TipType::Include:
         if (mParser) {
             s = lineText(p.line);
-            isIncludeNextLine = mParser->isIncludeNextLine(s);
-            if (!isIncludeNextLine)
-                isIncludeLine = mParser->isIncludeLine(s);
-            if (!isIncludeNextLine &&!isIncludeLine)
-                s = wordAtRowCol(p);
         }
         break;
     case TipType::Identifier:
@@ -2084,16 +2087,13 @@ void Editor::onTooltipTimer()
     // Determine what to do with subject
     QString hint = "";
     switch (reason) {
-    case TipType::Preprocessor:
-        if (isIncludeNextLine || isIncludeLine) {
-            if (pSettings->editor().enableHeaderToolTips())
-                hint = getFileHint(s, isIncludeNextLine);
-        } else if (//devEditor.ParserHints and
-                 !mCompletionPopup->isVisible()
-                 && !mHeaderCompletionPopup->isVisible()) {
-            if (pSettings->editor().enableIdentifierToolTips())
-                hint = getParserHint(QStringList(),s,p.line);
-        }
+    case TipType::Include:
+        if (pSettings->editor().enableHeaderToolTips()
+                && mParser)
+            hint = getHeaderFileHint(s, mParser->isIncludeNextLine(s));
+        break;
+        if (pSettings->editor().enableHeaderToolTips())
+            hint = getHeaderFileHint(s, true);
         break;
     case TipType::Identifier:
     case TipType::Selection:
@@ -2105,7 +2105,7 @@ void Editor::onTooltipTimer()
                     showDebugHint(s,p.line);
                 }
             } else if (pSettings->editor().enableIdentifierToolTips()) {
-                hint = getParserHint(expression, s, p.line);
+                hint = getParserHint(expression, p.line, p.ch);
             }
         }
         break;
@@ -3467,7 +3467,8 @@ void Editor::showCompletion(const QString& preWord,bool autoComplete, CodeComple
                    (attr->tokenType() != QSynedit::TokenType::Character)) {
             return;
         } else if (type==CodeCompletionType::KeywordsOnly ) {
-            if (syntaxer()->language()==QSynedit::ProgrammingLanguage::ATTAssembly)
+            if (syntaxer()->language()==QSynedit::ProgrammingLanguage::GNU_Assembly
+                    && std::dynamic_pointer_cast<QSynedit::GASSyntaxer>(syntaxer())->prefixRegisterNames() )
                 word = getWordAtPosition(this,caretXY(),pBeginPos,pEndPos, WordPurpose::wpATTASMKeywords);
             else if (fileType() == FileType::NASM && attr->tokenType() == QSynedit::TokenType::Preprocessor)
                 word = getWordAtPosition(this,caretXY(),pBeginPos,pEndPos, WordPurpose::wpATTASMKeywords);
@@ -3487,19 +3488,13 @@ void Editor::showCompletion(const QString& preWord,bool autoComplete, CodeComple
     QSet<QString> keywords;
 
     if (syntaxer()->language() != QSynedit::ProgrammingLanguage::CPP ) {
-        if (syntaxer()->language()==QSynedit::ProgrammingLanguage::ATTAssembly) {
-            if (word.startsWith("."))
-                keywords = QSynedit::ASMSyntaxer::ATTDirectives;
-            else if (word.startsWith("%"))
-                keywords = QSynedit::ASMSyntaxer::ATTRegisters;
-            else {
-                keywords = QSynedit::ASMSyntaxer::InstructionNames;
-            }
-        } else if (fileType() == FileType::NASM) {
-            if (attr->tokenType() == QSynedit::TokenType::Preprocessor)
-                keywords = QSynedit::NASMSyntaxer::PreprocessorDirectives;
-            else {
-                keywords = syntaxer()->keywords();
+        if (QSynedit::isAssemblyLanguage(syntaxer()->language())) {
+            if (word.startsWith(".")) {
+                keywords = syntaxer()->keywords(".");
+            } else if (word.startsWith("%")) {
+                keywords = syntaxer()->keywords("%");
+            } else {
+                keywords = syntaxer()->keywords("");
             }
         } else {
             int pos = word.lastIndexOf(".");
@@ -3789,7 +3784,7 @@ void Editor::completionInsert(bool appendFunc)
 // delete the part of the word that's already been typed ...
     QSynedit::BufferCoord p = wordEnd();
     QSynedit::BufferCoord pStart = wordStart();
-    if (syntaxer()->language()==QSynedit::ProgrammingLanguage::ATTAssembly) {
+    if (QSynedit::isAssemblyLanguage( syntaxer()->language())) {
         if (statement->command.startsWith(".")
                 || statement->command.startsWith("%"))
             pStart.ch--;
@@ -3901,7 +3896,7 @@ bool Editor::onCompletionKeyPressed(QKeyEvent *event)
         return false;
     QString oldPhrase = mCompletionPopup->memberPhrase();
     WordPurpose purpose = WordPurpose::wpCompletion;
-    if (syntaxer()->language()==QSynedit::ProgrammingLanguage::ATTAssembly) {
+    if (QSynedit::isAssemblyLanguage(syntaxer()->language())) {
         purpose = WordPurpose::wpATTASMKeywords;
     } else if (oldPhrase.startsWith('#')) {
         purpose = WordPurpose::wpDirective;
@@ -4057,12 +4052,12 @@ Editor::TipType Editor::getTipType(QPoint point, QSynedit::BufferCoord& pos)
             if (attr) {
                 if (dragging()) {
                     // do not allow when dragging selection
+                } else if (mParser && mParser->isIncludeLine(lineText(pos.line))) {
+                    return TipType::Include;
                 } else if (selAvail() && isPointInSelection(pos)) {
                         return TipType::Selection;
                 } else if (attr->tokenType() == QSynedit::TokenType::Identifier) {
                     return TipType::Identifier;
-                } else if (mParser && mParser->isIncludeLine(lineText(pos.line))) {
-                    return TipType::Preprocessor;
                 } else if (attr->tokenType() == QSynedit::TokenType::Number) {
                     return TipType::Number;
                 } else if (attr->tokenType() == QSynedit::TokenType::Keyword) {
@@ -4082,7 +4077,7 @@ void Editor::cancelHint()
     mCurrentTipType=TipType::None;
 }
 
-QString Editor::getFileHint(const QString &s, bool fromNext)
+QString Editor::getHeaderFileHint(const QString &s, bool fromNext)
 {
     QString fileName = mParser->getHeaderFileName(mFilename, s, fromNext);
     if (fileExists(fileName)) {
@@ -4091,7 +4086,7 @@ QString Editor::getFileHint(const QString &s, bool fromNext)
     return "";
 }
 
-QString Editor::getParserHint(const QStringList& expression,const QString &/*s*/, int line)
+QString Editor::getParserHint(const QStringList& expression,int line, int ch)
 {
     if (!mParser)
         return "";
@@ -4101,6 +4096,7 @@ QString Editor::getParserHint(const QStringList& expression,const QString &/*s*/
     PStatement statement = mParser->findStatementOf(
                 mFilename,expression,
                 line);
+    statement = constructorToClass(statement, line , ch);
     if (!statement)
         return result;
     if (statement->kind == StatementKind::Function
@@ -4653,6 +4649,28 @@ bool Editor::needReparse()
                        || (!mParser->isFileParsed(mFilename)));
 }
 
+PStatement Editor::constructorToClass(PStatement statement, int line, int ch)
+{
+    if (statement && statement->kind == StatementKind::Constructor) {
+        QSynedit::BufferCoord p;
+        QString token;
+        int start;
+        QSynedit::PTokenAttribute attri;
+        p.line = line+1;
+        p.ch = ch+1;
+        if (getTokenAttriAtRowColEx(p,token,start,attri)) {
+            QString s = document()->getLine(line);
+            int pos = start+token.length()-1;
+            while (pos<s.length() && CppParser::isSpaceChar(s[pos]))
+                pos++;
+            if (pos >= s.length() || (s[pos]!='(' && s[pos]!='{')) {
+                return statement->parentScope.lock();
+            }
+        }
+    }
+    return statement;
+}
+
 const QString &Editor::contextFile() const
 {
     return mContextFile;
@@ -4779,6 +4797,7 @@ void Editor::gotoDeclaration(const QSynedit::BufferCoord &pos)
                 filename(),
                 expression,
                 pos.line);
+    statement = constructorToClass(statement, pos.line, pos.ch);
 
     if (!statement) {
         return;
@@ -4809,7 +4828,7 @@ void Editor::gotoDefinition(const QSynedit::BufferCoord &pos)
                 filename(),
                 expression,
                 pos.line);
-
+    statement = constructorToClass(statement, pos.line, pos.ch);
     if (!statement) {
         // pMainWindow->updateStatusbarMessage(tr("Symbol '%1' not found!").arg(phrase));
         return;

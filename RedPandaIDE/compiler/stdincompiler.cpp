@@ -52,8 +52,7 @@ bool StdinCompiler::prepareForCompile()
         strFileType = "C";
         mCompiler = compilerSet()->CCompiler();
         break;
-    case FileType::ATTASM:
-    case FileType::INTELASM:
+    case FileType::GAS:
         mArguments += {"-x", "assembler", "-"};
         mArguments += getCCompileArguments(mOnlyCheckSyntax);
         mArguments += getCIncludeArguments();
@@ -71,7 +70,8 @@ bool StdinCompiler::prepareForCompile()
         mCompiler = compilerSet()->cppCompiler();
         break;
     default:
-        throw CompileError(tr("Can't find the compiler for file %1").arg(mFilename));
+        //throw CompileError(tr("Can't find the compiler for file %1").arg(mFilename));
+        break;
     }
     if (!mOnlyCheckSyntax)
         mArguments += getLibraryArguments(fileType);

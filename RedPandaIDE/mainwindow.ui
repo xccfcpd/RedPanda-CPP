@@ -117,7 +117,7 @@
      <x>0</x>
      <y>0</y>
      <width>2054</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -196,8 +196,7 @@
      <addaction name="actionC_C_Header"/>
      <addaction name="actionC_File"/>
      <addaction name="actionCPP_File"/>
-     <addaction name="actionATT_ASM"/>
-     <addaction name="actionIntel_ASM"/>
+     <addaction name="actionGAS"/>
      <addaction name="actionNASM"/>
      <addaction name="actionText_File"/>
     </widget>
@@ -3308,14 +3307,6 @@
     <string>C/C++ Header</string>
    </property>
   </action>
-  <action name="actionATT_ASM">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>AT&amp;&amp;T ASM</string>
-   </property>
-  </action>
   <action name="actionText_File">
    <property name="checkable">
     <bool>true</bool>
@@ -3338,14 +3329,6 @@
    </property>
    <property name="text">
     <string>C++ File</string>
-   </property>
-  </action>
-  <action name="actionIntel_ASM">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Intel ASM</string>
    </property>
   </action>
   <action name="actionGenerate_GIMPLE">
@@ -3372,6 +3355,19 @@
    </property>
    <property name="text">
     <string>NASM</string>
+   </property>
+  </action>
+  <action name="actionGAS">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>GNU Assembly</string>
+   </property>
+  </action>
+  <action name="actionNew_NASM_File">
+   <property name="text">
+    <string>New NASM File</string>
    </property>
   </action>
  </widget>

@@ -128,8 +128,7 @@ bool FileCompiler::prepareForCompile()
     mArguments += getCharsetArgument(mEncoding, fileType, mOnlyCheckSyntax);
     QString strFileType;
     switch(fileType) {
-    case FileType::ATTASM:
-    case FileType::INTELASM:
+    case FileType::GAS:
         mArguments += getCCompileArguments(mOnlyCheckSyntax);
         mArguments += getCIncludeArguments();
         mArguments += getProjectIncludeArguments();
@@ -161,38 +160,38 @@ bool FileCompiler::prepareForCompile()
     if (!mOnlyCheckSyntax)
         mArguments += getLibraryArguments(fileType);
 
-    if (isASMSourceFile(fileType)) {
-        bool hasStart=false;
-        QStringList lines=readFileToLines(mFilename);
-        QSynedit::ASMSyntaxer syntaxer;
-        syntaxer.resetState();
-        QString lastToken;
-        QString token;
-        QSynedit::PTokenAttribute attr;
-        for (int i=0;i<lines.count();i++) {
-            QString line=lines[i];
-            syntaxer.setLine(line,i+1);
-            lastToken="";
-            while(!syntaxer.eol()) {
-                token=syntaxer.getToken();
-                if (token==":" && lastToken=="_start") {
-                    hasStart=true;
-                    break;
-                }
-                attr = syntaxer.getTokenAttribute();
-                if (attr->tokenType() != QSynedit::TokenType::Space
-                        && attr->tokenType()!=QSynedit::TokenType::String
-                        && attr->tokenType()!=QSynedit::TokenType::Character)
-                    lastToken=token;
-                syntaxer.next();
-            }
-            if (hasStart)
-                break;
-        }
-        if (hasStart) {
-            mArguments << "-nostartfiles";
-        }
-    }
+//    if (isASMSourceFile(fileType)) {
+//        bool hasStart=false;
+//        QStringList lines=readFileToLines(mFilename);
+//        QSynedit::ASMSyntaxer syntaxer;
+//        syntaxer.resetState();
+//        QString lastToken;
+//        QString token;
+//        QSynedit::PTokenAttribute attr;
+//        for (int i=0;i<lines.count();i++) {
+//            QString line=lines[i];
+//            syntaxer.setLine(line,i+1);
+//            lastToken="";
+//            while(!syntaxer.eol()) {
+//                token=syntaxer.getToken();
+//                if (token==":" && lastToken=="_start") {
+//                    hasStart=true;
+//                    break;
+//                }
+//                attr = syntaxer.getTokenAttribute();
+//                if (attr->tokenType() != QSynedit::TokenType::Space
+//                        && attr->tokenType()!=QSynedit::TokenType::String
+//                        && attr->tokenType()!=QSynedit::TokenType::Character)
+//                    lastToken=token;
+//                syntaxer.next();
+//            }
+//            if (hasStart)
+//                break;
+//        }
+//        if (hasStart) {
+//            mArguments << "-nostartfiles";
+//        }
+//    }
 
     if (!fileExists(mCompiler)) {
         throw CompileError(

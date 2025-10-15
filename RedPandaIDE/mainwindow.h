@@ -807,7 +807,9 @@ private slots:
     void on_actionDocument_triggered();
 
     void on_actionNew_GAS_File_triggered();
-
+#if defined(ARCH_X86_64) || defined(ARCH_X86)
+    void on_actionNew_NASM_File_triggered();
+#endif
     void on_actionGNU_Assembler_Manual_triggered();
 
 #ifdef ARCH_X86_64
@@ -873,9 +875,7 @@ private slots:
 
     void on_actionCPP_File_triggered();
 
-    void on_actionATT_ASM_triggered();
-
-    void on_actionIntel_ASM_triggered();
+    void on_actionGAS_triggered();
 
     void on_actionGenerate_GIMPLE_triggered();
 
