@@ -32,7 +32,10 @@ protected:
         Label,
         Register, //EAX EBX etc
         Null,
-        Number,
+        BinInteger,
+        DecInteger,
+        OctInteger,
+        HexInteger,
         Space,
         String,
         Symbol,
@@ -66,6 +69,8 @@ protected:
     TokenId mTokenID;
     bool mHasTrailingSpaces;
     PTokenAttribute mNumberAttribute;
+    PTokenAttribute mHexAttribute;
+    PTokenAttribute mOctAttribute;
     PTokenAttribute mDirectiveAttribute;
     PTokenAttribute mRegisterAttribute;
     PTokenAttribute mLabelAttribute;
@@ -78,8 +83,8 @@ private:
     void procIdent(const QString& prefix);
     void procLF();
     void proceLowerThan();
-    void procNull();
     void procNumber();
+    void procNumberType();
     void procSingleQuoteString();
     void procSlash();
     void procSpace();
@@ -89,6 +94,7 @@ private:
     static void initData();
     TokenId getIdentType(const QString& ident,  QChar nextChar);
 protected:
+    virtual void procNull();
     virtual bool isDirective(const QString& ident);
     virtual bool isPreprocessDirective(const QString& ident);
     virtual void handleDirective(int line, const QString& directive);
@@ -119,6 +125,8 @@ public:
     QString blockCommentBeginSymbol() override;
     QString blockCommentEndSymbol() override;
     const PTokenAttribute &preprocessDirectiveAttribute() const;
+    const PTokenAttribute &hexAttribute() const;
+    const PTokenAttribute &octAttribute() const;
 };
 
 }
