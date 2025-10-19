@@ -8941,6 +8941,7 @@ void MainWindow::onAddProblem()
         name = tr("Problem %1").arg(startCount+1);
         if (!mOJProblemSetModel->problemNameUsed(name))
             break;
+        startCount++;
     }
     POJProblem problem = std::make_shared<OJProblem>();
     problem->setName(name);
@@ -10290,6 +10291,7 @@ void MainWindow::on_actionNew_GAS_File_triggered()
     newEditor("s");
 }
 
+#if defined(ARCH_X86_64) || defined(ARCH_X86)
 void MainWindow::on_actionNew_NASM_File_triggered()
 {
     if (mProject) {
@@ -10304,6 +10306,7 @@ void MainWindow::on_actionNew_NASM_File_triggered()
     }
     newEditor("asm");
 }
+#endif
 
 void MainWindow::on_actionGNU_Assembler_Manual_triggered()
 {
