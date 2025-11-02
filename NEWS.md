@@ -21,6 +21,10 @@ Red Panda C++ Version 3.4
   - fix: Infinite loop when generating new problem set name.
   - enhancement: Completion suggestion for goto labels;
   - fix: Wrong suggestion for complex words.
+  - fix: Close an editor which is parsing may crash.
+  - enhancement: Support parsing consteval if. 
+  - enhancement: Support decltype in typedef.
+  - change: Show symbols defined in current file no matter it starts with underscore or not.
   
 Red Panda C++ Version 3.3
   - enhancement: Auto indent contents in parenthesis.
