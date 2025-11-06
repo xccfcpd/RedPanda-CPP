@@ -439,3 +439,105 @@ jobs:
         with:
           name: macOS ${{ matrix.arch }}
           path: dist/*.tar.xz
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [windows]
+    
+    steps:
+      - name: Download Windows MSYS2 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Prepare release assets
+        run: |
+          # 创建临时目录存放要发布的文件
+          mkdir -p release_assets
+          
+          # 定义版本号（从tag获取）
+          VERSION=${GITHUB_REF#refs/tags/}
+          
+          # 处理 CLANG64 文件
+          echo "Processing CLANG64 files..."
+          find artifacts/Windows\ MSYS2\ -\ msystem=CLANG64/ -type f \( -name "*.exe" -o -name "*.7z" -o -name "*.zip" \) | while read file; do
+            filename=$(basename "$file")
+            extension="${filename##*.}"
+            # 根据文件类型决定命名方式
+            case "$extension" in
+              "exe")
+                new_name="RedPanda-CPP-CLANG64-${VERSION}.exe"
+                ;;
+              "7z")
+                new_name="RedPanda-CPP-CLANG64-${VERSION}.7z"
+                ;;
+              "zip")
+                new_name="RedPanda-CPP-CLANG64-${VERSION}.zip"
+                ;;
+              *)
+                new_name="RedPanda-CPP-CLANG64-${VERSION}.${extension}"
+                ;;
+            esac
+            cp "$file" "release_assets/${new_name}"
+            echo "Added: ${new_name}"
+          done
+          
+          # 处理 MINGW64 文件
+          echo "Processing MINGW64 files..."
+          find artifacts/Windows\ MSYS2\ -\ msystem=MINGW64/ -type f \( -name "*.exe" -o -name "*.7z" -o -name "*.zip" \) | while read file; do
+            filename=$(basename "$file")
+            extension="${filename##*.}"
+            case "$extension" in
+              "exe")
+                new_name="RedPanda-CPP-MINGW64-${VERSION}.exe"
+                ;;
+              "7z")
+                new_name="RedPanda-CPP-MINGW64-${VERSION}.7z"
+                ;;
+              "zip")
+                new_name="RedPanda-CPP-MINGW64-${VERSION}.zip"
+                ;;
+              *)
+                new_name="RedPanda-CPP-MINGW64-${VERSION}.${extension}"
+                ;;
+            esac
+            cp "$file" "release_assets/${new_name}"
+            echo "Added: ${new_name}"
+          done
+          
+          # 处理 UCRT64 文件
+          echo "Processing UCRT64 files..."
+          find artifacts/Windows\ MSYS2\ -\ msystem=UCRT64/ -type f \( -name "*.exe" -o -name "*.7z" -o -name "*.zip" \) | while read file; do
+            filename=$(basename "$file")
+            extension="${filename##*.}"
+            case "$extension" in
+              "exe")
+                new_name="RedPanda-CPP-UCRT64-${VERSION}.exe"
+                ;;
+              "7z")
+                new_name="RedPanda-CPP-UCRT64-${VERSION}.7z"
+                ;;
+              "zip")
+                new_name="RedPanda-CPP-UCRT64-${VERSION}.zip"
+                ;;
+              *)
+                new_name="RedPanda-CPP-UCRT64-${VERSION}.${extension}"
+                ;;
+            esac
+            cp "$file" "release_assets/${new_name}"
+            echo "Added: ${new_name}"
+          done
+          
+          # 列出所有要发布的文件
+          echo "Final release files:"
+          ls -lh release_assets/
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release_assets/*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
