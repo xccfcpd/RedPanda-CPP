@@ -545,8 +545,15 @@ void Editor::setEncodingOption(const QByteArray& encoding) noexcept{
         return;
     mEncodingOption = newEncoding;
     if (!isNew()) {
+        if (modified()) {
+            if (QMessageBox::warning(this,tr("Confirm Reload File"),
+                           tr("The editing file will be reloaded. <br />All unsaved modifications will be lost. <br />Are you sure to continue?"),
+                           QMessageBox::Yes, QMessageBox::No)!=QMessageBox::Yes)
+                return;
+        }
         try {
             loadFile();
+            setModified(false);
         } catch (FileError& e) {
             QMessageBox::critical(nullptr,
                                   tr("Error Load File"),
@@ -1907,7 +1914,7 @@ void Editor::onStatusChanged(QSynedit::StatusChanges changes)
             mOldHighlightedWord = mCurrentHighlightedWord;
         }
         pMainWindow->updateStatusbarForLineCol(this);
-
+        pMainWindow->updateEditorActions(this);
         // Update the function tip
         if (pSettings->editor().showFunctionTips()) {
             updateFunctionTip(false);

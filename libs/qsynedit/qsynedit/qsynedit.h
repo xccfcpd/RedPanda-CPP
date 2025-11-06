@@ -370,7 +370,7 @@ public:
     void setGutterWidth(int value);
 
     bool modified() const;
-    void setModified(bool Value);
+    void setModified(bool Value, bool skipUndo=false);
 
     PSyntaxer syntaxer() const;
     void setSyntaxer(const PSyntaxer &syntaxer);
@@ -540,7 +540,7 @@ private:
     void doUpdateVScrollbar();
     void updateCaret();
     void recalcCharExtent();
-    void updateModifiedStatus();
+    void updateModifiedStatusForUndoRedo();
     int reparseLines(int startLine, int endLine, bool needRescanFolds = true,  bool toDocumentEnd = true);
     //void reparseLine(int line);
     void uncollapse(PCodeFoldingRange FoldRange);
@@ -582,11 +582,11 @@ private:
     void doGotoEditorEnd(bool isSelection);
     void setSelectedTextEmpty();
     void setSelTextPrimitive(const QStringList& text);
-    void setSelTextPrimitiveEx(SelectionMode PasteMode,
+    void setSelTextPrimitiveEx(SelectionMode mode,
                                const QStringList& text);
-    void doLinesDeleted(int FirstLine, int Count);
-    void doLinesInserted(int FirstLine, int Count);
-    void properSetLine(int ALine, const QString& ALineText, bool notify = true);
+    void doLinesDeleted(int firstLine, int count);
+    void doLinesInserted(int firstLine, int count);
+    void properSetLine(int line, const QString& sLineText, bool notify = true);
 
     //primitive edit operations
     void doDeleteText(BufferCoord startPos, BufferCoord endPos, SelectionMode mode);
@@ -609,7 +609,7 @@ private:
 
     void clearUndo();
     BufferCoord getPreviousLeftBrace(int x,int y);
-    bool canDoBlockIndent();
+    bool canDoBlockIndent() const;
 
     QRect calculateCaretRect() const;
     QRect calculateInputCaretRect() const;

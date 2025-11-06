@@ -1591,8 +1591,9 @@ void QSynEdit::doToggleBlockComment()
     int endLen = endSymbol.length();
 
     QString text=selText().trimmed();
-    if (text.length()>beginLen+endLen && text.startsWith(beginSymbol) && text.endsWith(endSymbol)) {
-        QString newText=selText();
+    QString trimmedText = text.trimmed();
+    if (trimmedText.length()>beginLen+endLen && trimmedText.startsWith(beginSymbol) && trimmedText.endsWith(endSymbol)) {
+        QString newText=text;
         int pos = newText.indexOf(beginSymbol);
         if (pos>=0) {
             newText.remove(pos,beginLen);
@@ -1603,7 +1604,7 @@ void QSynEdit::doToggleBlockComment()
         }
         setSelText(newText);
     } else {
-        QString newText=beginSymbol+selText()+endSymbol;
+        QString newText=QString("%1 %2 %3").arg(beginSymbol,selText(),endSymbol);
         setSelText(newText);
     }
 
@@ -2270,67 +2271,23 @@ void QSynEdit::doTabKey()
 void QSynEdit::doShiftTabKey()
 {
     // Provide Visual Studio like block indenting
-    if (mOptions.testFlag(EditorOption::TabIndent) && canDoBlockIndent()) {
-      doBlockUnindent();
-      return;
-    }
-
-    //Don't un-tab if caret is not on line or is beyond line end
-    if (mCaretY > mDocument->count() || mCaretX > lineText().length()+1)
+    if (!mOptions.testFlag(EditorOption::TabIndent))
         return;
-    //Don't un-tab if no chars before the Caret
-    if (mCaretX==1)
-        return;
-    QString s = lineText().mid(0,mCaretX-1);
-    //Only un-tab if caret is at the begin of the line
-    if (!s.trimmed().isEmpty())
-        return;
-
-    int NewX = 0;
-    if (s[s.length()-1] == '\t') {
-        NewX= mCaretX-1;
-    } else {
-        int spacesBefore = leftSpaces(lineText());
-        int spacesToRemove = spacesBefore % tabSize();
-        if (spacesToRemove == 0)
-            spacesToRemove = tabSize();
-        if (spacesToRemove > spacesBefore )
-            spacesToRemove = spacesBefore;
-        NewX = mCaretX;
-        while (spacesToRemove > 0 && s[NewX-2] == ' ' ) {
-            NewX--;
-            spacesToRemove--;
-        }
-    }
-    // perform un-tab
-
-    if (NewX != mCaretX) {
-        doDeleteText(BufferCoord{NewX, mCaretY},caretXY(),mActiveSelectionMode);
-        internalSetCaretX(NewX);
-    }
+    doBlockUnindent();
 }
 
 
-bool QSynEdit::canDoBlockIndent()
+bool QSynEdit::canDoBlockIndent() const
 {
-    if (!selAvail()) {
-        if (caretY() > mDocument->count()) {
-            return false;
-        }
-        QString s = lineText(caretY()).left(caretX()-1);
-        return (s.trimmed().isEmpty());
-    }
+    if (selAvail())
+        return true;
 
-    BufferCoord BB = blockBegin();
-    BufferCoord BE = blockEnd();
-
-    if (BB.line > mDocument->count() || BE.line > mDocument->count()) {
+    if (caretY()<1 || caretY() > mDocument->count()) {
         return false;
     }
 
-    QString s1 = lineText(BB.line).left(BB.ch-1);
-    QString s2 = lineText(BE.line).mid(BE.ch-1);
-    return (s1.trimmed().isEmpty() && s2.trimmed().isEmpty());
+    QString s = mDocument->getLine(caretY()-1).left(caretX()-1);
+    return (s.trimmed().isEmpty());
 }
 
 QRect QSynEdit::calculateCaretRect() const
@@ -2515,8 +2472,8 @@ void QSynEdit::doBlockIndent()
 
 void QSynEdit::doBlockUnindent()
 {
-    int lastIndent = 0;
-    int firstIndent = 0;
+    int lastLineIndent = 0;
+    int firstLineIndent = 0;
 
     BufferCoord BB,BE;
     // keep current selection detail
@@ -2528,35 +2485,37 @@ void QSynEdit::doBlockUnindent()
         BE = caretXY();
     }
     BufferCoord oldCaretPos = caretXY();
-    int x = 0;
+    int caretLineIndent = 0;
     beginEditing();
     mUndoList->addChange(ChangeReason::Caret, oldCaretPos, oldCaretPos,QStringList(), activeSelectionMode());
     mUndoList->addChange(ChangeReason::Selection,mBlockBegin,mBlockEnd,QStringList(), activeSelectionMode());
 
-    int e = BE.line;
+    int endLine = BE.line;
     // convert selection to complete lines
     if (BE.ch == 1)
-        e = BE.line - 1;
+        endLine = BE.line - 1;
     // build string to delete
-    for (int i = BB.line; i<= e;i++) {
+    for (int i = BB.line; i<= endLine;i++) {
         QString line = mDocument->getLine(i - 1);
         if (line.isEmpty())
             continue;
-        if (line[0]!=' ' && line[0]!='\t')
-            continue;
         int charsToDelete = 0;
-        while (charsToDelete < tabSize() &&
-               charsToDelete < line.length() &&
-               line[charsToDelete] == ' ')
-            charsToDelete++;
-        if (charsToDelete == 0)
+        if (line[0]=='\t') {
             charsToDelete = 1;
+        } else {
+            while (charsToDelete < tabSize() &&
+                   charsToDelete < line.length() &&
+                   line[charsToDelete] == ' ')
+                charsToDelete++;
+        }
+        if (charsToDelete == 0)
+            continue;
         if (i==BB.line)
-            firstIndent = charsToDelete;
-        if (i==e)
-            lastIndent = charsToDelete;
+            firstLineIndent = charsToDelete;
+        if (i==endLine)
+            lastLineIndent = charsToDelete;
         if (i==oldCaretPos.line)
-            x = charsToDelete;
+            caretLineIndent = charsToDelete;
         QString tempString = line.mid(charsToDelete);
         mDocument->putLine(i-1,tempString);
         mUndoList->addChange(ChangeReason::Delete,
@@ -2568,9 +2527,9 @@ void QSynEdit::doBlockUnindent()
   // restore selection
   //adjust the x position of orgcaretpos appropriately
 
-    oldCaretPos.ch -= x;
-    BB.ch -= firstIndent;
-    BE.ch -= lastIndent;
+    oldCaretPos.ch -= caretLineIndent;
+    BB.ch -= firstLineIndent;
+    BE.ch -= lastLineIndent;
     setCaretAndSelection(oldCaretPos, BB, BE);
     endEditing();
 }
@@ -3180,14 +3139,10 @@ void QSynEdit::recalcCharExtent()
     setLeftPos(currentLeftCol * mCharWidth);
 }
 
-void QSynEdit::updateModifiedStatus()
+void QSynEdit::updateModifiedStatusForUndoRedo()
 {
-    bool oldModified = mModified;
-    mModified = !mUndoList->initialState();
-    setModified(mModified);
+    setModified(!mUndoList->initialState(), true);
 //    qDebug()<<mModified<<oldModified;
-    if (oldModified!=mModified)
-        emit statusChanged(StatusChange::ModifyChanged);
 }
 
 int QSynEdit::reparseLines(int startLine, int endLine, bool needRescanFolds, bool toDocumentEnd)
@@ -4060,7 +4015,7 @@ void QSynEdit::doUndo()
         }
     }
     ensureCaretVisible();
-    updateModifiedStatus();
+    updateModifiedStatusForUndoRedo();
     onChanged();
 }
 
@@ -4264,7 +4219,7 @@ void QSynEdit::doRedo()
         mUndoList->restoreChange(item);
     }
     ensureCaretVisible();
-    updateModifiedStatus();
+    updateModifiedStatusForUndoRedo();
     onChanged();
 }
 
@@ -5201,9 +5156,9 @@ void QSynEdit::doLinesInserted(int firstLine, int count)
     emit linesInserted(firstLine, count);
 }
 
-void QSynEdit::properSetLine(int ALine, const QString &ALineText, bool notify)
+void QSynEdit::properSetLine(int line, const QString &sLineText, bool notify)
 {
-    mDocument->putLine(ALine,ALineText,notify);
+    mDocument->putLine(line,sLineText,notify);
 }
 
 void QSynEdit::doDeleteText(BufferCoord startPos, BufferCoord endPos, SelectionMode mode)
@@ -5350,8 +5305,9 @@ int QSynEdit::doInsertTextByNormalMode(const BufferCoord& pos, const QStringList
     // step1: insert the first line of Value into current line
     if (text.length()>1) {
         if (!mUndoing && mSyntaxer->language()==ProgrammingLanguage::CPP && mOptions.testFlag(EditorOption::AutoIndent)) {
-            QString s = trimLeft(text[0]);
+            QString s = text[0];
             if (sLeftSide.isEmpty()) {
+                s=s.trimmed();
                 sLeftSide = GetLeftSpacing(calcIndentSpaces(caretY,s,true),true);
             }
             str = sLeftSide + s;
@@ -6415,7 +6371,7 @@ bool QSynEdit::modified() const
     return mModified;
 }
 
-void QSynEdit::setModified(bool value)
+void QSynEdit::setModified(bool value, bool skipUndo)
 {
     if (value) {
         mLastModifyTime = QDateTime::currentDateTime();
@@ -6424,14 +6380,16 @@ void QSynEdit::setModified(bool value)
     if (value != mModified) {
         mModified = value;
 
-        if (value) {
-            mUndoList->clear();
-            mRedoList->clear();
-        } else {
-            if (mOptions.testFlag(EditorOption::GroupUndo)) {
-                mUndoList->addGroupBreak();
+        if (!skipUndo) {
+            if (value) {
+                mUndoList->clear();
+                mRedoList->clear();
+            } else {
+                if (mOptions.testFlag(EditorOption::GroupUndo)) {
+                    mUndoList->addGroupBreak();
+                }
+                mUndoList->setInitialState();
             }
-            mUndoList->setInitialState();
         }
         emit statusChanged(StatusChange::ModifyChanged);
     }
@@ -6536,7 +6494,7 @@ void QSynEdit::onLinesPutted(int line)
 
 void QSynEdit::onUndoAdded()
 {
-    updateModifiedStatus();
+    updateModifiedStatusForUndoRedo();
 
     // we have to clear the redo information, since adding undo info removes
     // the necessary context to undo earlier edit actions
@@ -6617,9 +6575,8 @@ void QSynEdit::setBlockEnd(BufferCoord value)
           value.ch = std::min(value.ch, getDisplayStringAtLine(value.line).length() + 1);
       else
           value.ch = 1;
-    } else {
-        value.ch = std::max(value.ch, 1);
     }
+    value.ch = std::max(value.ch, 1);
     if (value.ch != mBlockEnd.ch || value.line != mBlockEnd.line) {
         if (mActiveSelectionMode == SelectionMode::Column && value.ch != mBlockEnd.ch) {
             BufferCoord oldBlockEnd = mBlockEnd;
@@ -6725,13 +6682,12 @@ void QSynEdit::setBlockBegin(BufferCoord value)
     bool SelChanged;
     value.line = minMax(value.line, 1, mDocument->count());
     if (mActiveSelectionMode == SelectionMode::Normal) {
-        if (value.line >= 1 && value.line <= mDocument->count())
+        if (value.line >= 1 && value.line <= mDocument->count()) {
             value.ch = std::min(value.ch, getDisplayStringAtLine(value.line).length() + 1);
-        else
+        } else
             value.ch = 1;
-    } else {
-        value.ch = std::max(value.ch, 1);
     }
+    value.ch = std::max(value.ch, 1);
     if (selAvail()) {
         if (mBlockBegin.line < mBlockEnd.line) {
             nInval1 = std::min(value.line, mBlockBegin.line);
