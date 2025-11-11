@@ -807,7 +807,8 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionTrim_trailing_spaces->setEnabled(true);
         mMenuInsertCodeSnippet->setEnabled(true);
 
-        ui->actionRename_Symbol->setEnabled(true);
+        //rename symbol needs parser
+        ui->actionRename_Symbol->setEnabled(e->parser() != nullptr);
 
         ui->actionLocate_in_Files_View->setEnabled(!e->isNew());
         ui->actionToggle_Readonly->setEnabled(!e->modified());
@@ -6299,9 +6300,11 @@ void MainWindow::onRunFinished()
 {
     updateCompileActions();
     if (pSettings->executor().minimizeOnRun()) {
-        showNormal();
+        showNormal();        
     }
     updateAppTitle();
+    raise(); // for mac OS?
+    activateWindow();
 }
 
 void MainWindow::onRunPausingForFinish()
