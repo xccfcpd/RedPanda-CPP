@@ -1481,7 +1481,7 @@ void Settings::Editor::doLoad()
     } else {
         mFontFamilies = fontFamilies;
     }
-    mFontSize = intValue("font_size",12);
+    mFontSize = intValue("font_size",10);
     mLineSpacing = doubleValue("line_spacing",1.1);
     mForceFixedFontWidth = boolValue("force_fixed_font_width", isCjk());
     // if (mForceFixedFontWidth)
@@ -3861,8 +3861,8 @@ void Settings::Environment::doLoad()
     //Appearance
     mTheme = stringValue("theme","dark");
     mInterfaceFont = stringValue("interface_font", defaultUiFont());
-    mInterfaceFontSize = intValue("interface_font_size",11);
-    mIconZoomFactor = doubleValue("icon_zoom_factor",1.0);
+    mInterfaceFontSize = intValue("interface_font_size",9);
+    mIconZoomFactor = doubleValue("icon_zoom_factor",1.3);
     mLanguage = stringValue("language", QLocale::system().name());
     mIconSet = stringValue("icon_set","contrast");
     mUseCustomIconSet = boolValue("use_custom_icon_set", false);    
@@ -4749,7 +4749,7 @@ void Settings::Debugger::doLoad()
     mShowDetailLog = boolValue("show_detail_log",false);
     mFontName = stringValue("font_name", defaultMonoFont());
     mOnlyShowMono = boolValue("only_show_mono",true);
-    mFontSize = intValue("font_size",14);
+    mFontSize = intValue("font_size",9);
     mUseIntelStyle = boolValue("use_intel_style",false);
     mBlendMode = boolValue("blend_mode",true);
     mSkipSystemLibraries = boolValue("skip_system_lib",true);

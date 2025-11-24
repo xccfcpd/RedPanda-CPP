@@ -21,7 +21,7 @@ APP_NAME = RedPandaCPP
 include(../version.inc)
 
 # TEST_VERSION = beta2
-system(git rev-list HEAD --count): TEST_VERSION = $$system(git rev-list HEAD --count)
+# system(git rev-list HEAD --count): TEST_VERSION = $$system(git rev-list HEAD --count)
 
 contains(QMAKE_HOST.arch, x86_64):{
     DEFINES += ARCH_X86_64=1

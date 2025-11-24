@@ -6,7 +6,7 @@
     "useQtFusionStyle": true,
     "isDark": true,
     "default scheme": "VS Code",
-    "default iconset": "contrast",
+    "default iconset": "newlook",
     "palette": {
         "PaletteWindow":"#19232D",
         "PaletteWindowText":"#E0E1E3",

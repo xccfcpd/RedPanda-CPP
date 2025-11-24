@@ -1,69 +1,47 @@
 [
     {
-        "header": "GL/freeglut.h",
-        "links": "-lfreeglut.dll -lwinmm"
-    },
-    {
+        "execUseUTF8": false,
         "header": "GL/gl.h",
         "links": "-lopengl32"
     },
     {
-        "header": "GL/glew.h",
-        "links": "-lglew32 -lopengl32"
-    },
-    {
-        "header": "GL/glu.h",
-        "links": "-lglu32 -lopengl32"
-    },
-    {
-        "header": "GL/glut.h",
-        "links": "-lfreeglut -lwinmm"
-    },
-    {
-        "header": "GLFW/glfw3.h",
-        "links": "-lglfw3 -lgdi32"
-    },
-    {
-        "header": "ege.h",
-        "links": "-lgraphics -luuid -lmsimg32 -lgdi32 -limm32 -lole32 -loleaut32 -lwinmm -lgdiplus"
-    },
-    {
+        "execUseUTF8": false,
         "header": "easyx.h",
-        "links": "-leasyx"
-    },    
-    {
-		"execUseUTF8": true,
-        "header": "fmt/core.h",
-        "links": "-lfmt"
-    },
-    {
-        "execUseUTF8": true,
-        "header": "raylib.h",
-        "links": "-lraylib -lopengl32 -lgdi32 -lwinmm"
+        "links": "-leasyx -lgdi32 -lole32 -luser32"
     },
     {
         "execUseUTF8": false,
-        "header": "tinyfiledialogs.h",
-        "links": "-ltinyfiledialogs -lcomdlg32 -lole32"
+        "header": "ege.h",
+        "links": "-lgraphics -lgdiplus -lgdi32 -mwindows"
     },
     {
+        "execUseUTF8": false,
+        "header": "gmp.h",
+        "links": "-lgmpxx -lgmp"
+    },
+    {
+        "execUseUTF8": false,
+        "header": "raylib.h",
+        "links": "-lraylib -lopengl32 -lgdi32 -lwinmm -mwindows"
+    },
+    {
+        "execUseUTF8": false,
         "header": "rdrawing.h",
         "links": "-lrdrawing"
     },
     {
+        "execUseUTF8": false,
         "header": "rturtle.h",
         "links": "-lrturtle"
     },
     {
-        "header": "turtle.h",
-        "links": "-lturtle"
-    },
-    {
-        "header": "winsock2.h",
+        "execUseUTF8": false,
+        "header": "winsock.h",
         "links": "-lws2_32"
     },
     {
-        "header": "winsock.h",
+        "execUseUTF8": false,
+        "header": "winsock2.h",
         "links": "-lws2_32"
     }
 ]
