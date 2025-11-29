@@ -317,11 +317,11 @@ void GLSLSyntaxer::braceOpenProc()
         int lastLine=-1;
         while (mRange.getLastIndentType() == IndentType::Statement) {
             popIndents(IndentType::Statement);
-            lastLine = mRange.lastUnindent.line;
+            lastLine = mRange.lastUnindent.lineSeq;
         }
         pushIndents(IndentType::Block, lastLine);
     } else
-        pushIndents(IndentType::Block);
+        pushIndents(IndentType::Block, mLineSeq);
 }
 
 void GLSLSyntaxer::colonProc()
@@ -455,7 +455,7 @@ void GLSLSyntaxer::identProc()
     if (isKeyword(word)) {
         mTokenId = TokenId::Key;
         if (GLSLStatementKeyWords.contains(word)) {
-            pushIndents(IndentType::Statement);
+            pushIndents(IndentType::Statement, mLineSeq);
         }
     } else {
         mTokenId = TokenId::Identifier;
@@ -801,7 +801,7 @@ void GLSLSyntaxer::roundOpenProc()
     mRun += 1;
     mTokenId = TokenId::Symbol;
     mRange.parenthesisLevel++;
-    pushIndents(IndentType::Parenthesis);
+    pushIndents(IndentType::Parenthesis, mLineSeq);
 }
 
 void GLSLSyntaxer::semiColonProc()
@@ -868,7 +868,7 @@ void GLSLSyntaxer::squareOpenProc()
     mRun+=1;
     mTokenId = TokenId::Symbol;
     mRange.bracketLevel++;
-    pushIndents(IndentType::Bracket);
+    pushIndents(IndentType::Bracket, mLineSeq);
 }
 
 void GLSLSyntaxer::starProc()
@@ -1230,23 +1230,21 @@ void GLSLSyntaxer::popIndents(IndentType indentType)
     }
 }
 
-void GLSLSyntaxer::pushIndents(IndentType indentType, int line)
+void GLSLSyntaxer::pushIndents(IndentType indentType, size_t lineSeq)
 {
-    if (line==-1)
-        line = mLineNumber;
-    mRange.indents.push_back(IndentInfo{indentType,line, ""});
+    mRange.indents.push_back(IndentInfo{indentType,lineSeq, ""});
 }
 
-bool GLSLSyntaxer::isCommentNotFinished(int state) const
+bool GLSLSyntaxer::isCommentNotFinished(const PSyntaxState &state) const
 {
-    return (state == RangeState::rsAnsiC ||
-            state == RangeState::rsDirectiveComment||
-            state == RangeState::rsCppComment);
+    return (state->state == RangeState::rsAnsiC ||
+            state->state == RangeState::rsDirectiveComment||
+            state->state == RangeState::rsCppComment);
 }
 
-bool GLSLSyntaxer::isStringNotFinished(int state) const
+bool GLSLSyntaxer::isStringNotFinished(const PSyntaxState &state) const
 {
-    return state == RangeState::rsMultiLineString;
+    return state->state == RangeState::rsMultiLineString;
 }
 
 bool GLSLSyntaxer::eol() const
@@ -1358,11 +1356,12 @@ void GLSLSyntaxer::next()
     } while (mTokenId!=TokenId::Null && mRun<=mTokenPos);
 }
 
-void GLSLSyntaxer::setLine(const QString &newLine, int lineNumber)
+void GLSLSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq)
 {
     mLineString = newLine;
     mLine = getNullTerminatedStringData(mLineString);
     mLineNumber = lineNumber;
+    mLineSeq = lineSeq;
     mRun = 0;
     mRange.blockStarted = 0;
     mRange.blockEnded = 0;
@@ -1377,9 +1376,9 @@ bool GLSLSyntaxer::isKeyword(const QString &word)
     return Keywords.contains(word);
 }
 
-void GLSLSyntaxer::setState(const SyntaxState& rangeState)
+void GLSLSyntaxer::setState(const PSyntaxState& rangeState)
 {
-    mRange = rangeState;
+    mRange = *rangeState;
     // current line's left / right parenthesis count should be reset before parsing each line
     mRange.lastUnindent=IndentInfo{IndentType::None,0, ""};
     mRange.hasTrailingSpaces = false;
@@ -1410,9 +1409,11 @@ ProgrammingLanguage GLSLSyntaxer::language()
     return ProgrammingLanguage::GLSL;
 }
 
-SyntaxState GLSLSyntaxer::getState() const
+PSyntaxState GLSLSyntaxer::getState() const
 {
-    return mRange;
+    PSyntaxState pSyntaxState = std::make_shared<SyntaxState>();
+    *pSyntaxState = mRange;
+    return pSyntaxState;
 }
 
 QSet<QString> GLSLSyntaxer::keywords()

@@ -1,3 +1,10 @@
+Red Panda C++ Version 3.5
+  - fix: Stacktrace table shows extra rows.
+  - fix: The first line of disassembled code is lost in the cpu dialog.
+  - enhancement: Skip all std:: (C++ standard libraries) functions when debugging.
+  - enhancement: Correctly syntax color lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
+  - enhancement: Correctly parse lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
+
 Red Panda C++ Version 3.4
   - enhancement: Auto hide option "Auto clear parsed symbols when editor hidden" if "editors share one parser" is unchecked.
   - fix: Syntax color doesn't work in the code snippet option page.

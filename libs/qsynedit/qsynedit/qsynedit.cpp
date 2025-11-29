@@ -26,6 +26,7 @@
 #include <QPainter>
 #include <QTimerEvent>
 #include "syntaxer/syntaxer.h"
+#include "syntaxer/cpp.h"
 #include "syntaxer/textfile.h"
 #include "painter.h"
 #include <QClipboard>
@@ -263,14 +264,14 @@ bool QSynEdit::getTokenAttriAtRowCol(const BufferCoord &pos, QString &token, PTo
 
 bool QSynEdit::getTokenAttriAtRowCol(
         const BufferCoord &pos, QString &token,
-        PTokenAttribute &attri, SyntaxState &syntaxState)
+        PTokenAttribute &attri, PSyntaxState &syntaxState)
 {
     int charIdx, lineIdx, endPos, start;
     QString lineText;
     lineIdx = pos.line - 1;
     if ((lineIdx >= 0) && (lineIdx < mDocument->count())) {
         lineText = mDocument->getLine(lineIdx);
-        prepareSyntaxerState(*mSyntaxer, lineIdx, lineText);
+        prepareSyntaxerState(*mSyntaxer, lineIdx, lineText, mDocument->getLineSeq(lineIdx));
         charIdx = pos.ch;
         if ((charIdx > 0) && (charIdx <= lineText.length())) {
             while (!mSyntaxer->eol()) {
@@ -298,7 +299,7 @@ bool QSynEdit::getTokenAttriAtRowColEx(const BufferCoord &pos, QString &token, i
     lineIdx = pos.line - 1;
     if ((lineIdx >= 0) && (lineIdx < mDocument->count())) {
         lineText = mDocument->getLine(lineIdx);
-        prepareSyntaxerState(*mSyntaxer, lineIdx, lineText);
+        prepareSyntaxerState(*mSyntaxer, lineIdx, lineText, mDocument->getLineSeq(lineIdx));
         chIdx = pos.ch;
         if ((chIdx > 0) && (chIdx <= lineText.length())) {
             while (!mSyntaxer->eol()) {
@@ -360,7 +361,7 @@ void QSynEdit::doTrimTrailingSpaces()
         endEditing();
     });
     for (int i=0;i<mDocument->count();i++) {
-        if (mDocument->getSyntaxState(i).hasTrailingSpaces) {
+        if (mDocument->getSyntaxState(i)->hasTrailingSpaces) {
                 int line = i+1;
                 QString oldLine = mDocument->getLine(i);
                 QString newLine = trimRight(oldLine);
@@ -2150,7 +2151,7 @@ void QSynEdit::insertLine(bool moveCaret)
               SelectionMode::Normal);
     bool notInComment=true;
     QString trimmedleftLineText=trimLeft(leftLineText);
-    prepareSyntaxerState(*mSyntaxer, mCaretY-1, trimmedleftLineText);
+    prepareSyntaxerState(*mSyntaxer, mCaretY-1, trimmedleftLineText, mDocument->getLineSeq(mCaretY-1));
     int indentSpaces = 0;
     if (mOptions.testFlag(EditorOption::AutoIndent)
             && mSyntaxer->getToken()=="else") {
@@ -2160,12 +2161,13 @@ void QSynEdit::insertLine(bool moveCaret)
         QString indentSpacesForLeftLineText = GetLeftSpacing(indentSpaces,true);
         leftLineText = indentSpacesForLeftLineText + trimmedleftLineText;
     }
-    properSetLine(mCaretY-1, leftLineText);
+    properSetLine(mCaretY-1, leftLineText, false);
+    reparseLines(mCaretY-1, mCaretY, false, false);
 
     notInComment = !mSyntaxer->isCommentNotFinished(
-                mSyntaxer->getState().state)
+                mSyntaxer->getState())
             && !mSyntaxer->isStringNotFinished(
-                mSyntaxer->getState().state);
+                mSyntaxer->getState());
 
     indentSpaces = 0;
     if (mOptions.testFlag(EditorOption::AutoIndent)) {
@@ -2753,9 +2755,19 @@ void QSynEdit::decPaintLock()
     }
 }
 
-SyntaxState QSynEdit::calcSyntaxStateAtLine(int line, const QString &newLineText)
+PSyntaxState QSynEdit::calcSyntaxStateAtLine(int line, const QString &newLineText, bool handleLastBackSlash)
 {
-    prepareSyntaxerState(*mSyntaxer, line, newLineText);
+    bool oldHandleLastBackSlash = true;
+    if (mSyntaxer->language() == ProgrammingLanguage::CPP) {
+        std::shared_ptr<QSynedit::CppSyntaxer> cppSyntaxer = std::dynamic_pointer_cast<QSynedit::CppSyntaxer>(mSyntaxer);
+        oldHandleLastBackSlash = cppSyntaxer->handleLastBackSlash();
+        cppSyntaxer->setHandleLastBackSlash(handleLastBackSlash);
+    }
+    prepareSyntaxerState(*mSyntaxer, line, newLineText, mDocument->getLineSeq(line));
+    if (mSyntaxer->language() == ProgrammingLanguage::CPP) {
+        std::shared_ptr<QSynedit::CppSyntaxer> cppSyntaxer = std::dynamic_pointer_cast<QSynedit::CppSyntaxer>(mSyntaxer);
+        cppSyntaxer->setHandleLastBackSlash(oldHandleLastBackSlash);
+    }
     syntaxer()->nextToEol();
     return syntaxer()->getState();
 }
@@ -3114,15 +3126,14 @@ void QSynEdit::updateModifiedStatusForUndoRedo()
 
 int QSynEdit::reparseLines(int startLine, int endLine, bool needRescanFolds, bool toDocumentEnd)
 {
-
-    SyntaxState state;
-    int maxLine = toDocumentEnd ? mDocument->count() : endLine+1;
+    PSyntaxState state;
+    int maxLine = toDocumentEnd ? mDocument->count() : endLine;
     startLine = std::max(0,startLine);
     endLine = std::min(endLine, mDocument->count());
     maxLine = std::min(maxLine, mDocument->count());
 
 
-    if (startLine >= endLine)
+    if (startLine >= maxLine)
         return startLine;
 
     if (startLine == 0) {
@@ -3132,23 +3143,25 @@ int QSynEdit::reparseLines(int startLine, int endLine, bool needRescanFolds, boo
     }
     int line = startLine;
     do {
-        mSyntaxer->setLine(mDocument->getLine(line), line);
+        mSyntaxer->setLine(line, mDocument->getLine(line), mDocument->getLineSeq(line));
         mSyntaxer->nextToEol();
         state = mSyntaxer->getState();
-        if (line >= endLine && state == mDocument->getSyntaxState(line)) {
+        if (line >= endLine && state->equals(mDocument->getSyntaxState(line)) ) {
             break;
         }
         mDocument->setSyntaxState(line,state);
         line++;
     } while (line < maxLine);
-
+#ifdef QT_DEBUG
+//    qDebug()<<"parse endLine"<<endLine<<"real end"<<line;
+#endif
     //don't rescan folds if only currentLine is reparsed
     if (line-startLine==1)
         return line;
 
-    if (mEditingCount>0)
+    if (mEditingCount>0) {
         return line;
-
+    }
     if (needRescanFolds && useCodeFolding())
         rescanFolds();
     return line;
@@ -3160,7 +3173,7 @@ void QSynEdit::reparseDocument()
 //        qint64 begin=QDateTime::currentMSecsSinceEpoch();
         mSyntaxer->resetState();
         for (int i =0;i<mDocument->count();i++) {
-            mSyntaxer->setLine(mDocument->getLine(i), i);
+            mSyntaxer->setLine(i, mDocument->getLine(i), mDocument->getLineSeq(i));
             mSyntaxer->nextToEol();
             mDocument->setSyntaxState(i, mSyntaxer->getState());
         }
@@ -4513,6 +4526,18 @@ void QSynEdit::setLineText(const QString s)
         mDocument->putLine(mCaretY-1,s);
 }
 
+size_t QSynEdit::lineSeq(int line) const
+{
+    return mDocument->getLineSeq(line-1);
+}
+
+int QSynEdit::findPrevLineBySeq(int startLine, size_t lineSeq) const
+{
+    //start at 0
+    //-1 not found
+    return mDocument->findPrevLineBySeq(startLine, lineSeq);
+}
+
 PSyntaxer QSynEdit::syntaxer() const
 {
     return mSyntaxer;
@@ -4552,15 +4577,26 @@ void QSynEdit::processCommand(EditCommand Command, QChar AChar, void *pData)
     onCommandProcessed(Command, AChar, pData);
 }
 
-void QSynEdit::prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex, const QString lineText) const
+void QSynEdit::prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex) const
 {
     if (lineIndex == 0) {
         syntaxer.resetState();
     } else {
         syntaxer.setState(mDocument->getSyntaxState(lineIndex-1));
     }
-    syntaxer.setLine(lineText, lineIndex);
+    syntaxer.setLine(lineIndex, mDocument->getLine(lineIndex), mDocument->getLineSeq(lineIndex));
 }
+
+void QSynEdit::prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex, const QString lineText, size_t lineSeq) const
+{
+    if (lineIndex == 0) {
+        syntaxer.resetState();
+    } else {
+        syntaxer.setState(mDocument->getSyntaxState(lineIndex-1));
+    }
+    syntaxer.setLine(lineIndex, lineText, lineSeq);
+}
+
 
 void QSynEdit::moveCaretHorz(int deltaX, bool isSelection)
 {
@@ -4753,7 +4789,6 @@ void QSynEdit::doGotoBlockStart(bool isSelection)
 {
     if (mCaretY<0 || mCaretY>lineCount())
         return;
-    SyntaxState state = document()->getSyntaxState(mCaretY-1);
     //todo: handle block other than {}
     if (document()->braceLevel(mCaretY-1)==0) {
         doGotoEditorStart(isSelection);
@@ -4776,7 +4811,6 @@ void QSynEdit::doGotoBlockEnd(bool isSelection)
 {
     if (mCaretY<0 || mCaretY>lineCount())
         return;
-    SyntaxState state = document()->getSyntaxState(mCaretY-1);
     //todo: handle block other than {}
     if (document()->blockLevel(mCaretY-1)==0) {
         doGotoEditorEnd(isSelection);

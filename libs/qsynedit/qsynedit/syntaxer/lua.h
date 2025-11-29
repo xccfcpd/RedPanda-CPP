@@ -110,7 +110,7 @@ private:
     void unknownProc();
 
     void popIndents(IndentType indentType);
-    void pushIndents(IndentType indentType, int line=-1);
+    void pushIndents(IndentType indentType, size_t lineSeq);
 
 private:
     bool mAsmStart;
@@ -118,6 +118,7 @@ private:
 //    SynRangeState mSpaceRange;
     QString mLine;
     int mLineSize;
+    size_t mLineSeq;
     int mRun;
     int mStringLen;
     int mToIdent;
@@ -140,21 +141,21 @@ private:
 
 
 public:
-    bool isCommentNotFinished(int state) const override;
-    bool isStringNotFinished(int state) const override;
+    bool isCommentNotFinished(const PSyntaxState &state) const override;
+    bool isStringNotFinished(const PSyntaxState &state) const override;
     bool eol() const override;
     QString getToken() const override;
     const PTokenAttribute &getTokenAttribute() const override;
     int getTokenPos() override;
     void next() override;
-    void setLine(const QString &newLine, int lineNumber) override;
+    void setLine(int lineNumber, const QString &newLine,size_t lineSeq) override;
     bool isKeyword(const QString &word) override;
-    void setState(const SyntaxState& rangeState) override;
+    void setState(const PSyntaxState& syntaxState) override;
     void resetState() override;
 
     QString languageName() override;
     ProgrammingLanguage language() override;
-    SyntaxState getState() const override;
+    PSyntaxState getState() const override;
     bool isIdentChar(const QChar &ch) const override;
     bool isIdentStartChar(const QChar& ch) const override;
     QSet<QString> keywords() override;

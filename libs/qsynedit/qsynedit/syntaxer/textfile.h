@@ -69,11 +69,11 @@ public:
     const PTokenAttribute &getTokenAttribute() const override;
     int getTokenPos() override;
     void next() override;
-    void setLine(const QString &newLine, int lineNumber) override;
-    bool isCommentNotFinished(int state) const override;
-    bool isStringNotFinished(int state) const override;
-    SyntaxState getState() const override;
-    void setState(const SyntaxState& rangeState) override;
+    void setLine(int lineNumber, const QString &newLine, size_t lineSeq) override;
+    bool isCommentNotFinished(const PSyntaxState &) const override;
+    bool isStringNotFinished(const PSyntaxState &) const override;
+    PSyntaxState getState() const override;
+    void setState(const PSyntaxState& rangeState) override;
     void resetState() override;
     QSet<QString> keywords() override;
     QString commentSymbol() override;

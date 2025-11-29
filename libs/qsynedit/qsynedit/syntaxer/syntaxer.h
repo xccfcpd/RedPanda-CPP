@@ -39,7 +39,7 @@ enum class IndentType {
 
 struct IndentInfo {
     IndentType type;
-    int line;
+    size_t lineSeq;
     QString keyword;
     bool operator==(const IndentInfo &i2) const;
     bool operator!=(const IndentInfo &i2) const { return !((*this)==i2); }
@@ -59,13 +59,14 @@ struct SyntaxState {
     QVector<IndentInfo> indents; // indents stack (needed by auto indent)
     IndentInfo lastUnindent;
     bool hasTrailingSpaces;
-    QMap<QString,QVariant> extraData;
 
-    bool operator==(const SyntaxState& s2);
+    virtual bool equals(const std::shared_ptr<SyntaxState>& s2) const;
     IndentInfo getLastIndent();
     IndentType getLastIndentType();
     SyntaxState();
 };
+
+using PSyntaxState = std::shared_ptr<SyntaxState>;
 
 enum class TokenType {
     Default,
@@ -147,19 +148,19 @@ public:
     virtual bool isIdentChar(const QChar& ch) const;
     virtual bool isIdentStartChar(const QChar& ch) const;
 
-    virtual bool isCommentNotFinished(int state) const = 0;
-    virtual bool isStringNotFinished(int state) const = 0;
-    virtual bool isDocstringNotFinished(int /* state */) const { return false; }
+    virtual bool isCommentNotFinished(const PSyntaxState &state) const = 0;
+    virtual bool isStringNotFinished(const PSyntaxState &state) const = 0;
+    virtual bool isDocstringNotFinished(const PSyntaxState &/* state */) const { return false; }
     virtual bool eol() const = 0;
-    virtual SyntaxState getState() const = 0;
+    virtual PSyntaxState getState() const = 0;
     virtual QString getToken() const=0;
     virtual const PTokenAttribute &getTokenAttribute() const=0;
     virtual int getTokenPos() = 0;
     virtual bool isKeyword(const QString& word);
     virtual void next() = 0;
     virtual void nextToEol();
-    virtual void setState(const SyntaxState& rangeState) = 0;
-    virtual void setLine(const QString& newLine, int lineNumber) = 0;
+    virtual void setState(const PSyntaxState& rangeState) = 0;
+    virtual void setLine(int lineNumber, const QString& newLine, size_t lineSeq) = 0;
     virtual void resetState() = 0;
     virtual QSet<QString> keywords();
     QSet<QString> keywords(const QString& prefix);

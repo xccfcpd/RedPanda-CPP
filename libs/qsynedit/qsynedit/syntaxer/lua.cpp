@@ -323,7 +323,7 @@ void LuaSyntaxer::identProc()
         if (word == "then" || word == "do" || word == "repeat" || word == "function") {
             mRange.blockLevel += 1;
             mRange.blockStarted++;
-            pushIndents(IndentType::Block);
+            pushIndents(IndentType::Block, mLineSeq);
         } else if (word == "end" || word =="until") {
             mRange.blockLevel -= 1;
             if (mRange.blockLevel<0) {
@@ -572,7 +572,7 @@ void LuaSyntaxer::roundOpenProc()
     mRun += 1;
     mTokenId = TokenId::Symbol;
     mRange.parenthesisLevel++;
-    pushIndents(IndentType::Parenthesis);
+    pushIndents(IndentType::Parenthesis, mLineSeq);
 }
 
 void LuaSyntaxer::slashProc()
@@ -620,7 +620,7 @@ void LuaSyntaxer::squareOpenProc()
         mRun++;
         mTokenId = TokenId::Symbol;
         mRange.bracketLevel++;
-        pushIndents(IndentType::Bracket);
+        pushIndents(IndentType::Bracket, mLineSeq);
     }
 }
 
@@ -950,11 +950,9 @@ void LuaSyntaxer::popIndents(IndentType indentType)
     }
 }
 
-void LuaSyntaxer::pushIndents(IndentType indentType, int line)
+void LuaSyntaxer::pushIndents(IndentType indentType, size_t lineSeq)
 {
-    if (line==-1)
-        line = mLineNumber;
-    mRange.indents.push_back(IndentInfo{indentType,line, ""});
+    mRange.indents.push_back(IndentInfo{indentType,lineSeq, ""});
 }
 
 bool LuaSyntaxer::useXMakeLibs() const
@@ -1016,15 +1014,15 @@ QMap<QString, QSet<QString> > LuaSyntaxer::scopedKeywords()
     return StdLibTables;
 }
 
-bool LuaSyntaxer::isCommentNotFinished(int state) const
+bool LuaSyntaxer::isCommentNotFinished(const PSyntaxState &state) const
 {
-    return (state == RangeState::rsComment ||
-            state == RangeState::rsLongComment);
+    return (state->state == RangeState::rsComment ||
+            state->state == RangeState::rsLongComment);
 }
 
-bool LuaSyntaxer::isStringNotFinished(int state) const
+bool LuaSyntaxer::isStringNotFinished(const PSyntaxState &state) const
 {
-    return state == RangeState::rsString;
+    return state->state == RangeState::rsString;
 }
 
 bool LuaSyntaxer::eol() const
@@ -1122,11 +1120,12 @@ void LuaSyntaxer::next()
     //qDebug()<<"1-1-1";
 }
 
-void LuaSyntaxer::setLine(const QString &newLine, int lineNumber)
+void LuaSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq)
 {
     mLine = newLine;
     mLineSize = mLine.size();
     mLineNumber = lineNumber;
+    mLineSeq = lineSeq;
     mRun = 0;
     mRange.blockStarted = 0;
     mRange.blockEnded = 0;
@@ -1141,9 +1140,9 @@ bool LuaSyntaxer::isKeyword(const QString &word)
     return Keywords.contains(word) || mCustomTypeKeywords.contains(word);
 }
 
-void LuaSyntaxer::setState(const SyntaxState& rangeState)
+void LuaSyntaxer::setState(const PSyntaxState& syntaxState)
 {
-    mRange = rangeState;
+    mRange = *syntaxState;
     // current line's left / right parenthesis count should be reset before parsing each line
     mRange.blockStarted = 0;
     mRange.blockEnded = 0;
@@ -1178,9 +1177,11 @@ ProgrammingLanguage LuaSyntaxer::language()
     return ProgrammingLanguage::LUA;
 }
 
-SyntaxState LuaSyntaxer::getState() const
+PSyntaxState LuaSyntaxer::getState() const
 {
-    return mRange;
+    PSyntaxState syntaxState = std::make_shared<SyntaxState>();
+    *syntaxState = mRange;
+    return syntaxState;
 }
 
 bool LuaSyntaxer::isIdentChar(const QChar &ch) const

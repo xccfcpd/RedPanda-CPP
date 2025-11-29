@@ -24,6 +24,13 @@ namespace QSynedit {
 class CppSyntaxer: public Syntaxer
 {
 public:
+
+    enum class ProcessStage {
+        Normal,
+        LastBackSlash,
+        SpacesAfterLastSlash,
+    };
+
     enum class TokenId {
         Comment,
         Directive,
@@ -42,18 +49,32 @@ public:
         Char,
         Float,
         HexFloat,
-        RawString
+        RawString,
+        LastBackSlash,
+        SpaceAfterBackSlash
     };
 
     enum RangeState {
         rsUnknown, rsAnsiC, rsDirective, rsDirectiveComment,
-        rsString, rsStringNextLine, rsStringUnfinished,
-        rsMultiLineString, rsMultiLineDirective, rsCppComment, rsCppCommentRemaining,
+        rsString,
+        rsMultiLineDirective, rsCppComment,
         rsDocstring,
         rsStringEscapeSeq,
         rsRawString, rsSpace,rsRawStringNotEscaping,rsRawStringEnd,
         rsChar, rsCharEscaping,
         rsDefineIdentifier, rsDefineRemaining,
+    };
+
+
+    struct CppSyntaxState: SyntaxState {
+        QString initialDCharSeq;
+        bool inAttribute;
+        QList<size_t> ancestorsForIf;
+        bool mergeWithNextLine;
+        QString lastToken;
+        RangeState stateBeforeLastToken;
+
+        bool equals(const std::shared_ptr<SyntaxState>& s2) const override;
     };
 
     explicit CppSyntaxer();
@@ -92,13 +113,12 @@ public:
 
     static const QSet<QString> StandardAttributes;
 
-    bool isStringToNextLine(int state) { return state == RangeState::rsStringNextLine; }
-    bool isRawStringStart(int state) { return state == RangeState::rsRawString; }
-    bool isRawStringNoEscape(int state) { return state == RangeState::rsRawStringNotEscaping; }
-    bool isRawStringEnd(int state) { return state == RangeState::rsRawStringEnd; }
-    bool isCharNotFinished(int state) { return state == RangeState::rsChar || state == RangeState::rsCharEscaping; }
-    bool isCharEscaping(int state) { return state == RangeState::rsCharEscaping; }
-    bool isInAttribute(const SyntaxState &state);
+    bool isRawStringStart(const PSyntaxState &state) const { return state->state == RangeState::rsRawString; }
+    bool isRawStringNoEscape(const PSyntaxState &state) const { return state->state == RangeState::rsRawStringNotEscaping; }
+    bool isRawStringEnd(const PSyntaxState &state) const { return state->state == RangeState::rsRawStringEnd; }
+    bool isCharNotFinished(const PSyntaxState &state) const { return state->state == RangeState::rsChar || state->state == RangeState::rsCharEscaping; }
+    bool isCharEscaping(const PSyntaxState &state) const { return state->state == RangeState::rsCharEscaping; }
+    bool isStringEscaping(const PSyntaxState &state) const { return state->state == RangeState::rsStringEscapeSeq; }
 
     TokenId getTokenId() { return mTokenId; }
 private:
@@ -155,13 +175,21 @@ private:
     void procXor();
     void processChar();
     void popIndents(IndentType indentType);
-    void pushIndents(IndentType indentType, int line=-1, const QString& keyword = QString());
+    void pushIndents(IndentType indentType, size_t lineSeq, const QString& keyword = QString());
     void popStatementIndents();
 
 private:
-    SyntaxState mRange;
+    CppSyntaxState mRange;
     QString mLine;
     int mLineSize;
+    size_t mLineSeq;
+
+    int mPrevLineLastTokenSize;
+    QString mOrigLine;
+    bool mMergeWithNextLine;
+    QString mSpacesAfterLastBackSlash;
+    ProcessStage mProcessStage;
+
     int mRun;
     int mStringLen;
     int mToIdent;
@@ -170,6 +198,8 @@ private:
     int mLineNumber;
     int mLeftBraces;
     int mRightBraces;
+
+    bool mHandleLastBackSlash;
 
     QString mLastKeyword;
 
@@ -191,23 +221,23 @@ private:
 
     // Syntaxer interface
 public:
-    bool isCommentNotFinished(int state) const override;
-    bool isStringNotFinished(int state) const override;
-    bool isDocstringNotFinished(int state) const override;
+    bool isCommentNotFinished(const PSyntaxState &state) const override;
+    bool isStringNotFinished(const PSyntaxState &state) const override;
+    bool isDocstringNotFinished(const PSyntaxState &state) const override;
     bool eol() const override;
     QString getToken() const override;
     const PTokenAttribute &getTokenAttribute() const override;
     int getTokenPos() override;
     void next() override;
-    void setLine(const QString &newLine, int lineNumber) override;
+    void setLine(int lineNumber, const QString &newLine, size_t lineSeq) override;
     bool isKeyword(const QString &word) override;
-    void setState(const SyntaxState& rangeState) override;
+    void setState(const PSyntaxState& rangeState) override;
     void resetState() override;
 
     QString languageName() override;
     ProgrammingLanguage language() override;
 
-    SyntaxState getState() const override;
+    PSyntaxState getState() const override;
     bool isIdentChar(const QChar &ch) const override;
     bool isIdentStartChar(const QChar &ch) const override;
     QSet<QString> keywords() override;
@@ -222,6 +252,8 @@ public:
     QString blockCommentEndSymbol() override;
     virtual bool supportFolding() override;
     virtual bool needsLineState() override;
+    bool handleLastBackSlash() const;
+    void setHandleLastBackSlash(bool newHandleLastBackSlash);
 };
 
 }

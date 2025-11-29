@@ -22,10 +22,7 @@
 #include <QDebug>
 #include <QVariant>
 
-#define DATA_KEY_INITIAL_DCHAR_SEQ "initialDCharSeq"
-#define DATA_KEY_IN_ATTRIBUTE "inAttribute"
-#define DATA_KEY_LAST_FINISHED_IFS "lastFinishedIfs"
-#define DATA_KEY_PARENT_OF_POPED_IFS "ancestor_for_if"
+#define IF_NO_PARENT 0
 
 namespace QSynedit {
 
@@ -178,6 +175,37 @@ const QSet<QString> CppSyntaxer::StandardAttributes {
     "optimize_for_synchronized"
 };
 
+static bool isEscapingSeqChar(const QChar& ch) {
+    switch(ch.unicode()) {
+        case '\'':
+        case '"':
+        case '\\':
+        case '?':
+        case 'a':
+        case 'b':
+        case 'f':
+        case 'n':
+        case 'r':
+        case 't':
+        case 'v':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case 'x':
+        case 'u':
+        case 'U':
+            return true;
+    }
+    return false;
+}
+
 CppSyntaxer::CppSyntaxer(): Syntaxer()
 {
     mCharAttribute = std::make_shared<TokenAttribute>(SYNS_AttrCharacter,
@@ -222,12 +250,8 @@ CppSyntaxer::CppSyntaxer(): Syntaxer()
                                                                 TokenType::Identifier);
     addAttribute(mVariableAttribute);
     resetState();
-}
 
-bool CppSyntaxer::isInAttribute(const SyntaxState &state)
-{
-    return state.extraData.contains(DATA_KEY_IN_ATTRIBUTE)
-           && state.extraData[DATA_KEY_IN_ATTRIBUTE].toBool();
+    mHandleLastBackSlash = true;
 }
 
 void CppSyntaxer::procAndSymbol()
@@ -254,12 +278,10 @@ void CppSyntaxer::procCppStyleComment()
     }
     mTokenId = TokenId::Comment;
     bool isWord = isIdentChar(mLine[mRun]);
-    bool multiLineStatement=false;
     while (mRun<mLineSize) {
         if (isSpaceChar(mLine[mRun])) {
             break;
         } else {
-            multiLineStatement = (mLine[mRun]=='\\');
             if (isWord) {
                 if (!isIdentChar(mLine[mRun]))
                     break;
@@ -270,9 +292,7 @@ void CppSyntaxer::procCppStyleComment()
         }
         mRun++;
     }
-    if (multiLineStatement) { // continues on next line
-        mRange.state = RangeState::rsCppCommentRemaining;
-    } else if (mRun<mLineSize) {
+    if (mRun<mLineSize) {
         mRange.state = RangeState::rsCppComment;
     } else
         mRange.state = RangeState::rsUnknown;
@@ -356,12 +376,10 @@ void CppSyntaxer::procAsciiChar()
             mRange.state = RangeState::rsUnknown;
             return;
         } if (mLine[mRun] == '\\') {
-            if (mRun+1>=mLineSize) {
-                mRun++;
+            if ((mRun+1>=mLineSize)
+                    || (mRun+1<mLineSize && isEscapingSeqChar(mLine[mRun+1])) ) {
                 mRange.state = RangeState::rsCharEscaping;
                 return;
-            } else if (mLine[mRun+1] == '\'' || mLine[mRun+1] == '\\') {
-                mRun+=1;
             }
         } else if (isSpaceChar(mLine[mRun])) {
             return;
@@ -404,18 +422,18 @@ void CppSyntaxer::procBraceOpen()
     if (mRange.getLastIndentType() == IndentType::Statement) {
         // if last indent is started by 'if' 'for' etc
         // just replace it
-        int lastLine=-1;
+        size_t lastLineSeq=0;
         if (!mRange.indents.isEmpty()) {
-            lastLine=mRange.indents.back().line;
+            lastLineSeq=mRange.indents.back().lineSeq;
         } else {
-            lastLine=0;
+            lastLineSeq=mLineSeq;
         }
         popStatementIndents();
-        pushIndents(IndentType::Block, lastLine);
+        pushIndents(IndentType::Block, lastLineSeq);
     } else if (mRange.lastUnindent.type == IndentType::Parenthesis) {
-        pushIndents(IndentType::Block, mRange.lastUnindent.line);
+        pushIndents(IndentType::Block, mRange.lastUnindent.lineSeq);
     } else
-        pushIndents(IndentType::Block);
+        pushIndents(IndentType::Block, mLineSeq);
 }
 
 void CppSyntaxer::procColon()
@@ -510,13 +528,6 @@ void CppSyntaxer::procDefineRemaining()
                 }
             }
             break;
-        case '\\': // yet another line?
-            if (mRun == mLineSize-1) {
-                mRun+=1;
-                mRange.state = RangeState::rsMultiLineDirective;
-                return;
-            }
-            break;
         }
         mRun+=1;
     }
@@ -543,13 +554,6 @@ void CppSyntaxer::procDirectiveEnd()
                     mRange.state = RangeState::rsDirectiveComment;
                     return;
                 }
-            }
-            break;
-        case '\\': // yet another line?
-              if (mRun == mLineSize-1) {
-                  mRun+=1;
-                  mRange.state = RangeState::rsMultiLineDirective;
-                  return;
             }
             break;
         }
@@ -601,39 +605,19 @@ void CppSyntaxer::procIdentifier()
         mTokenId = TokenId::Key;
         if (CppStatementKeyWords.contains(word)) {
             if (word == "else") {
-                QVariant var = mRange.extraData.value(DATA_KEY_LAST_FINISHED_IFS);
-                if (var.isValid()) {
-                    int lastPopedIfs = var.toInt();
-                    if (lastPopedIfs!=0) {
-                        QList<int> ifParents;
-                        //int line = lastPopedIfs.first();
-                        lastPopedIfs--;
-                        var = mRange.extraData.value(DATA_KEY_PARENT_OF_POPED_IFS);
-                        if (var.isValid()) {
-                            ifParents = var.value<QList<int>>();
-//                            qDebug()<<ifParents<<mLineNumber<<mLine<<mRun;
-                            if (ifParents.first() != -1)
-                                pushIndents(IndentType::Statement, ifParents.first(), "");
-                            ifParents.pop_front();
-                        }
-                        if (lastPopedIfs==0) {
-                            mRange.extraData.remove(DATA_KEY_LAST_FINISHED_IFS);
-                            mRange.extraData.remove(DATA_KEY_PARENT_OF_POPED_IFS);
-                        } else {
-                            mRange.extraData.insert(DATA_KEY_LAST_FINISHED_IFS,lastPopedIfs);
-                            var = QVariant::fromValue(ifParents);
-                            mRange.extraData.insert(DATA_KEY_PARENT_OF_POPED_IFS,var);
-                        }
-                    }
+                if (!mRange.ancestorsForIf.isEmpty()) {
+                    if (mRange.ancestorsForIf.first() != IF_NO_PARENT)
+                        pushIndents(IndentType::Statement, mRange.ancestorsForIf.first(), "");
+                    mRange.ancestorsForIf.pop_front();
                 }
-                pushIndents(IndentType::Statement, -1, word);
+                pushIndents(IndentType::Statement, mLineSeq, word);
             } else if (word == "if" && mLastKeyword == "else") {
                 mRange.indents.last().keyword = "if";
             } else  {
-                pushIndents(IndentType::Statement, -1, word);
+                pushIndents(IndentType::Statement, mLineSeq, word);
             }
         }
-    } else if (isInAttribute(mRange) && StandardAttributes.contains(word)) {
+    } else if (mRange.inAttribute && StandardAttributes.contains(word)) {
         mTokenId = TokenId::Key;
     } else {
         mTokenId = TokenId::Identifier;
@@ -705,7 +689,27 @@ void CppSyntaxer::procNot()
 
 void CppSyntaxer::procNull()
 {
-    mTokenId = TokenId::Null;
+    if (mMergeWithNextLine) {
+        switch(mProcessStage) {
+        case ProcessStage::Normal:
+            mTokenId = TokenId::LastBackSlash;
+            mProcessStage = ProcessStage::LastBackSlash;
+            break;
+        case ProcessStage::LastBackSlash:
+            if (mSpacesAfterLastBackSlash.isEmpty()) {
+                mTokenId = TokenId::Null;
+            } else {
+                mTokenId = TokenId::SpaceAfterBackSlash;
+                mProcessStage = ProcessStage::SpacesAfterLastSlash;
+            }
+            break;
+        case ProcessStage::SpacesAfterLastSlash:
+            mTokenId = TokenId::Null;
+            break;
+        }
+    } else {
+        mTokenId = TokenId::Null;
+    }
 }
 
 void CppSyntaxer::procNumber(bool isFloat)
@@ -985,7 +989,7 @@ void CppSyntaxer::procRawString()
     mTokenId = TokenId::RawString;
     QString rawStringInitialDCharSeq;
     if (mRange.state == RangeState::rsRawString)
-        mRange.extraData[DATA_KEY_INITIAL_DCHAR_SEQ] = "";
+        mRange.initialDCharSeq = "";
     while (mRun<mLineSize) {
         if (mRange.state!=RangeState::rsRawStringNotEscaping &&
                 (mLine[mRun].isSpace()
@@ -1002,16 +1006,15 @@ void CppSyntaxer::procRawString()
         case '(':
             if (mRange.state==RangeState::rsRawString) {
                 mRange.state = RangeState::rsRawStringNotEscaping;
-                mRange.extraData[DATA_KEY_INITIAL_DCHAR_SEQ] = rawStringInitialDCharSeq;
+                mRange.initialDCharSeq = rawStringInitialDCharSeq;
             }
             break;
         case ')':
             if (mRange.state == RangeState::rsRawStringNotEscaping) {
-                rawStringInitialDCharSeq = mRange.extraData[DATA_KEY_INITIAL_DCHAR_SEQ].toString();
+                rawStringInitialDCharSeq = mRange.initialDCharSeq;
                 if ( mLine.mid(mRun+1,rawStringInitialDCharSeq.length()) == rawStringInitialDCharSeq) {
                     mRun = mRun+rawStringInitialDCharSeq.length();
                     mRange.state = RangeState::rsRawStringEnd;
-                    mRange.extraData.remove(DATA_KEY_INITIAL_DCHAR_SEQ);
                 }
             }
             break;
@@ -1046,7 +1049,7 @@ void CppSyntaxer::procRoundOpen()
     mRun += 1;
     mTokenId = TokenId::Symbol;
     mRange.parenthesisLevel++;
-    pushIndents(IndentType::Parenthesis);
+    pushIndents(IndentType::Parenthesis, mLineSeq);
 }
 
 void CppSyntaxer::procSemiColon()
@@ -1114,8 +1117,8 @@ void CppSyntaxer::procSpace()
         mRun+=1;
     if (mRun>=mLineSize) {
         mRange.hasTrailingSpaces = true;
-        if (mRange.state==RangeState::rsCppComment
-                || mRange.state == RangeState::rsDefineRemaining)
+        if (!mMergeWithNextLine && (mRange.state==RangeState::rsCppComment
+                || mRange.state == RangeState::rsDefineRemaining))
             mRange.state = RangeState::rsUnknown;
     }
 }
@@ -1124,11 +1127,10 @@ void CppSyntaxer::procSquareClose()
 {
     mRun++;
     if (mRun < mLineSize && mLine[mRun]==']') {
-        if (mRange.extraData.contains(DATA_KEY_IN_ATTRIBUTE)
-                && mRange.extraData[DATA_KEY_IN_ATTRIBUTE].toBool()) {
+        if (mRange.inAttribute) {
             mTokenId = TokenId::Symbol;
             mRun++;
-            mRange.extraData.remove(DATA_KEY_IN_ATTRIBUTE);
+            mRange.inAttribute = false;
             return;
         }
     }
@@ -1145,11 +1147,11 @@ void CppSyntaxer::procSquareOpen()
     if (mRun < mLineSize && mLine[mRun]=='[') {
         mRun++;
         mTokenId = TokenId::Symbol;
-        mRange.extraData[DATA_KEY_IN_ATTRIBUTE]=true;
+        mRange.inAttribute=true;
     } else{
         mTokenId = TokenId::Symbol;
         mRange.bracketLevel++;
-        pushIndents(IndentType::Bracket);
+        pushIndents(IndentType::Bracket, mLineSeq);
     }
 }
 
@@ -1167,150 +1169,110 @@ void CppSyntaxer::procStringEscapeSeq()
 {
     mTokenId = TokenId::StringEscapeSeq;
     mRun+=1;
-    if (mRun<mLineSize) {
-        switch(mLine[mRun].unicode()) {
-        case '\'':
-        case '"':
-        case '?':
-        case 'a':
-        case 'b':
-        case 'f':
-        case 'n':
-        case 'r':
-        case 't':
-        case 'v':
-        case '\\':
-            mRun+=1;
-            break;
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-            for (int i=0;i<3;i++) {
-                if (mRun>=mLineSize ||
-                   (mLine[mRun]<'0' || mLine[mRun]>'7')
-                   )
-                    break;
-                mRun+=1;
-            }
-            break;
-        case '8':
-        case '9':
-            mTokenId = TokenId::Unknown;
-            mRun+=1;
-            break;
-        case 'x':
-            mRun+=1;
-            while (mRun<mLineSize && (
-                   (mLine[mRun]>='0' && mLine[mRun]<='9')
-                 ||  (mLine[mRun]>='a' && mLine[mRun]<='f')
-                 ||  (mLine[mRun]>='A' && mLine[mRun]<='F')
-                   ))  {
-                mRun+=1;
-            }
-            break;
-        case 'o':
-            mRun+=1;
-            while (mRun<mLineSize && (
-                   (mLine[mRun]>='0' && mLine[mRun]<='7')
-                   ))  {
-                mRun+=1;
-            }
-            break;
-        case 'u':
-            mRun+=5;
-            break;
-        case 'U':
-            mRun+=9;
-            break;
-        }
-    }
-    mRange.state = RangeState::rsString;
-}
-
-void CppSyntaxer::procString()
-{
-    if (mRun >= mLineSize) {
-        mRange.state = RangeState::rsStringUnfinished;
+    if (mRun>=mLineSize) {
         return;
     }
+    switch(mLine[mRun].unicode()) {
+    case '\'':
+    case '"':
+    case '?':
+    case 'a':
+    case 'b':
+    case 'f':
+    case 'n':
+    case 'r':
+    case 't':
+    case 'v':
+    case '\\':
+        mRun+=1;
+        break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+        for (int i=0;i<3;i++) {
+            if (mRun>=mLineSize ||
+               (mLine[mRun]<'0' || mLine[mRun]>'7')
+               )
+                break;
+            mRun+=1;
+        }
+        break;
+    case '8':
+    case '9':
+        mTokenId = TokenId::Unknown;
+        mRun+=1;
+        break;
+    case 'x':
+        mRun+=1;
+        while (mRun<mLineSize && (
+               (mLine[mRun]>='0' && mLine[mRun]<='9')
+             ||  (mLine[mRun]>='a' && mLine[mRun]<='f')
+             ||  (mLine[mRun]>='A' && mLine[mRun]<='F')
+               ))  {
+            mRun+=1;
+        }
+        break;
+    case 'o':
+        mRun+=1;
+        while (mRun<mLineSize && (
+               (mLine[mRun]>='0' && mLine[mRun]<='7')
+               ))  {
+            mRun+=1;
+        }
+        break;
+    case 'u':
+        mRun+=5;
+        break;
+    case 'U':
+        mRun+=9;
+        break;
+    }
+    if (mRange.state == RangeState::rsStringEscapeSeq)
+        mRange.state = RangeState::rsString;
+    else if (mRange.state == RangeState::rsCharEscaping)
+        mRange.state = RangeState::rsChar;
+}
+
+void CppSyntaxer::procString() {
+    Q_ASSERT(mRun < mLineSize);
     mTokenId = TokenId::String;
-    bool isWord = isIdentChar(mLine[mRun]);
+    if (mLine[mRun]=='"') {
+        mRun++;
+        mRange.state = RangeState::rsUnknown;
+        return;
+    } else if (isIdentStartChar(mLine[mRun])) {
+        while (mRun < mLineSize && isIdentChar(mLine[mRun]))
+            mRun++;
+        return;
+    }
     while (mRun < mLineSize) {
         if (mLine[mRun]=='"') {
-            if (isWord)
-                break;
-            mRun++;
-            mRange.state = RangeState::rsUnknown;
             return;
         } else if (mLine[mRun]==' ' || mLine[mRun]=='\t') {
             return;
         } else if (mLine[mRun]=='\\') {
-            if (mRun == mLineSize-1) {
-                mRun++;
-                mRange.state = RangeState::rsStringNextLine;
+            if ((mRun+1>=mLineSize)
+                    || (mRun+1<mLineSize && isEscapingSeqChar(mLine[mRun+1])) ) {
+                mRange.state = RangeState::rsStringEscapeSeq;
                 return;
             }
-            if (mRun+1<mLineSize) {
-                switch(mLine[mRun+1].unicode()) {
-                case '\'':
-                case '"':
-                case '\\':
-                case '?':
-                case 'a':
-                case 'b':
-                case 'f':
-                case 'n':
-                case 'r':
-                case 't':
-                case 'v':
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case 'x':
-                case 'u':
-                case 'U':
-                    mRange.state = RangeState::rsStringEscapeSeq;
-                    return;
-                }
-            }
-        } else {
-            if (isWord) {
-                if (!isIdentChar(mLine[mRun])) {
-                    break;
-                }
-            } else {
-                if (isIdentChar(mLine[mRun])) {
-                    break;
-                }
-            }
+        } else if (isIdentStartChar(mLine[mRun])) {
+            return;
         }
         mRun+=1;
     }
-    // here mRun>=mLineSize
-    mRange.state = RangeState::rsStringUnfinished;
 }
 
 void CppSyntaxer::procStringStart()
 {
     mTokenId = TokenId::String;
     mRange.state = RangeState::rsString;
-    mRun++; //skip \"
-    if (mRun>=mLineSize) {
-        mRange.state = RangeState::rsStringUnfinished;
-        return;
-    }
+    mRun++; //skip "
     //procString();
 }
 
@@ -1464,22 +1426,19 @@ void CppSyntaxer::popIndents(IndentType indentType)
         mRange.lastUnindent=mRange.indents.back();
         mRange.indents.pop_back();
     } else {
-        mRange.lastUnindent=IndentInfo{indentType,0, ""};
+        mRange.lastUnindent=IndentInfo{indentType,mLineSeq, ""};
     }
 }
 
-void CppSyntaxer::pushIndents(IndentType indentType, int line, const QString& keyword)
+void CppSyntaxer::pushIndents(IndentType indentType, size_t lineSeq, const QString& keyword)
 {
-    if (line==-1)
-        line = mLineNumber;
-    mRange.indents.push_back(IndentInfo{indentType,line, keyword});
+    mRange.indents.push_back(IndentInfo{indentType,lineSeq, keyword});
 }
 
 void CppSyntaxer::popStatementIndents()
 {
-    int lastPopedIfs = 0;
     IndentInfo lastUnindent = mRange.lastUnindent;
-    QList<int> ifParents;
+    QList<size_t> ifParents;
 //    qDebug()<<"pop statement indetns"<<mLineNumber;
     while (mRange.getLastIndentType() == IndentType::Statement) {
 //        qDebug()<<"-----"<<mRange.indents.count();
@@ -1489,21 +1448,27 @@ void CppSyntaxer::popStatementIndents()
         if ( lastUnindent != mRange.lastUnindent ) {
             lastUnindent = mRange.lastUnindent;
             if (lastUnindent.type == IndentType::Statement && lastUnindent.keyword == "if") {
-                lastPopedIfs++;
                 if (mRange.indents.isEmpty()
                         || mRange.indents.last().type != IndentType::Statement)
-                    ifParents.append(-1);
+                    ifParents.append(IF_NO_PARENT);
                 else
-                    ifParents.append(mRange.indents.last().line);
+                    ifParents.append(mRange.indents.last().lineSeq);
             }
         }
     }
-    if (lastPopedIfs!=0) {
-        mRange.extraData.insert(DATA_KEY_LAST_FINISHED_IFS,lastPopedIfs);
-        QVariant var;
-        var = QVariant::fromValue(ifParents);
-        mRange.extraData.insert(DATA_KEY_PARENT_OF_POPED_IFS, var);
+    if (!ifParents.isEmpty()) {
+        mRange.ancestorsForIf = ifParents;
     }
+}
+
+bool CppSyntaxer::handleLastBackSlash() const
+{
+    return mHandleLastBackSlash;
+}
+
+void CppSyntaxer::setHandleLastBackSlash(bool newHandleLastBackSlash)
+{
+    mHandleLastBackSlash = newHandleLastBackSlash;
 }
 
 const QSet<QString> &CppSyntaxer::customTypeKeywords() const
@@ -1546,22 +1511,22 @@ bool CppSyntaxer::needsLineState()
     return true;
 }
 
-bool CppSyntaxer::isCommentNotFinished(int state) const
+bool CppSyntaxer::isCommentNotFinished(const PSyntaxState &state) const
 {
-    return (state == RangeState::rsAnsiC ||
-            state == RangeState::rsDirectiveComment||
-            state == RangeState::rsDocstring ||
-            state == RangeState::rsCppComment);
+    return (state->state == RangeState::rsAnsiC ||
+            state->state == RangeState::rsDirectiveComment||
+            state->state == RangeState::rsDocstring ||
+            state->state == RangeState::rsCppComment);
 }
 
-bool CppSyntaxer::isStringNotFinished(int state) const
+bool CppSyntaxer::isStringNotFinished(const PSyntaxState &state) const
 {
-    return state == RangeState::rsString || state==RangeState::rsStringNextLine || state==RangeState::rsStringUnfinished;
+    return (state->state == RangeState::rsString || state->state == RangeState::rsStringEscapeSeq);
 }
 
-bool CppSyntaxer::isDocstringNotFinished(int state) const
+bool CppSyntaxer::isDocstringNotFinished(const PSyntaxState &state) const
 {
-    return state == RangeState::rsDocstring;
+    return state->state == RangeState::rsDocstring;
 }
 
 bool CppSyntaxer::eol() const
@@ -1571,7 +1536,20 @@ bool CppSyntaxer::eol() const
 
 QString CppSyntaxer::getToken() const
 {
-    return mLine.mid(mTokenPos,mRun-mTokenPos);
+    switch (mProcessStage) {
+    case ProcessStage::Normal:
+        if (mRun<mPrevLineLastTokenSize)
+            return "";
+        else if (mTokenPos<mPrevLineLastTokenSize)
+            return mLine.mid(mPrevLineLastTokenSize, mRun - mPrevLineLastTokenSize);
+        else
+            return mLine.mid(mTokenPos,mRun-mTokenPos);
+    case ProcessStage::LastBackSlash:
+        return "\\";
+    case ProcessStage::SpacesAfterLastSlash:
+        return mSpacesAfterLastBackSlash;
+    }
+    return QString();
 }
 
 const PTokenAttribute &CppSyntaxer::getTokenAttribute() const
@@ -1610,6 +1588,10 @@ const PTokenAttribute &CppSyntaxer::getTokenAttribute() const
         return mSymbolAttribute;
     case TokenId::Unknown:
         return mInvalidAttribute;
+    case TokenId::LastBackSlash:
+        return mSymbolAttribute;
+    case TokenId::SpaceAfterBackSlash:
+        return mWhitespaceAttribute;
     default:
         return mInvalidAttribute;
     }
@@ -1617,28 +1599,25 @@ const PTokenAttribute &CppSyntaxer::getTokenAttribute() const
 
 int CppSyntaxer::getTokenPos()
 {
-    return mTokenPos;
+    switch (mProcessStage) {
+    case ProcessStage::Normal:
+        if (mTokenPos<mPrevLineLastTokenSize)
+            return 0;
+        else
+            return mTokenPos - mPrevLineLastTokenSize;
+    case ProcessStage::LastBackSlash:
+        return mLineSize - mPrevLineLastTokenSize;
+    case ProcessStage::SpacesAfterLastSlash:
+        return mLineSize - mPrevLineLastTokenSize+1;
+    }
+    return mTokenPos - mPrevLineLastTokenSize;
 }
 
 void CppSyntaxer::next()
 {
-    if (mRun==0) {
-        switch(mRange.state) {
-        case RangeState::rsString:
-        case RangeState::rsChar:
-            mRange.state = RangeState::rsUnknown;
-            break;
-        case RangeState::rsCppCommentRemaining:
-            mRange.state = RangeState::rsCppComment;
-        }
-    }
+    if (mProcessStage==ProcessStage::Normal && mRun<mLineSize)
+        mRange.stateBeforeLastToken = (RangeState)mRange.state;
     mTokenPos = mRun;
-    if (mLineSize == 0) {
-        if ((mRange.state == RangeState::rsString)
-                || (mRange.state == RangeState::rsCppComment)
-                || (mRange.state == RangeState::rsMultiLineDirective) )
-            mRange.state=RangeState::rsUnknown;
-    }
     do {
         if (mRun>=mLineSize) {
             procNull();
@@ -1658,13 +1637,10 @@ void CppSyntaxer::next()
             procDocstring();
             break;
         case RangeState::rsString:
-        case RangeState::rsStringNextLine:
-        case RangeState::rsStringUnfinished:
             //qDebug()<<"*1-0-0*";
             procString();
             break;
         case RangeState::rsCppComment:
-        case RangeState::rsCppCommentRemaining:
             //qDebug()<<"*2-0-0*";
             procCppStyleComment();
             break;
@@ -1677,6 +1653,7 @@ void CppSyntaxer::next()
 //            stringEndProc();
 //            break;
         case RangeState::rsStringEscapeSeq:
+        case RangeState::rsCharEscaping:
             //qDebug()<<"*6-0-0*";
             procStringEscapeSeq();
             break;
@@ -1733,21 +1710,65 @@ void CppSyntaxer::next()
         mLastKeyword = getToken();
     else if (mTokenId != TokenId::Space)
         mLastKeyword = "";
+    if (mMergeWithNextLine && mRun >= mLineSize && mProcessStage==ProcessStage::Normal) {
+        mRange.lastToken = getToken();
+    }
     //qDebug()<<"1-1-1";
 }
 
-void CppSyntaxer::setLine(const QString &newLine, int lineNumber)
+void CppSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq)
 {
-    mLine = newLine;
-    mLineSize = mLine.size();
+    mOrigLine = newLine;
     mLineNumber = lineNumber;
+    mLineSeq = lineSeq;
     mRun = 0;
     mRange.blockStarted = 0;
     mRange.blockEnded = 0;
     mRange.blockEndedLastLine = 0;
+
     mRange.hasTrailingSpaces = false;
     mLastKeyword="";
+
+    mMergeWithNextLine = false;
+    mSpacesAfterLastBackSlash = "";
+    mLine = newLine;
+    if (mHandleLastBackSlash) {
+        int i=newLine.length()-1;
+        while (i>=0 && isSpaceChar(newLine[i])) {
+            i--;
+        }
+        if (i>=0 && newLine[i]=='\\') {
+            mMergeWithNextLine = true;
+            mSpacesAfterLastBackSlash = newLine.mid(i+1);
+            mLine = newLine.left(i);
+        }
+    }
+    bool mergeWithPrevLine = mRange.mergeWithNextLine;
+    if (mergeWithPrevLine) {
+        mRange.state = mRange.stateBeforeLastToken;
+        mLine = mRange.lastToken + mLine;
+        mPrevLineLastTokenSize = mRange.lastToken.length();
+    } else {
+        if ((mRange.state == RangeState::rsString)
+                || (mRange.state == RangeState::rsStringEscapeSeq)
+                || (mRange.state == RangeState::rsChar)
+                || (mRange.state == RangeState::rsCharEscaping)
+                || (mRange.state == RangeState::rsCppComment)
+                || (mRange.state == RangeState::rsMultiLineDirective) )
+            mRange.state=RangeState::rsUnknown;
+        mPrevLineLastTokenSize = 0;
+    }
+    mLineSize = mLine.size();
+    mRange.lastToken = "";
+    mRange.mergeWithNextLine = mMergeWithNextLine;
+    mRange.stateBeforeLastToken = RangeState::rsUnknown;
+    mProcessStage = ProcessStage::Normal;
     next();
+    if (mergeWithPrevLine) {
+        while (mRun <= mRange.lastToken.length() && !eol()) {
+            next();
+        }
+    }
 }
 
 bool CppSyntaxer::isKeyword(const QString &word)
@@ -1755,15 +1776,11 @@ bool CppSyntaxer::isKeyword(const QString &word)
     return Keywords.contains(word) || mCustomTypeKeywords.contains(word);
 }
 
-void CppSyntaxer::setState(const SyntaxState& rangeState)
+void CppSyntaxer::setState(const PSyntaxState& rangeState)
 {
-    mRange = rangeState;
+    std::shared_ptr<CppSyntaxState> cppState = std::dynamic_pointer_cast<CppSyntaxState>(rangeState);
+    mRange = *cppState;
     // current line's left / right parenthesis count should be reset before parsing each line
-    mRange.blockStarted = 0;
-    mRange.blockEnded = 0;
-    mRange.blockEndedLastLine = 0;
-    mRange.lastUnindent=rangeState.lastUnindent;
-    mRange.hasTrailingSpaces = false;
 }
 
 void CppSyntaxer::resetState()
@@ -1779,6 +1796,14 @@ void CppSyntaxer::resetState()
     mRange.indents.clear();
     mRange.lastUnindent=IndentInfo{IndentType::None,0, ""};
     mRange.hasTrailingSpaces = false;
+
+    mRange.initialDCharSeq = "";
+    mRange.inAttribute = false;
+    mRange.ancestorsForIf.clear();
+
+    mRange.mergeWithNextLine = false;
+    mRange.lastToken = "";
+    mRange.stateBeforeLastToken = RangeState::rsUnknown;
 }
 
 QString CppSyntaxer::languageName()
@@ -1791,9 +1816,12 @@ ProgrammingLanguage CppSyntaxer::language()
     return ProgrammingLanguage::CPP;
 }
 
-SyntaxState CppSyntaxer::getState() const
+PSyntaxState CppSyntaxer::getState() const
 {
-    return mRange;
+    std::shared_ptr<CppSyntaxState> syntaxstate = std::make_shared<CppSyntaxState>();
+    *syntaxstate = mRange;
+    return syntaxstate;
+
 }
 
 bool CppSyntaxer::isIdentChar(const QChar &ch) const
@@ -1818,6 +1846,20 @@ QString CppSyntaxer::foldString(QString endLine)
     if (endLine.trimmed().startsWith("#"))
         return "...";
     return "...}";
+}
+
+bool CppSyntaxer::CppSyntaxState::equals(const std::shared_ptr<SyntaxState> &s2) const
+{
+    if (SyntaxState::equals(s2)) {
+        std::shared_ptr<CppSyntaxState> cppS2 = std::dynamic_pointer_cast<CppSyntaxState>(s2);
+        return initialDCharSeq == cppS2->initialDCharSeq
+                && inAttribute == cppS2->inAttribute
+                && ancestorsForIf == cppS2->ancestorsForIf
+                && mergeWithNextLine == cppS2->mergeWithNextLine
+                && lastToken == cppS2->lastToken
+                && stateBeforeLastToken == cppS2->stateBeforeLastToken;
+    } else
+        return false;
 }
 
 }

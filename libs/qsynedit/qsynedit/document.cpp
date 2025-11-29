@@ -58,7 +58,7 @@ int Document::parenthesisLevel(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        return mLines[line]->syntaxState().parenthesisLevel;
+        return mLines[line]->syntaxState()->parenthesisLevel;
     } else
         return 0;
 }
@@ -67,7 +67,7 @@ int Document::bracketLevel(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        return mLines[line]->syntaxState().bracketLevel;
+        return mLines[line]->syntaxState()->bracketLevel;
     } else
         return 0;
 }
@@ -76,7 +76,7 @@ int Document::braceLevel(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        return mLines[line]->syntaxState().braceLevel;
+        return mLines[line]->syntaxState()->braceLevel;
     } else
         return 0;
 }
@@ -109,7 +109,7 @@ int Document::blockLevel(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        return mLines[line]->syntaxState().blockLevel;
+        return mLines[line]->syntaxState()->blockLevel;
     } else
         return 0;
 }
@@ -118,7 +118,7 @@ int Document::blockStarted(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        return mLines[line]->syntaxState().blockStarted;
+        return mLines[line]->syntaxState()->blockStarted;
     } else
         return 0;
 }
@@ -127,7 +127,7 @@ int Document::blockEnded(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
-        int result = mLines[line]->syntaxState().blockEnded;
+        int result = mLines[line]->syntaxState()->blockEnded;
 //        if (index+1 < mLines.size())
 //            result += mLines[index+1]->syntaxState.blockEndedLastLine;
         return result;
@@ -158,7 +158,7 @@ QString Document::lineBreak() const
     return "\n";
 }
 
-SyntaxState Document::getSyntaxState(int line) const
+PSyntaxState Document::getSyntaxState(int line) const
 {
     QMutexLocker locker(&mMutex);
     if (line>=0 && line < mLines.size()) {
@@ -166,7 +166,7 @@ SyntaxState Document::getSyntaxState(int line) const
     } else {
          listIndexOutOfBounds(line);
     }
-    return SyntaxState();
+    return PSyntaxState();
 }
 
 void Document::insertItem(int line, const QString &s)
@@ -201,7 +201,7 @@ void Document::setAppendNewLineAtEOF(bool appendNewLineAtEOF)
     mAppendNewLineAtEOF = appendNewLineAtEOF;
 }
 
-void Document::setSyntaxState(int line, const SyntaxState& state)
+void Document::setSyntaxState(int line, const PSyntaxState& state)
 {
     QMutexLocker locker(&mMutex);
     if (line<0 || line>=mLines.count()) {
@@ -217,6 +217,15 @@ QString Document::getLine(int line) const
         return QString();
     }
     return mLines[line]->lineText();
+}
+
+size_t Document::getLineSeq(int line) const
+{
+    QMutexLocker locker(&mMutex);
+    if (line<0 || line>=mLines.count()) {
+        return 0;
+    }
+    return mLines[line]->lineSeq();
 }
 
 int Document::getLineGlyphsCount(int line) const
@@ -552,7 +561,7 @@ void Document::loadUTF32BOMFile(QFile &file)
     this->setText(text);
 }
 
-void Document::saveUTF16File(QFile &file, TextEncoder &encoder)
+void Document::saveUTF16File(QFile &file, TextEncoder &encoder) const
 {
     if (!encoder.isValid())
         return;
@@ -560,12 +569,24 @@ void Document::saveUTF16File(QFile &file, TextEncoder &encoder)
     file.write(encoder.encodeUnchecked(text));
 }
 
-void Document::saveUTF32File(QFile &file, TextEncoder &encoder)
+void Document::saveUTF32File(QFile &file, TextEncoder &encoder) const
 {
     if (!encoder.isValid())
         return;
     QString text=getTextStr();
     file.write(encoder.encodeUnchecked(text));
+}
+
+int Document::findPrevLineBySeq(int startLine, size_t lineSeq) const
+{
+    //starts at 0
+    //-1 not found
+    QMutexLocker locker(&mMutex);
+    for (int i = std::min(startLine, mLines.count()-1); i>=0;i--) {
+        if (mLines[i]->lineSeq() == lineSeq)
+            return i;
+    }
+    return -1;
 }
 
 void Document::setTabSize(int newTabSize)
@@ -728,7 +749,7 @@ void Document::loadFromFile(const QString& filename, const QByteArray& encoding,
 
 
 void Document::saveToFile(QFile &file, const QByteArray& encoding,
-                                   const QByteArray& defaultEncoding, QByteArray& realEncoding)
+                                   const QByteArray& defaultEncoding, QByteArray& realEncoding) const
 {
     QMutexLocker locker(&mMutex);
     std::optional<TextEncoder> encoder;
@@ -772,7 +793,7 @@ void Document::saveToFile(QFile &file, const QByteArray& encoding,
     }
     bool allAscii = true;
     QByteArray data;
-    for (PDocumentLine& line:mLines) {
+    for (const PDocumentLine& line:mLines) {
         QString text = line->lineText()+lineBreak();
         data = encoder->encodeUnchecked(text);
         if (allAscii) {
@@ -1266,16 +1287,21 @@ void Document::invalidateAllNonTempLineWidth()
     QMutexLocker locker(&mMutex);
     for (PDocumentLine& line:mLines) {
         if (!line->mIsTempWidth)
-            line->mIsTempWidth;
+            line->mIsTempWidth = true;
     }
 }
+
+//Reserve 0
+size_t DocumentLine::seqCounter = 1;
 
 DocumentLine::DocumentLine(DocumentLine::UpdateWidthFunc updateWidthFunc):
     mSyntaxState{},
     mWidth{-1},
     mIsTempWidth{true},
-    mUpdateWidthFunc{updateWidthFunc}
+    mUpdateWidthFunc{updateWidthFunc},
+    mLineSeq{seqCounter++}
 {
+
 }
 
 int DocumentLine::glyphLength(int i) const

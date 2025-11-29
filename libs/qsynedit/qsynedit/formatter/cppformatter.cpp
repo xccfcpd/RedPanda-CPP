@@ -22,11 +22,16 @@ namespace QSynedit {
         line = std::min(line, editor->lineCount()+1);
         if (line<=1)
             return 0;
+        // test if previous line ending with '\', keep originalSpaces
+        std::shared_ptr<CppSyntaxer::CppSyntaxState>
+                statePrevLine = std::dynamic_pointer_cast<CppSyntaxer::CppSyntaxState>(editor->document()->getSyntaxState(line-2));
+        if (statePrevLine->mergeWithNextLine)
+            return editor->leftSpaces(lineText);
         // test if last line is non-end string
         int lastLine = line-1;
         if (lastLine>=1) {
-            SyntaxState rangeLastLine = editor->document()->getSyntaxState(lastLine-1);
-            if (rangeLastLine.state == CppSyntaxer::RangeState::rsStringNextLine)
+            PSyntaxState rangeLastLine = editor->document()->getSyntaxState(lastLine-1);
+            if (editor->syntaxer()->isStringNotFinished(rangeLastLine) )
                 return editor->leftSpaces(lineText);
         }
         // find the first non-empty preceeding line
@@ -45,15 +50,15 @@ namespace QSynedit {
             indentSpaces = editor->leftSpaces(startLineText);
             if (editor->syntaxer()->language() != ProgrammingLanguage::CPP)
                 return indentSpaces;
-            SyntaxState rangePreceeding = editor->document()->getSyntaxState(startLine-1);
-            if (rangePreceeding.state == CppSyntaxer::RangeState::rsRawStringNotEscaping)
+            PSyntaxState rangePreceeding = editor->document()->getSyntaxState(startLine-1);
+            if (rangePreceeding->state == CppSyntaxer::RangeState::rsRawStringNotEscaping)
                 return 0;
 
-            if (rangePreceeding.getLastIndentType() == IndentType::Parenthesis) {
+            if (rangePreceeding->getLastIndentType() == IndentType::Parenthesis) {
                 bool lastLineHasLastParentheis = true;
                 if (startLine > 1) {
-                    SyntaxState synState = editor->document()->getSyntaxState(startLine - 2);
-                    lastLineHasLastParentheis = rangePreceeding.parenthesisLevel > synState.parenthesisLevel;
+                    PSyntaxState synState = editor->document()->getSyntaxState(startLine - 2);
+                    lastLineHasLastParentheis = rangePreceeding->parenthesisLevel > synState->parenthesisLevel;
                 }
                 if (lastLineHasLastParentheis) {
                     indentSpaces = findLastParenthesis(startLine, editor);
@@ -66,8 +71,8 @@ namespace QSynedit {
     //            QString trimmedS = s.trimmed();
                 QString trimmedLineText = lineText.trimmed();
                 editor->syntaxer()->setState(rangePreceeding);
-                editor->syntaxer()->setLine(trimmedLineText,line-1);
-                SyntaxState rangeAfterFirstToken = editor->syntaxer()->getState();
+                editor->syntaxer()->setLine(line-1, trimmedLineText, editor->lineSeq(line));
+                PSyntaxState rangeAfterFirstToken = editor->syntaxer()->getState();
                 QString firstToken = editor->syntaxer()->getToken();
                 PTokenAttribute attr = editor->syntaxer()->getTokenAttribute();
                 if (
@@ -90,7 +95,7 @@ namespace QSynedit {
                         ) {
                     // public: private: protecte: case: should indents like it's parent statement
                     editor->syntaxer()->setState(rangePreceeding);
-                    editor->syntaxer()->setLine("}",line-1);
+                    editor->syntaxer()->setLine(line-1, "}", 0);
                     rangeAfterFirstToken = editor->syntaxer()->getState();
                     firstToken = editor->syntaxer()->getToken();
                     attr = editor->syntaxer()->getTokenAttribute();
@@ -100,7 +105,7 @@ namespace QSynedit {
                 if (trimmedLineText.startsWith('#')
                            && attr == ((CppSyntaxer *)editor->syntaxer().get())->preprocessorAttribute()) {
                     indentSpaces=0;
-                } else if (editor->syntaxer()->isDocstringNotFinished(rangePreceeding.state)
+                } else if (editor->syntaxer()->isDocstringNotFinished(rangePreceeding)
                            ) {
                     // last line is a not finished comment,
                     if  (trimmedLineText.startsWith("*")) {
@@ -108,42 +113,48 @@ namespace QSynedit {
                         // it means this line is a docstring, should indents according to
                         // the line the comment beginning , and add 1 additional space
                         int commentStartLine = findCommentStartLine(startLine-1,editor);
-                        SyntaxState range;
+                        PSyntaxState range;
                         indentSpaces = editor->leftSpaces(editor->lineText(commentStartLine))+1;
                         range = editor->document()->getSyntaxState(commentStartLine-1);
                     } else {
                         //indents according to the beginning of the comment and 2 additional space
                         int commentStartLine = findCommentStartLine(startLine-1,editor);
-                        SyntaxState range;
+                        PSyntaxState range;
                         indentSpaces = editor->leftSpaces(editor->lineText(commentStartLine))+2;
                         range = editor->document()->getSyntaxState(commentStartLine-1);
                     }
-                } else if (rangeAfterFirstToken.lastUnindent.type!=IndentType::None
+                } else if (rangeAfterFirstToken->lastUnindent.type!=IndentType::None
                            && firstToken=="}") {
-                    IndentInfo matchingIndents = rangeAfterFirstToken.lastUnindent;
-                    indentSpaces = editor->leftSpaces(editor->lineText(matchingIndents.line+1));
+                    IndentInfo matchingIndents = rangeAfterFirstToken->lastUnindent;
+                    int matchingLine = editor->findPrevLineBySeq(line-1, matchingIndents.lineSeq);
+                    if (matchingLine>=0)
+                        indentSpaces = editor->leftSpaces(editor->lineText(matchingLine+1));
                 } else if (firstToken=="{") {
-                    IndentInfo matchingIndents = rangeAfterFirstToken.getLastIndent();
-                    if (matchingIndents.line!=line-1) {
-                        indentSpaces = editor->leftSpaces(editor->lineText(matchingIndents.line+1));
-                    } else if (rangeAfterFirstToken.indents.count()>=2){
-                        IndentInfo info =  rangeAfterFirstToken.indents[rangeAfterFirstToken.indents.count()-2];
-                        indentSpaces = editor->leftSpaces(editor->lineText(info.line+1))+editor->tabSize();
+                    IndentInfo matchingIndents = rangeAfterFirstToken->getLastIndent();
+                    int matchingLine = editor->findPrevLineBySeq(line-1, matchingIndents.lineSeq);
+                    if (matchingLine>=0 && matchingLine!=line-1) {
+                        indentSpaces = editor->leftSpaces(editor->lineText(matchingLine+1));
+                    } else if (rangeAfterFirstToken->indents.count()>=2){
+                        IndentInfo info =  rangeAfterFirstToken->indents[rangeAfterFirstToken->indents.count()-2];                        
+                        int infoLine = editor->findPrevLineBySeq(line-1, info.lineSeq);
+                        indentSpaces = editor->leftSpaces(editor->lineText(infoLine+1))+editor->tabSize();
                     } else
                         indentSpaces = 0;
                 } else if (firstToken=="else") {
-                    IndentInfo matchingIndents = rangeAfterFirstToken.getLastIndent();
-                    if (matchingIndents.line == line-1) {
-                        if (rangeAfterFirstToken.indents.count()>=2){
-                            IndentInfo info =  rangeAfterFirstToken.indents[rangeAfterFirstToken.indents.count()-2];
-                            indentSpaces = editor->leftSpaces(editor->lineText(info.line+1))+editor->tabSize();
+                    IndentInfo matchingIndents = rangeAfterFirstToken->getLastIndent();
+                    if (matchingIndents.lineSeq == editor->lineSeq(line)) {
+                        if (rangeAfterFirstToken->indents.count()>=2){
+                            IndentInfo info =  rangeAfterFirstToken->indents[rangeAfterFirstToken->indents.count()-2];
+                            int infoLine = editor->findPrevLineBySeq(line-1, info.lineSeq);
+                            indentSpaces = editor->leftSpaces(editor->lineText(infoLine+1))+editor->tabSize();
                         } else {
                             indentSpaces = 0;
                         }
                     }
-                } else if (rangePreceeding.getLastIndentType()!=IndentType::None) {
-                    IndentInfo matchingIndents = rangePreceeding.getLastIndent();
-                    indentSpaces = editor->leftSpaces(editor->lineText(matchingIndents.line+1))+editor->tabSize();
+                } else if (rangePreceeding->getLastIndentType()!=IndentType::None) {
+                    IndentInfo matchingIndents = rangePreceeding->getLastIndent();
+                    int matchingLine = editor->findPrevLineBySeq(line-1, matchingIndents.lineSeq);
+                    indentSpaces = editor->leftSpaces(editor->lineText(matchingLine+1))+editor->tabSize();
                 } else {
                     indentSpaces = 0;
                 }
@@ -155,10 +166,10 @@ namespace QSynedit {
     int CppFormatter::findCommentStartLine(int searchStartLine, const QSynEdit* editor)
     {
         int commentStartLine = searchStartLine;
-        SyntaxState range;
+        PSyntaxState range;
         while (commentStartLine>=1) {
             range = editor->document()->getSyntaxState(commentStartLine-1);
-            if (!editor->syntaxer()->isCommentNotFinished(range.state)){
+            if (!editor->syntaxer()->isCommentNotFinished(range)){
                 commentStartLine++;
                 break;
             }
@@ -177,7 +188,7 @@ namespace QSynedit {
     {
         QString lineText = editor->lineText(line);
         int leading = editor->leftSpaces(lineText);
-        editor->prepareSyntaxerState(*(editor->syntaxer()), line-1, lineText.trimmed());
+        editor->prepareSyntaxerState(*(editor->syntaxer()), line-1);
         QList<int> posList;
         while (!editor->syntaxer()->eol()) {
             if (editor->syntaxer()->getTokenAttribute() == editor->syntaxer()->symbolAttribute()) {

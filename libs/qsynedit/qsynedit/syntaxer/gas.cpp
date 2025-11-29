@@ -157,10 +157,11 @@ void GASSyntaxer::setPrefixRegisterNames(bool prefix)
     }
 }
 
-void GASSyntaxer::setLine(const QString &newLine, int lineNumber)
+void GASSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq)
 {
+    Q_UNUSED(lineSeq);
     mThisLineHasSyntaxDirective = false;
-    ASMSyntaxer::setLine(newLine, lineNumber);
+    ASMSyntaxer::setLine(lineNumber, newLine, lineSeq);
 }
 
 QString GASSyntaxer::languageName()

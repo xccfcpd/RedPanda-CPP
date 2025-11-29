@@ -132,6 +132,7 @@ using PTokenAttribute = std::shared_ptr<TokenAttribute>;
 class Document;
 using PDocument = std::shared_ptr<Document>;
 struct SyntaxState;
+using PSyntaxState = std::shared_ptr<SyntaxState>;
 class Syntaxer;
 using PSyntaxer = std::shared_ptr<Syntaxer>;
 class UndoList;
@@ -276,7 +277,7 @@ public:
     bool getTokenAttriAtRowCol(const BufferCoord& pos, QString& token,
       PTokenAttribute& attri);
     bool getTokenAttriAtRowCol(const BufferCoord& pos, QString& token,
-      PTokenAttribute& attri, SyntaxState &syntaxState);
+      PTokenAttribute& attri, PSyntaxState &syntaxState);
     bool getTokenAttriAtRowColEx(const BufferCoord& pos, QString& token,
       int &start, PTokenAttribute& attri);
 
@@ -316,7 +317,8 @@ public:
 
     virtual BufferCoord getMatchingBracket();
     virtual BufferCoord getMatchingBracketEx(BufferCoord APoint);
-    void prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex, const QString lineText) const;
+    void prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex) const;
+    void prepareSyntaxerState(Syntaxer &syntaxer, int lineIndex, const QString lineText, size_t lineSeq) const;
 
     QStringList contents();
     QString text();
@@ -384,6 +386,9 @@ public:
     QString lineText() const;
     QString lineText(int line) const;
     void setLineText(const QString s);
+    size_t lineSeq(int line) const;
+
+    int findPrevLineBySeq(int startLine, size_t lineSeq) const;
 
     const PDocument& document() const;
     bool empty();
@@ -506,7 +511,7 @@ protected:
     void doSelectLine();
     void incPaintLock();
     void decPaintLock();
-    SyntaxState calcSyntaxStateAtLine(int line, const QString &newLineText);
+    PSyntaxState calcSyntaxStateAtLine(int line, const QString &newLineText, bool handleLastBackSlash = true);
     void processCommand(EditCommand Command, QChar AChar = QChar(), void * pData = nullptr);
     bool dragging() const { return mDragging; }
 

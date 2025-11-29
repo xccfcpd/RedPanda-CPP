@@ -854,7 +854,7 @@ void QSynEditPainter::paintFoldAttributes()
             if (lastNonBlank>=mEdit->lineCount())
                 continue;
             lineIndent = mEdit->getLineIndent(mEdit->mDocument->getLine(lastNonBlank));
-            int braceLevel = mEdit->mDocument->getSyntaxState(lastNonBlank).braceLevel;
+            int braceLevel = mEdit->mDocument->getSyntaxState(lastNonBlank)->braceLevel;
             int indentLevel = braceLevel ;
             tabSteps = 0;
             indentLevel = 0;
@@ -1083,7 +1083,7 @@ void QSynEditPainter::paintLines()
         // Initialize highlighter with line text and range info. It is
         // necessary because we probably did not scan to the end of the last
         // line - the internal highlighter range might be wrong.
-        mEdit->prepareSyntaxerState(*(mEdit->mSyntaxer), vLine-1, sLine);
+        mEdit->prepareSyntaxerState(*(mEdit->mSyntaxer), vLine-1, sLine, mEdit->lineSeq(vLine));
         // Try to concatenate as many tokens as possible to minimize the count
         // of ExtTextOut calls necessary. This depends on the selection state
         // or the line having special colors. For spaces the foreground color
@@ -1094,6 +1094,7 @@ void QSynEditPainter::paintLines()
         while (!mEdit->mSyntaxer->eol()) {
             sToken = mEdit->mSyntaxer->getToken();
             if (sToken.isEmpty())  {
+                mEdit->mSyntaxer->next();
                 continue;
             }
             int tokenStartChar = mEdit->mSyntaxer->getTokenPos();
@@ -1107,19 +1108,19 @@ void QSynEditPainter::paintLines()
                     || sToken == "("
                     || sToken == "{"
                     ) {
-                SyntaxState rangeState = mEdit->mSyntaxer->getState();
-                getBraceColorAttr(rangeState.bracketLevel
-                                  +rangeState.braceLevel
-                                  +rangeState.parenthesisLevel
+                PSyntaxState rangeState = mEdit->mSyntaxer->getState();
+                getBraceColorAttr(rangeState->bracketLevel
+                                  +rangeState->braceLevel
+                                  +rangeState->parenthesisLevel
                                   ,attr);
             } else if (sToken == "]"
                        || sToken == ")"
                        || sToken == "}"
                        ){
-                SyntaxState rangeState = mEdit->mSyntaxer->getState();
-                getBraceColorAttr(rangeState.bracketLevel
-                                  +rangeState.braceLevel
-                                  +rangeState.parenthesisLevel+1,
+                PSyntaxState rangeState = mEdit->mSyntaxer->getState();
+                getBraceColorAttr(rangeState->bracketLevel
+                                  +rangeState->braceLevel
+                                  +rangeState->parenthesisLevel+1,
                                   attr);
             }
             //input method
@@ -1175,7 +1176,7 @@ void QSynEditPainter::paintLines()
             if ((foldRange) && foldRange->collapsed) {
                 addOnStr = mEdit->mSyntaxer->foldString(sLine);
                 attr = mEdit->mSyntaxer->symbolAttribute();
-                getBraceColorAttr(mEdit->mSyntaxer->getState().braceLevel,attr);
+                getBraceColorAttr(mEdit->mSyntaxer->getState()->braceLevel,attr);
             } else {
                 // Draw LineBreak glyph.
                 if (mEdit->mOptions.testFlag(EditorOption::ShowLineBreaks)

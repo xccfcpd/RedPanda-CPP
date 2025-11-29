@@ -169,9 +169,8 @@ public:
     int columnCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-    void addTrace(PTrace p);
+    void setTraces(QList<PTrace> traces);
     void clear();
-    void removeTrace(int index);
     const QList<PTrace>& backtraces() const;
     PTrace backtrace(int index) const;
 private:
@@ -559,6 +558,7 @@ public:
 
     virtual void skipDirectoriesInSymbolSearch(const QStringList& lst) = 0;
     virtual void addSymbolSearchDirectories(const QStringList& lst) = 0;
+    virtual void skipStandardLibraryFunctions() = 0;
 signals:
     void parseStarted();
     void invalidateAllVars();
