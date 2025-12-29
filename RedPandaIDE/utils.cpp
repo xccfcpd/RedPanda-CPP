@@ -10,7 +10,7 @@
 #include <QOperatingSystemVersion>
 #include <QtXml>
 #include "editor.h"
-#include "editorlist.h"
+#include "editormanager.h"
 #include "settings.h"
 #include "mainwindow.h"
 #include "project.h"
@@ -217,7 +217,7 @@ QString parseMacros(const QString &s, const QMap<QString, QString> &macros)
 
 QMap<QString, QString> devCppMacroVariables()
 {
-    Editor *e = pMainWindow->editorList()->getEditor();
+    Editor *e = pMainWindow->editorManager()->getEditor();
 
     QMap<QString, QString> result = {
         {"DEFAULT", localizePath(QDir::currentPath())},
@@ -341,29 +341,29 @@ void resetCppParser(std::shared_ptr<CppParser> parser, int compilerSetIndex)
     }
     parser->parseHardDefines();
     pMainWindow->disconnect(parser.get(),
-                            &CppParser::onStartParsing,
+                            &CppParser::parseStarted,
                             pMainWindow,
-                            &MainWindow::onStartParsing);
+                            &MainWindow::onParseStarted);
     pMainWindow->disconnect(parser.get(),
-                            &CppParser::onProgress,
+                            &CppParser::progress,
                             pMainWindow,
                             &MainWindow::onParserProgress);
     pMainWindow->disconnect(parser.get(),
-                            &CppParser::onEndParsing,
+                            &CppParser::parseFinished,
                             pMainWindow,
-                            &MainWindow::onEndParsing);
+                            &MainWindow::onParseFinished);
     pMainWindow->connect(parser.get(),
-                            &CppParser::onStartParsing,
+                            &CppParser::parseStarted,
                             pMainWindow,
-                            &MainWindow::onStartParsing);
+                            &MainWindow::onParseStarted);
     pMainWindow->connect(parser.get(),
-                            &CppParser::onProgress,
+                            &CppParser::progress,
                             pMainWindow,
                             &MainWindow::onParserProgress);
     pMainWindow->connect(parser.get(),
-                            &CppParser::onEndParsing,
+                            &CppParser::parseFinished,
                             pMainWindow,
-                            &MainWindow::onEndParsing);
+                            &MainWindow::onParseFinished);
 }
 
 int getNewFileNumber()

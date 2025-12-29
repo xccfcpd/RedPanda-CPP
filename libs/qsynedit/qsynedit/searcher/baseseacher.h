@@ -23,23 +23,23 @@
 namespace QSynedit {
 
 enum SearchOption {
+    ssoNone         = 0x0000,
     ssoMatchCase    = 0x0001,
     ssoWholeWord    = 0x0002,
     ssoBackwards    = 0x0004,
-    ssoEntireScope  = 0x0008,
-    ssoSelectedOnly = 0x0010,
-    ssoWrapAround   = 0x0020,
-    ssoRegExp       = 0x0080
+    ssoFromCaret    = 0x0008,
+    ssoWrapAround   = 0x0010,
+    ssoIncludeCurrentSelection = 0x0100,
 };
 
 Q_DECLARE_FLAGS(SearchOptions, SearchOption)
 Q_DECLARE_OPERATORS_FOR_FLAGS(SearchOptions)
 
-class BaseSearcher : public QObject
+class Searcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit BaseSearcher(QObject *parent = nullptr);
+    explicit Searcher(QObject *parent = nullptr);
     QString pattern();
     virtual void setPattern(const QString& value);
     virtual int length(int aIndex) = 0;
@@ -57,7 +57,7 @@ private:
     SearchOptions mOptions;
 };
 
-using PSynSearchBase = std::shared_ptr<BaseSearcher>;
+using PSearcher = std::shared_ptr<Searcher>;
 
 }
 

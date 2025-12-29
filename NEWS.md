@@ -4,6 +4,12 @@ Red Panda C++ Version 3.5
   - enhancement: Skip all std:: (C++ standard libraries) functions when debugging.
   - enhancement: Correctly syntax color lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
   - enhancement: Correctly parse lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
+  - redo/undo restore caret and select positions.
+  - fix: keep indents while commenting blocks.
+  - fix: Qsynedit now accept multi-QChar key press input.
+  - fix: Crash when parsing lambda expression that has incomplete statements.
+  - fix: Chances to deadlock while parser is working and trying to close/switch editors.
+  - fix: Can't goto definition / declaration in an unsaved new file.
 
 Red Panda C++ Version 3.4
   - enhancement: Auto hide option "Auto clear parsed symbols when editor hidden" if "editors share one parser" is unchecked.

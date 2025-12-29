@@ -22,16 +22,17 @@
 #include "mainwindow.h"
 #include "settings.h"
 #include "editor.h"
-#include "editorlist.h"
+#include "editormanager.h"
 #include "syntaxermanager.h"
 #include "project.h"
 
+using QSynedit::CharPos;
 CppRefacter::CppRefacter(QObject *parent) : QObject(parent)
 {
 
 }
 
-bool CppRefacter::findOccurence(Editor *editor, const QSynedit::BufferCoord &pos)
+bool CppRefacter::findOccurence(Editor *editor, const CharPos &pos)
 {
     if (!editor->parser())
         return false;
@@ -100,7 +101,7 @@ static QString fullParentName(PStatement statement) {
         return "";
     }
 }
-void CppRefacter::renameSymbol(Editor *editor, const QSynedit::BufferCoord &pos, const QString &newWord)
+void CppRefacter::renameSymbol(Editor *editor, const CharPos &pos, const QString &newWord)
 {
     if (!editor->parser()->freeze())
         return;
@@ -111,7 +112,7 @@ void CppRefacter::renameSymbol(Editor *editor, const QSynedit::BufferCoord &pos,
     QStringList expression;
     QChar s=editor->charAt(pos);
     if (!editor->isIdentStartChar(s)) {
-        expression = editor->getExpressionAtPosition(QSynedit::BufferCoord{pos.ch-1,pos.line});
+        expression = editor->getExpressionAtPosition(CharPos{pos.ch-1,pos.line});
     } else {
         expression = editor->getExpressionAtPosition(pos);
     }
@@ -148,7 +149,7 @@ void CppRefacter::renameSymbol(Editor *editor, const QSynedit::BufferCoord &pos,
     renameSymbolInFile(editor->filename(),oldStatement,newWord, editor->parser());
 }
 
-void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const QSynedit::BufferCoord &pos, const QString &newWord)
+void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const CharPos &pos, const QString &newWord)
 {
     if (!editor)
         return;
@@ -172,7 +173,7 @@ void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const QSynedit::B
     QStringList expression;
     QChar s=editor->charAt(pos);
     if (!editor->isIdentStartChar(s)) {
-        expression = editor->getExpressionAtPosition(QSynedit::BufferCoord{pos.ch-1,pos.line});
+        expression = editor->getExpressionAtPosition(CharPos{pos.ch-1,pos.line});
     } else {
         expression = editor->getExpressionAtPosition(pos);
     }
@@ -196,12 +197,11 @@ void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const QSynedit::B
     QSynedit::PSyntaxer syntaxer = syntaxerManager.getSyntaxer(QSynedit::ProgrammingLanguage::CPP);
     int posY = scope->definitionLine;
     editor->clearSelection();
-    editor->addGroupBreak();
     editor->beginEditing();
     while (posY < editor->lineCount()) {
         //check if still in the scope
         bool inScope = false;
-        PStatement currentScope = editor->parser()->findScopeStatement(editor->filename(),posY+1);
+        PStatement currentScope = editor->parser()->findScopeStatement(editor->filename(),posY);
         while (currentScope != nullptr) {
             if (currentScope == scope) {
                 inScope = true;
@@ -213,16 +213,15 @@ void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const QSynedit::B
             break;
 
         QString line = editor->document()->getLine(posY);
-        editor->prepareSyntaxerState(*syntaxer, posY);
+        editor->startParseLine(syntaxer.get(), posY);
         QString newLine;
         while (!syntaxer->eol()) {
-            int start = syntaxer->getTokenPos() + 1;
             QString token = syntaxer->getToken();
             if (token == oldVarName) {
                 //same name symbol , test if the same statement;
-                QSynedit::BufferCoord p;
-                p.line = posY+1;
-                p.ch = start;
+                CharPos p;
+                p.line = posY;
+                p.ch = syntaxer->getTokenPos();
 
                 QStringList expression = editor->getExpressionAtPosition(p);
                 if (expression.length() == 1) {
@@ -238,9 +237,10 @@ void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const QSynedit::B
             syntaxer->next();
         }
         if (newLine!=line)
-            editor->replaceLine(posY+1,newLine);
+            editor->replaceLine(posY,newLine);
         posY++;
     }
+    editor->setCaretXY(editor->ensureCharPosValid(editor->caretXY()));
     editor->endEditing();
 }
 
@@ -311,15 +311,15 @@ PSearchResultTreeItem CppRefacter::findOccurenceInFile(
     if (!isC_CPPSourceFile(fileType))
         fileType = FileType::CCppHeader;
     editor.setFileType(fileType);
-    if (pMainWindow->editorList()->getContentFromOpenedEditor(
+    if (pMainWindow->editorManager()->getContentFromOpenedEditor(
                 filename,buffer)){
-        editor.document()->setContents(buffer);
+        editor.setContent(buffer);
     } else if (!fileExists(filename)){
         return parentItem;
     } else {
         QByteArray encoding;
         try {
-            editor.document()->loadFromFile(filename,fileEncoding,encoding);
+            editor.loadFromFile(filename,fileEncoding,encoding);
         } catch (FileError e) {
             //don't handle it;
             return parentItem;
@@ -334,18 +334,17 @@ PSearchResultTreeItem CppRefacter::findOccurenceInFile(
             continue;
         }
 
-        editor.prepareSyntaxerState(*(editor.syntaxer()), posY);
+        editor.startParseLine(editor.syntaxer().get(), posY);
         while (!editor.syntaxer()->eol()) {
-            int start = editor.syntaxer()->getTokenPos() + 1;
+            int start = editor.syntaxer()->getTokenPos();
             QString token = editor.syntaxer()->getToken();
             QSynedit::PTokenAttribute attr = editor.syntaxer()->getTokenAttribute();
             if (attr && attr->tokenType()==QSynedit::TokenType::Identifier) {
                 if (token == statement->command) {
                     //same name symbol , test if the same statement;
-                    QSynedit::BufferCoord p;
-                    p.line = posY+1;
+                    CharPos p;
+                    p.line = posY;
                     p.ch = start;
-
                     QStringList expression = editor.getExpressionAtPosition(p);
                     PStatement tokenStatement = parser->findStatementOf(
                                 filename,
@@ -375,32 +374,23 @@ PSearchResultTreeItem CppRefacter::findOccurenceInFile(
 void CppRefacter::renameSymbolInFile(const QString &filename, const PStatement &statement,  const QString &newWord, const PCppParser &parser)
 {
     QStringList buffer;
-    Editor * oldEditor=pMainWindow->editorList()->getOpenedEditorByFilename(filename);
+    Editor * oldEditor=pMainWindow->editorManager()->getOpenedEditorByFilename(filename);
     if (oldEditor){
         QSynedit::PSyntaxer syntaxer = syntaxerManager.getSyntaxer(QSynedit::ProgrammingLanguage::CPP);
         int posY = 0;
         oldEditor->clearSelection();
-        oldEditor->addGroupBreak();
         oldEditor->beginEditing();
         while (posY < oldEditor->lineCount()) {
             QString line = oldEditor->document()->getLine(posY);
-            oldEditor->prepareSyntaxerState(*syntaxer, posY);
-//            if (posY == 0) {
-//                syntaxer->resetState();
-//            } else {
-//                syntaxer->setState(
-//                            oldEditor->document()->getSyntaxState(posY-1));
-//            }
-//            syntaxer->setLine(line,posY);
             QString newLine;
+            oldEditor->startParseLine(syntaxer.get(), posY);
             while (!syntaxer->eol()) {
-                int start = syntaxer->getTokenPos() + 1;
                 QString token = syntaxer->getToken();
                 if (token == statement->command) {
                     //same name symbol , test if the same statement;
-                    QSynedit::BufferCoord p;
-                    p.line = posY+1;
-                    p.ch = start;
+                    CharPos p;
+                    p.line = posY;
+                    p.ch = syntaxer->getTokenPos();
 
                     QStringList expression = oldEditor->getExpressionAtPosition(p);
                     PStatement tokenStatement = parser->findStatementOf(
@@ -416,16 +406,17 @@ void CppRefacter::renameSymbolInFile(const QString &filename, const PStatement &
                 syntaxer->next();
             }
             if (newLine!=line)
-                oldEditor->replaceLine(posY+1,newLine);
+                oldEditor->replaceLine(posY,newLine);
             posY++;
         }
+        oldEditor->setCaretXY(oldEditor->ensureCharPosValid(oldEditor->caretXY()));
         oldEditor->endEditing();
     } else {
         Editor editor(nullptr);
         QByteArray encoding;
         editor.setSyntaxer(syntaxerManager.getSyntaxer(QSynedit::ProgrammingLanguage::CPP));
         try {
-            editor.document()->loadFromFile(filename,ENCODING_AUTO_DETECT,encoding);
+            editor.loadFromFile(filename,ENCODING_AUTO_DETECT,encoding);
         } catch(FileError e) {
             QMessageBox::critical(pMainWindow,
                         tr("Rename Symbol Error"),
@@ -437,23 +428,15 @@ void CppRefacter::renameSymbolInFile(const QString &filename, const PStatement &
         int posY = 0;
         while (posY < editor.lineCount()) {
             QString line = editor.document()->getLine(posY);
-            editor.prepareSyntaxerState(*(editor.syntaxer()), posY);
-//            if (posY == 0) {
-//                editor.syntaxer()->resetState();
-//            } else {
-//                editor.syntaxer()->setState(
-//                            editor.document()->getSyntaxState(posY-1));
-//            }
-//            editor.syntaxer()->setLine(line,posY);
             QString newLine;
+            editor.startParseLine(editor.syntaxer().get(), posY);
             while (!editor.syntaxer()->eol()) {
-                int start = editor.syntaxer()->getTokenPos() + 1;
                 QString token = editor.syntaxer()->getToken();
                 if (token == statement->command) {
                     //same name symbol , test if the same statement;
-                    QSynedit::BufferCoord p;
-                    p.line = posY+1;
-                    p.ch = start;
+                    CharPos p;
+                    p.line = posY;
+                    p.ch = editor.syntaxer()->getTokenPos();
 
                     QStringList expression = editor.getExpressionAtPosition(p);
                     PStatement tokenStatement = parser->findStatementOf(

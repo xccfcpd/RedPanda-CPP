@@ -45,8 +45,8 @@ enum class EditCommand {
     Right           = 2,    // Move cursor right one char
     Up              = 3,    // Move cursor up one line
     Down            = 4,    // Move cursor down one line
-    WordLeft        = 5,    // Move cursor left one word
-    WordRight       = 6,    // Move cursor right one word
+    PrevWordBegin   = 5,    // Move cursor left one word
+    nextWordBegin   = 6,    // Move cursor right one word
     LineStart       = 7,    // Move cursor to beginning of line
     LineEnd         = 8,    // Move cursor to end of line
     PageUp          = 9,    // Move cursor up one page
@@ -74,8 +74,8 @@ enum class EditCommand {
     SelRight        = Right + Selection,
     SelUp           = Up + Selection,
     SelDown         = Down + Selection,
-    SelWordLeft     = WordLeft + Selection,
-    SelWordRight    = WordRight + Selection,
+    SelPrevWordBegin     = PrevWordBegin + Selection,
+    SelNextWordBegin    = nextWordBegin + Selection,
     SelLineStart    = LineStart + Selection,
     SelLineEnd      = LineEnd + Selection,
     SelPageUp       = PageUp + Selection,
@@ -119,13 +119,13 @@ enum class EditCommand {
     DeleteLine      = 507,  // Delete current line
     ClearAll        = 508,  // Delete everything
     LineBreak       = 509,  // Break line at current position, move caret to new line
-    InsertLine      = 510,  // Break line at current position, leave caret
-    Char            = 511,  // Insert a character at current position
-    DuplicateLine   = 512,  // Duplicate current line
+    Input            = 511,  // Insert a character / one line string at current position
+    Duplicate   = 512,  // Duplicate current line
     MoveSelUp       = 513,  // Move selection up
     MoveSelDown     = 514,  // Move selection down
     ImeStr          = 550,  // Insert character(s) from IME
     DeleteWord     = 551,  // Delete current Word
+    ReplaceLine     = 552,
 
     Undo            = 601,  // Perform undo if available
     Redo            = 602,  // Perform redo if available
@@ -149,7 +149,6 @@ enum class EditCommand {
     LowerCaseBlock  = 626,
     ToggleCaseBlock = 627,
 
-    String          = 630,  //Insert a whole string
     ZoomOut         = 631,  //Increase Font Size
     ZoomIn          = 632,  //Decrease Font Size
 

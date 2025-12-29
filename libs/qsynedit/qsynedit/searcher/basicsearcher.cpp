@@ -18,7 +18,7 @@
 
 namespace QSynedit {
 
-BasicSearcher::BasicSearcher(QObject *parent):BaseSearcher(parent)
+BasicSearcher::BasicSearcher(QObject *parent):Searcher(parent)
 {
 
 }
@@ -59,17 +59,7 @@ int BasicSearcher::findAll(const QString &text)
             break;
         }
         start = next + pattern().length();
-        if (options().testFlag(ssoWholeWord)) {
-            if (((next<=0) || isDelimitChar(text[next-1]))
-                    &&
-                    ( (start>=text.length()) || isDelimitChar(text[start]) )
-                 ) {
-                mResults.append(next);
-            }
-        } else {
-            mResults.append(next);
-        }
-
+        mResults.append(next);
     }
     return mResults.size();
 }

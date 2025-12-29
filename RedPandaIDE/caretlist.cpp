@@ -101,7 +101,7 @@ void CaretList::unPause()
     mPauseAdd = false;
 }
 
-void CaretList::linesDeleted(const Editor *editor, int firstLine, int count)
+void CaretList::onLinesDeleted(const Editor *editor, int firstLine, int count)
 {
     //qDebug()<<"deleted:"<<mIndex<<":"<<mList.count();
     for (int i=mList.size()-1;i>=0;i--) {
@@ -115,13 +115,30 @@ void CaretList::linesDeleted(const Editor *editor, int firstLine, int count)
     }
 }
 
-void CaretList::linesInserted(const Editor *editor, int firstLine, int count)
+void CaretList::onLinesInserted(const Editor *editor, int firstLine, int count)
 {
     //qDebug()<<"inserted:"<<mIndex<<":"<<mList.count();
     for(PEditorCaret& caret:mList) {
         if (caret->editor == editor
                 && caret->line >= firstLine)
             caret->line+=count;
+    }
+}
+
+void CaretList::onLinesMoved(const Editor *editor, int fromLine, int toLine)
+{
+    for(PEditorCaret& caret:mList) {
+        if (caret->editor == editor) {
+            if (caret->line == fromLine)
+                caret->line = toLine;
+            else if (fromLine < toLine ) {
+                if (fromLine < caret->line && caret->line <= toLine)
+                    --caret->line;
+            } else if (toLine < fromLine) {
+                if (toLine <= caret->line && caret->line <= fromLine)
+                    caret->line++;
+            }
+        }
     }
 }
 

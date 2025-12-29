@@ -19,11 +19,10 @@
 #include "utils.h"
 #include "utils/parsearg.h"
 #include "mainwindow.h"
-#include "editor.h"
 #include "settings.h"
 #include "widgets/cpudialog.h"
 #include "systemconsts.h"
-#include "editorlist.h"
+#include "editormanager.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -414,11 +413,6 @@ void Debugger::clearForProject()
     mWatchModel->clear(true);
 }
 
-void Debugger::addBreakpoint(int line, const Editor* editor)
-{
-    addBreakpoint(line,editor->filename(), editor->inProject());
-}
-
 void Debugger::addBreakpoint(int line, const QString &filename, bool forProject)
 {
     QMutexLocker locker{&mClientMutex};
@@ -451,11 +445,6 @@ void Debugger::deleteBreakpoints(const QString &filename, bool forProject)
     }
 }
 
-void Debugger::deleteBreakpoints(const Editor *editor)
-{
-    deleteBreakpoints(editor->filename(),editor->inProject());
-}
-
 void Debugger::deleteBreakpoints(bool forProject)
 {
     mBreakpointModel->clear(forProject);
@@ -471,11 +460,6 @@ void Debugger::deleteInvalidProjectBreakpoints(const QSet<QString> unitFiles)
         if (!unitFiles.contains(bp->filename))
             mBreakpointModel->removeBreakpoint(i, true);
     }
-}
-
-void Debugger::removeBreakpoint(int line, const Editor *editor)
-{
-    removeBreakpoint(line,editor->filename(),editor->inProject());
 }
 
 void Debugger::removeBreakpoint(int line, const QString &filename, bool forProject)
@@ -506,11 +490,6 @@ PBreakpoint Debugger::breakpointAt(int line, const QString& filename, int *index
     }
     *index=-1;
     return PBreakpoint();
-}
-
-PBreakpoint Debugger::breakpointAt(int line, const Editor *editor, int *index)
-{
-    return breakpointAt(line,editor->filename(),index, editor->inProject());
 }
 
 void Debugger::setBreakPointCondition(int index, const QString &condition, bool forProject)
@@ -1234,8 +1213,8 @@ QVariant BreakpointModel::data(const QModelIndex &index, int role) const
             return extractFileName(breakpoint->filename);
         }
         case 1:
-            if (breakpoint->line>0)
-                return breakpoint->line;
+            if (breakpoint->line>=0)
+                return breakpoint->line+1;
             else
                 return "";
         case 2:
@@ -1400,7 +1379,7 @@ void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, 
 void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, int count, bool forProject)
 {
     const QList<PBreakpoint> &list=breakpoints(forProject);
-    for (int i = list.count()-1;i>=0;i--){
+    for (int i = 0; i<list.count();i++){
         PBreakpoint breakpoint = list[i];
         if  (breakpoint->filename == filename
              && breakpoint->line>=startLine) {
@@ -1408,6 +1387,34 @@ void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, 
             if (forProject == mIsForProject)
                 emit dataChanged(createIndex(i,0),createIndex(i,2));
         }
+    }
+}
+
+void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int toLine, bool forProject)
+{
+    const QList<PBreakpoint> &list=breakpoints(forProject);
+
+    for (int i = 0; i<list.count();i++){
+        bool changed = false;
+        PBreakpoint breakpoint = list[i];
+        if  (breakpoint->filename == filename) {
+           if (breakpoint->line==fromLine) {
+               breakpoint->line = toLine;
+               changed = true;
+           } else if (fromLine < toLine) {
+               if (fromLine < breakpoint->line && breakpoint->line <= toLine) {
+                   --breakpoint->line;
+                   changed = true;
+               }
+           } else if (toLine < fromLine) {
+               if (toLine <= breakpoint->line && breakpoint->line <= fromLine) {
+                   ++breakpoint->line;
+                   changed = true;
+               }
+           }
+        }
+        if (changed && forProject == mIsForProject)
+            emit dataChanged(createIndex(i,0),createIndex(i,2));
     }
 }
 
@@ -1483,8 +1490,8 @@ QVariant BacktraceModel::data(const QModelIndex &index, int role) const
         case 1:
             return trace->filename;
         case 2:
-            if (trace->line>0)
-                return trace->line;
+            if (trace->line>=0)
+                return trace->line + 1;
             else
                 return "";
         default:

@@ -20,7 +20,7 @@
 #include "../settings.h"
 #include "../mainwindow.h"
 #include "../editor.h"
-#include "../editorlist.h"
+#include "../editormanager.h"
 
 
 IssuesTable::IssuesTable(QWidget *parent):
@@ -110,7 +110,7 @@ void IssuesModel::clearIssues()
         }
     }
     foreach (const QString& filename, issueFiles) {
-        Editor *e=pMainWindow->editorList()->getOpenedEditorByFilename(filename);
+        Editor *e=pMainWindow->editorManager()->getOpenedEditorByFilename(filename);
         if (e)
             e->clearSyntaxIssues();
     }
@@ -207,13 +207,13 @@ QVariant IssuesModel::data(const QModelIndex &index, int role) const
                 return issue->filename;
         }
         case 1:
-            if (issue->line>0)
-                return issue->line;
+            if (issue->line>=0)
+                return issue->line+1;
             else
                 return "";
         case 2:
-            if (issue->column>0)
-                return issue->column;
+            if (issue->column>=0)
+                return issue->column+1;
             else
                 return "";
         case 3:

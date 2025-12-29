@@ -145,6 +145,7 @@ public slots:
     void invalidateAllBreakpointNumbers(); // call this when gdb is stopped
     void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject);
     void onFileInsertLines(const QString& filename, int startLine, int count, bool forProject);
+    void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject);
 private:
     bool isForProject() const;
     void setIsForProject(bool newIsForProject);
@@ -329,17 +330,13 @@ public:
     void clearForProject();
 
     //breakpoints
-    void addBreakpoint(int line, const Editor* editor);
     void addBreakpoint(int line, const QString& filename, bool forProject);
     void deleteBreakpoints(const QString& filename, bool forProject);
-    void deleteBreakpoints(const Editor* editor);
     void deleteBreakpoints(bool forProject);
     void deleteInvalidProjectBreakpoints(const QSet<QString> unitFiles);
-    void removeBreakpoint(int line, const Editor* editor);
     void removeBreakpoint(int line, const QString& filename, bool forProject);
     void removeBreakpoint(int index, bool forProject);
     PBreakpoint breakpointAt(int line, const QString &filename, int *index, bool forProject);
-    PBreakpoint breakpointAt(int line, const Editor *editor, int *index);
     void setBreakPointCondition(int index, const QString& condition, bool forProject);
     void sendAllBreakpointsToDebugger();
 

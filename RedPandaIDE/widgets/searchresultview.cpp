@@ -20,7 +20,10 @@
 #include <QStyledItemDelegate>
 #include "mainwindow.h"
 
-PSearchResults SearchResultModel::addSearchResults(const QString &keyword, QSynedit::SearchOptions options, SearchFileScope scope, const QString& folder, const QString& filters, bool searchSubfolders)
+PSearchResults SearchResultModel::addSearchResults(
+        const QString &keyword, QSynedit::SearchOptions options,
+        bool useRegex,
+        SearchFileScope scope, const QString& folder, const QString& filters, bool searchSubfolders)
 {
     int index=-1;
     for (int i=0;i<mSearchResults.size();i++) {
@@ -40,6 +43,7 @@ PSearchResults SearchResultModel::addSearchResults(const QString &keyword, QSyne
     PSearchResults results = std::make_shared<SearchResults>();
     results->keyword = keyword;
     results->options = options;
+    results->useRegex = useRegex;
     results->scope = scope;
     results->searchType = SearchType::Search;
     results->folder=folder;
@@ -234,7 +238,7 @@ QVariant SearchResultTreeModel::data(const QModelIndex &index, int role) const
              return QString("%1(%2)").arg(item->filename)
                      .arg(item->results.count());
          } else {
-             return QString("%1 %2: %3").arg(tr("Line")).arg(item->line)
+             return QString("%1 %2: %3").arg(tr("Line")).arg(item->line+1)
                  .arg(item->text);
          }
     }
@@ -457,32 +461,37 @@ void SearchResultTreeViewDelegate::paint(QPainter *painter, const QStyleOptionVi
      if (item->parent==nullptr) { //is filename
         painter->drawText(x,y,fullText);
      } else {
-         QString s = item->text.mid(0,item->start-1);
-         QString text = QString("%1 %2: %3").arg(tr("Line")).arg(item->line)
-                 .arg(s);
-         painter->drawText(x,y,text);
-         x+=metrics.horizontalAdvance(text);
-         QFont font = option.font;
-         font.setBold(true);
-         text=item->text.mid(item->start-1,item->len);
-         metrics = QFontMetrics(font);
-         int width = metrics.horizontalAdvance(text);
          QFont oldFont = painter->font();
          QPen oldPen = painter->pen();
-         painter->setPen(qApp->palette().color(QPalette::ColorRole::HighlightedText));
-         painter->setFont(font);
+         QFont font1 = option.font;
+         font1.setBold(false);
+         painter->setFont(font1);
+         QString s = item->text.mid(0,item->start);
+         QString text = QString("%1 %2: %3").arg(tr("Line")).arg(item->line+1)
+                 .arg(s);
+         painter->drawText(x,y,text);
+         metrics = QFontMetrics(font1);
+         x+=metrics.horizontalAdvance(text);
+         QFont font2 = option.font;
+         font2.setBold(true);
+         painter->setFont(font2);
+         text=item->text.mid(item->start,item->len);
+         metrics = QFontMetrics(font2);
+         int width = metrics.horizontalAdvance(text);
+         painter->setPen(qApp->palette().color(QPalette::ColorRole::ButtonText));
          QRect rect = textRect;
          rect.setLeft(x);
          rect.setWidth(width);
-         painter->fillRect(rect,qApp->palette().color(QPalette::ColorRole::Highlight));
+         painter->fillRect(rect,qApp->palette().color(QPalette::ColorRole::Button));
          painter->drawText(x,y,text);
-         metrics = QFontMetrics(font);
+         metrics = QFontMetrics(font2);
          x+=width;
-         painter->setFont(oldFont);
          painter->setPen(oldPen);
-
-         text = item->text.mid(item->start-1+item->len);
+         text = item->text.mid(item->start+item->len);
+         painter->setFont(font1);
          painter->drawText(x,y,text);
+         painter->setFont(oldFont);
+
      }
 
 

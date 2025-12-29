@@ -20,7 +20,7 @@
 
 namespace QSynedit {
 
-RegexSearcher::RegexSearcher(QObject* parent):BaseSearcher(parent)
+RegexSearcher::RegexSearcher(QObject* parent):Searcher(parent)
 {
 
 }
@@ -53,20 +53,8 @@ int RegexSearcher::findAll(const QString &text)
     QRegularExpressionMatchIterator it = mRegex.globalMatch(text);
     while (it.hasNext()) {
         QRegularExpressionMatch match = it.next();
-        if (options().testFlag(ssoWholeWord)) {
-            int start = match.capturedStart();
-            int end = match.capturedStart()+match.capturedLength();
-            if (((start<=0) || isDelimitChar(text[start-1]))
-                    &&
-                    ( (end>=text.length()) || isDelimitChar(text[end]) )
-                 ) {
-                mLengths.append(match.capturedLength());
-                mResults.append(match.capturedStart());
-            }
-        } else {
-            mLengths.append(match.capturedLength());
-            mResults.append(match.capturedStart());
-        }
+        mLengths.append(match.capturedLength());
+        mResults.append(match.capturedStart());
     }
     return mResults.size();
 }
@@ -79,14 +67,14 @@ QString RegexSearcher::replace(const QString &aOccurrence, const QString &aRepla
 
 void RegexSearcher::setPattern(const QString &value)
 {
-    BaseSearcher::setPattern(value);
+    Searcher::setPattern(value);
     mRegex.setPattern(value);
     updateRegexOptions();
 }
 
 void RegexSearcher::setOptions(const SearchOptions &options)
 {
-    BaseSearcher::setOptions(options);
+    Searcher::setOptions(options);
     updateRegexOptions();
 }
 

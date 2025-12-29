@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef EDITORLIST_H
-#define EDITORLIST_H
+#ifndef EDITORMANAGER_H
+#define EDITORMANAGER_H
 
 #include <QTabWidget>
 #include <QSplitter>
@@ -25,7 +25,7 @@
 
 class Project;
 class Editor;
-class EditorList : public QObject
+class EditorManager : public QObject
 {
     Q_OBJECT
 public:
@@ -35,7 +35,7 @@ public:
         lstBoth
     };
 
-    explicit EditorList(QTabWidget* leftPageWidget,
+    explicit EditorManager(QTabWidget* leftPageWidget,
                         QTabWidget* rightPageWidget,
                         QSplitter* splitter,
                         QWidget* panel, QObject* parent = nullptr);
@@ -50,6 +50,7 @@ public:
     bool closeEditor(Editor* editor, bool transferFocus=true, bool force=false);
 
     bool swapEditor(Editor* editor);
+    void activeEditor(Editor *e, bool focus);
 
     void saveAll();
     bool saveAllForProject();
@@ -69,6 +70,15 @@ public:
     void getVisibleEditors(Editor*& left, Editor*& right) const;
     void updateLayout();
 
+
+    QTabWidget *findPageControlForEditor(Editor *e);
+
+    void updateEditorBookmarks();
+    void updateEditorBreakpoints();
+
+    bool requestEvalTip(Editor *e, const QString& s);
+    void onEditorTipEvalValueReady(Editor *e);
+
     void beginUpdate();
     void endUpdate();
     void applySettings();
@@ -79,6 +89,8 @@ public:
     void selectNextPage();
     void selectPreviousPage();
 
+    void showCriticalError(const QString& title, const QString& reason);
+
     Editor* operator[](int index);
 
     QTabWidget *leftPageWidget() const;
@@ -87,16 +99,25 @@ public:
 
 signals:
     void editorClosed();
-    void editorRenamed(const QString& oldFilename, const QString& newFilename, bool firstSave);
     void editorOpenned();
-
 private:
     QTabWidget* getNewEditorPageControl() const;
     QTabWidget* getFocusedPageControl() const;
     void showLayout(LayoutShowType layout);
     void doRemoveEditor(Editor* e);
 private slots:
-    void onEditorRenamed(const QString& oldFilename, const QString& newFilename, bool firstSave);
+    void onEditorCaptionUpdated(Editor* e);
+    void onBreakpointAdded(const Editor* e, int line);
+    void onBreakpointRemoved(const Editor* e, int line);
+    void onBreakpointsCleared(const Editor* e);
+    void onEditorShown(Editor *e);
+    void onFileSaving(Editor *e, const QString& filename);
+    void onFileSaved(Editor *e, const QString& filename);
+    void onFileRenamed(Editor *e, const QString &oldFilename, const QString &newFilename);
+    void onFileSaveError(Editor *e, const QString& filename, const QString& reason);
+    void onEditorLinesInserted(int startLine, int count);
+    void onEditorLinesRemoved(int startLine, int count);
+    void onEditorLineMoved(int fromLine, int toLine);
 private:
     LayoutShowType mLayout;
     QTabWidget *mLeftPageWidget;

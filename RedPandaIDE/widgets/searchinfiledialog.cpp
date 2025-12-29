@@ -28,7 +28,7 @@
 #include <qsynedit/searcher/regexsearcher.h>
 #include "../editor.h"
 #include "../mainwindow.h"
-#include "../editorlist.h"
+#include "../editormanager.h"
 #include "../project.h"
 #include "../settings.h"
 #include "../systemconsts.h"
@@ -39,9 +39,8 @@ SearchInFileDialog::SearchInFileDialog(QWidget *parent) :
 {
     setWindowFlag(Qt::WindowContextHelpButtonHint,false);
     ui->setupUi(this);
-    mSearchOptions&=0;
-    mBasicSearchEngine= QSynedit::PSynSearchBase(new QSynedit::BasicSearcher());
-    mRegexSearchEngine= QSynedit::PSynSearchBase(new QSynedit::RegexSearcher());
+    mBasicSearchEngine= std::make_shared<QSynedit::BasicSearcher>();
+    mRegexSearchEngine= std::make_shared<QSynedit::RegexSearcher>();
     ui->cbFind->completer()->setCaseSensitivity(Qt::CaseSensitive);
     on_rbFolder_toggled(false);
 }
@@ -62,7 +61,12 @@ void SearchInFileDialog::findInFiles(const QString &text)
     activateWindow();
 }
 
-void SearchInFileDialog::findInFiles(const QString &keyword, SearchFileScope scope, QSynedit::SearchOptions options, const QString& folder, const QString& filters, bool searchSubfolders)
+void SearchInFileDialog::findInFiles(const QString &keyword,
+                                     SearchFileScope scope,
+                                     QSynedit::SearchOptions options,
+                                     bool useRegex,
+                                     const QString& folder, const QString& filters,
+                                     bool searchSubfolders)
 {
     setComboTextAndHistory(ui->cbFind,keyword,mSearchKeys);
     ui->cbFind->setFocus();
@@ -85,7 +89,7 @@ void SearchInFileDialog::findInFiles(const QString &keyword, SearchFileScope sco
         break;
     }
     // Apply options
-    ui->chkRegExp->setChecked(options.testFlag(QSynedit::ssoRegExp));
+    ui->chkRegExp->setChecked(useRegex);
     ui->chkCaseSensetive->setChecked(options.testFlag(QSynedit::ssoMatchCase));
     ui->chkWholeWord->setChecked(options.testFlag(QSynedit::ssoWholeWord));
     show();
@@ -112,21 +116,16 @@ void SearchInFileDialog::doSearch(bool replace)
 {
     updateComboHistory(mSearchKeys, ui->cbFind->currentText());
 
-    mSearchOptions&=0;
+    QSynedit::SearchOptions searchOptions = QSynedit::ssoNone;
 
     // Apply options
-    if (ui->chkRegExp->isChecked()) {
-        mSearchOptions.setFlag(QSynedit::ssoRegExp);
-    }
+    bool useRegex = (ui->chkRegExp->isChecked());
     if (ui->chkCaseSensetive->isChecked()) {
-        mSearchOptions.setFlag(QSynedit::ssoMatchCase);
+        searchOptions.setFlag(QSynedit::ssoMatchCase);
     }
     if (ui->chkWholeWord->isChecked()) {
-        mSearchOptions.setFlag(QSynedit::ssoWholeWord);
+        searchOptions.setFlag(QSynedit::ssoWholeWord);
     }
-
-    mSearchOptions.setFlag(QSynedit::ssoEntireScope);
-
     close();
 
     // int findCount=0;
@@ -136,18 +135,19 @@ void SearchInFileDialog::doSearch(bool replace)
     if (ui->rbOpenFiles->isChecked()) {
         PSearchResults results = pMainWindow->searchResultModel()->addSearchResults(
                     keyword,
-                    mSearchOptions,
+                    searchOptions,
+                    useRegex,
                     SearchFileScope::openedFiles
                     );
         // loop through editors, add results to message control
-        for (int i=0;i<pMainWindow->editorList()->pageCount();i++) {
-            Editor * e=pMainWindow->editorList()->operator[](i);
+        for (int i=0;i<pMainWindow->editorManager()->pageCount();i++) {
+            Editor * e=pMainWindow->editorManager()->operator[](i);
             if (e!=nullptr) {
                 fileSearched++;
                 PSearchResultTreeItem parentItem = batchFindInEditor(
                             e,
                             e->filename(),
-                            keyword);
+                            keyword,searchOptions,useRegex);
                 int t = parentItem->results.size();
                 //findCount+=t;
                 if (t>0) {
@@ -160,7 +160,8 @@ void SearchInFileDialog::doSearch(bool replace)
     } else if (ui->rbFolder->isChecked()) {
         PSearchResults results = pMainWindow->searchResultModel()->addSearchResults(
                     keyword,
-                    mSearchOptions,
+                    searchOptions,
+                    useRegex,
                     SearchFileScope::Folder,
                     ui->txtFolder->text(),
                     ui->txtFilters->text(),
@@ -211,13 +212,13 @@ void SearchInFileDialog::doSearch(bool replace)
 
             if (progressDlg.wasCanceled())
                 break;
-            Editor * e = pMainWindow->editorList()->getOpenedEditorByFilename(curFilename);
+            Editor * e = pMainWindow->editorManager()->getOpenedEditorByFilename(curFilename);
             if (e) {
                 fileSearched++;
                 PSearchResultTreeItem parentItem = batchFindInEditor(
                             e,
                             e->filename(),
-                            keyword);
+                            keyword,searchOptions,useRegex);
                 int t = parentItem->results.size();
                 //findCount+=t;
                 if (t>0) {
@@ -228,7 +229,7 @@ void SearchInFileDialog::doSearch(bool replace)
                 QSynedit::QSynEdit editor;
                 QByteArray realEncoding;
                 try{
-                    editor.document()->loadFromFile(curFilename,ENCODING_AUTO_DETECT, realEncoding);
+                    editor.loadFromFile(curFilename,ENCODING_AUTO_DETECT, realEncoding);
                 } catch (QSynedit::BinaryFileError e) {
                     continue;
                 } catch (FileError e) {
@@ -238,7 +239,7 @@ void SearchInFileDialog::doSearch(bool replace)
                 PSearchResultTreeItem parentItem = batchFindInEditor(
                             &editor,
                             curFilename,
-                            keyword);
+                            keyword,searchOptions,useRegex);
                 int t = parentItem->results.size();
                 //findCount+=t;
                 if (t>0) {
@@ -251,16 +252,17 @@ void SearchInFileDialog::doSearch(bool replace)
     } else if (ui->rbCurrentFile->isChecked()) {
         PSearchResults results = pMainWindow->searchResultModel()->addSearchResults(
                     keyword,
-                    mSearchOptions,
+                    searchOptions,
+                    useRegex,
                     SearchFileScope::currentFile
                     );
-        Editor * e= pMainWindow->editorList()->getEditor();
+        Editor * e= pMainWindow->editorManager()->getEditor();
         if (e!=nullptr) {
             fileSearched++;
             PSearchResultTreeItem parentItem = batchFindInEditor(
                         e,
                         e->filename(),
-                        keyword);
+                        keyword,searchOptions,useRegex);
             int t = parentItem->results.size();
             //findCount+=t;
             if (t>0) {
@@ -274,7 +276,8 @@ void SearchInFileDialog::doSearch(bool replace)
             return;
         PSearchResults results = pMainWindow->searchResultModel()->addSearchResults(
                     keyword,
-                    mSearchOptions,
+                    searchOptions,
+                    useRegex,
                     SearchFileScope::wholeProject
                     );
         QByteArray projectEncoding = pMainWindow->project()->options().encoding;
@@ -301,7 +304,7 @@ void SearchInFileDialog::doSearch(bool replace)
                 PSearchResultTreeItem parentItem = batchFindInEditor(
                             e,
                             e->filename(),
-                            keyword);
+                            keyword,searchOptions,useRegex);
                 int t = parentItem->results.size();
                 //findCount+=t;
                 if (t>0) {
@@ -315,7 +318,7 @@ void SearchInFileDialog::doSearch(bool replace)
                     encoding = projectEncoding;
                 QByteArray realEncoding;
                 try {
-                    editor.document()->loadFromFile(curFilename,encoding, realEncoding);
+                    editor.loadFromFile(curFilename,encoding, realEncoding);
                 } catch (QSynedit::BinaryFileError e) {
                     continue;
                 } catch (FileError e) {
@@ -325,7 +328,7 @@ void SearchInFileDialog::doSearch(bool replace)
                 PSearchResultTreeItem parentItem = batchFindInEditor(
                             &editor,
                             curFilename,
-                            keyword);
+                            keyword,searchOptions,useRegex);
                 int t = parentItem->results.size();
                 //findCount+=t;
                 if (t>0) {
@@ -340,40 +343,40 @@ void SearchInFileDialog::doSearch(bool replace)
 
 }
 
-int SearchInFileDialog::execute(QSynedit::QSynEdit *editor, const QString &sSearch, const QString &sReplace,
-                          QSynedit::SearchMathedProc matchCallback,
+int SearchInFileDialog::execute(QSynedit::QSynEdit *editor, const QString &sSearch,
+                                const QString &sReplace,
+                                QSynedit::SearchOptions searchOptions,
+                                bool useRegex,
+                          QSynedit::SearchMatchedProc matchCallback,
                           QSynedit::SearchConfirmAroundProc confirmAroundCallback)
 {
     if (editor==nullptr)
         return 0;
-    // Modify the caret when using 'from cursor' and when the selection is ignored
-    if (!mSearchOptions.testFlag(QSynedit::ssoEntireScope) && !mSearchOptions.testFlag(QSynedit::ssoSelectedOnly)
-            && editor->selAvail()) {
-        // start at end of selection
-        if (mSearchOptions.testFlag(QSynedit::ssoBackwards)) {
-            editor->setCaretXY(editor->blockBegin());
-        } else {
-            editor->setCaretXY(editor->blockEnd());
-        }
-    }
 
-    QSynedit::PSynSearchBase searchEngine;
-    if (mSearchOptions.testFlag(QSynedit::ssoRegExp)) {
+    QSynedit::PSearcher searchEngine;
+    if (useRegex) {
         searchEngine = mRegexSearchEngine;
     } else {
         searchEngine = mBasicSearchEngine;
     }
 
-    return editor->searchReplace(sSearch, sReplace, mSearchOptions,
-                          searchEngine, matchCallback, confirmAroundCallback);
+    QSynedit::CharPos newScopeEnd;
+    return editor->searchReplace(sSearch, sReplace,
+                                 editor->fileBegin(),
+                                 editor->fileEnd(),
+                                 newScopeEnd,
+                                 searchOptions,
+                          searchEngine.get(), matchCallback, confirmAroundCallback);
 }
 
-std::shared_ptr<SearchResultTreeItem> SearchInFileDialog::batchFindInEditor(QSynedit::QSynEdit *e, const QString& filename,const QString &keyword)
+std::shared_ptr<SearchResultTreeItem> SearchInFileDialog::batchFindInEditor(
+        QSynedit::QSynEdit *e, const QString& filename, const QString &keyword,
+        QSynedit::SearchOptions searchOptions, bool useRegex)
 {
     //backup
-    QSynedit::BufferCoord caretBackup = e->caretXY();
-    QSynedit::BufferCoord blockBeginBackup = e->blockBegin();
-    QSynedit::BufferCoord blockEndBackup = e->blockEnd();
+    QSynedit::CharPos caretBackup = e->caretXY();
+    QSynedit::CharPos blockBeginBackup = e->selBegin();
+    QSynedit::CharPos blockEndBackup = e->selEnd();
     int topPosBackup = e->topPos();
     int leftPosBackup = e->leftPos();
 
@@ -381,15 +384,16 @@ std::shared_ptr<SearchResultTreeItem> SearchInFileDialog::batchFindInEditor(QSyn
     parentItem->filename = filename;
     parentItem->parent = nullptr;
     execute(e,keyword,"",
+            searchOptions,useRegex,
                     [e,&parentItem, filename](const QString&,
-                    const QString&, int line, int ch, int wordLen){
+                    const QString&, const QSynedit::CharPos& foundPos, int wordLen){
         PSearchResultTreeItem item = std::make_shared<SearchResultTreeItem>();
         item->filename = filename;
-        item->line = line;
-        item->start = ch;
+        item->line = foundPos.line;
+        item->start = foundPos.ch;
         item->len = wordLen;
         item->parent = parentItem.get();
-        item->text = e->lineText(line);
+        item->text = e->lineText(foundPos.line);
         item->text.replace('\t',' ');
         parentItem->results.append(item);
         return QSynedit::SearchAction::Skip;

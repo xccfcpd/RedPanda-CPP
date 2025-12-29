@@ -57,7 +57,7 @@ enum class RunType {
 };
 
 
-class EditorList;
+class EditorManager;
 class QLabel;
 class QComboBox;
 class CompilerManager;
@@ -117,17 +117,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void updateForEncodingInfo(bool clear=false);
-    void updateForEncodingInfo(const Editor* editor, bool clear=false);
-    void updateStatusbarForLineCol(bool clear=false);
-    void updateStatusbarForLineCol(const Editor* editor, bool clear=false);
-    void updateForStatusbarModeInfo(bool clear=false);
-    void updateForStatusbarModeInfo(const Editor* editor, bool clear=false);
+    void updateForEncodingInfo(const Editor* editor);
+    void updateStatusbarForLineCol(const Editor* editor);
+    void updateForStatusbarModeInfo(const Editor* editor);
     void updateStatusbarMessage(const QString& s);
     void setProjectCurrentFile(const QString& filename);
     void updateEditorSettings();
-    void updateEditorBookmarks();
-    void updateEditorBreakpoints();
     void updateEditorActions();
     void updateEncodingActions(const Editor *e);
     void updateEditorActions(const Editor *e);
@@ -184,7 +179,7 @@ public:
 
     Debugger *debugger() const;
 
-    EditorList *editorList() const;
+    EditorManager *editorManager() const;
 
     SearchInFileDialog *searchInFilesDialog() const;
 
@@ -219,7 +214,7 @@ public:
 
     TodoModel* todoModel();
 
-    Editor* openFile(QString filename, bool activate=true, QTabWidget* page=nullptr, FileType fileType=FileType::None, const QString& contextFile = QString());
+    Editor* openFile(QString filename, bool activate=true, FileType fileType=FileType::None, const QString& contextFile = QString());
     void openProject(QString filename, bool openFiles = true);
     void changeOptions(const QString& widgetName=QString(), const QString& groupName=QString());
     void changeProjectOptions(const QString& widgetName=QString(), const QString& groupName=QString());
@@ -255,8 +250,8 @@ public slots:
     void onDebugEvaluateInput();
     void onDebugMemoryAddressInput();
     void onParserProgress(const QString& fileName, int total, int current);
-    void onStartParsing();
-    void onEndParsing(int total, int updateView);
+    void onParseStarted();
+    void onParseFinished(int total, int updateView);
     void onEvalValueReady(const QString& value);
     void onLocalsReady(const QStringList& value);
     void onEditorContextMenu(const QPoint& pos);
@@ -268,14 +263,18 @@ public slots:
     void stopDebugForNoSymbolTable();
     void onTodoParsingFile(const QString& filename);
     void onTodoParseStarted();
-    void onTodoFound(const QString& filename, int lineNo, int ch, const QString& line);
+    void onTodoFound(const QString& filename, int line, int ch, const QString& lineText);
     void onTodoParseFinished();
     void onWatchpointHitted(const QString& var, const QString& oldVal, const QString& newVal);
-    void setActiveBreakpoint(QString FileName, int Line, bool setFocus);
+    void setActiveBreakpoint(QString fileName, int line, bool setFocus);
     void updateDPI(int oldDPI, int newDPI);
     void onFileSaved(const QString& path, bool inProject);
     void onDebugFinished();
 
+    //editor signals
+    void refreshInfosForEditor(Editor *e);
+    void removeInfosForEditor();
+    void onOpenFileRequested(const QString& filename, FileType fileType, const QString& contextFile, const QSynedit::CharPos& caretPos);
 private:
     void executeTool(PToolItem item);
     int calIconSize(const QString &fontName, int fontPointSize);
@@ -354,7 +353,6 @@ private slots:
     void updateVCSActions();
 #endif
     void invalidateProjectProxyModel();
-    void onEditorRenamed(const QString &oldFilename, const QString &newFilename, bool firstSave);
     void onAutoSaveTimeout();
     void onFileChanged(const QString &path);
     void onDirChanged(const QString &path);
@@ -888,7 +886,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     bool mFullInitialized;
-    EditorList *mEditorList;
+    EditorManager *mEditorManager;
     QLabel *mFileInfoStatus;
     LabelWithMenu *mFileEncodingStatus;
     QLabel *mFileModeStatus;
@@ -919,6 +917,7 @@ private:
     bool mOpeningProject;
     bool mClosingProject;
     QElapsedTimer mParserTimer;
+    int  mParsingCount;
     QFileSystemWatcher mFileSystemWatcher;
     std::shared_ptr<Project> mProject; //mProject can be destoryed any time
     Qt::DockWidgetArea mMessagesDockLocation;
@@ -1078,6 +1077,8 @@ public:
     bool openingFiles() const;
     bool openingProject() const;
 
+    OJProblemSetModel *getOJProblemSetModel() const;
+    OJProblemModel *getOJProblemModel() const;
 };
 
 extern MainWindow* pMainWindow;
