@@ -69,7 +69,7 @@ public:
 
     void clearTempResults();
     void getDefineParts(const QString& input, QString &name, QString &args, QString &value);
-    void addHardDefineByLine(const QString& line) { addDefineByLine(line,true); }
+    void addHardDefineByLine(const QString& line);
     void setScanOptions(bool parseSystem, bool parseLocal) {
         mParseSystem = parseSystem;
         mParseLocal=parseLocal;
@@ -94,8 +94,9 @@ public:
         return mDefines.value(name,PDefine());
     }
 
-    QString expandMacros(const QString& text, QSet<QString> usedMacros) const;
-    void expandMacro(const QString &text, QString &newText, const QString &word, int &i, QSet<QString> usedMacros) const;
+    QString expandMacros(QString text) const;
+    QString expandMacros(QString text, const QSet<QString> macrosToBeIgnored) const;
+    QString expandMacro(const QString &text, const QString &word, int &i, const QSet<QString> &macrosToBeIgnored, QSet<QString> &macrosUsed) const;
 
     const QStringList& result() const{
         return mResult;
@@ -145,6 +146,7 @@ private:
     };
 
     bool supportCPP23() const;
+
     static QString expandFunction(PDefine define,const QString &args);
     void preprocessBuffer();
     void skipToPreprocessor();
@@ -165,8 +167,6 @@ private:
 
     void handleInclude(const QString& line, bool fromNext);
     void handlePreprocessor(const QString& command, const QString& tokens);
-    QString expandMacros();
-    void expandMacro(QString &newLine, const QString &word, int& i, QSet<QString> usedMacros);
     QString removeGCCAttributes(const QString& line);
     void removeGCCAttribute(const QString&line, QString& newLine, int &i, const QString& word);
 

@@ -723,7 +723,7 @@ private:
     void parseCommandTypeAndArgs(QString& command,
                                  QString& typeSuffix,
                                  QString& args) const;
-    QString expandMacro(const QString& text) const;
+    QString expandMacros(const QString& text) const;
     static QStringList splitExpression(const QString& expr);
 private:
     int mParserId;

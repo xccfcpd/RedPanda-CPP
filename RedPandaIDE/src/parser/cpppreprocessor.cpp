@@ -159,6 +159,12 @@ void CppPreprocessor::getDefineParts(const QString &input, QString &name, QStrin
     args.squeeze();
 }
 
+void CppPreprocessor::addHardDefineByLine(const QString &line)
+{
+    Q_ASSERT(line.startsWith('#'));
+    addDefineByLine(line.mid(1),true);
+}
+
 void CppPreprocessor::addDefineByLine(const QString &line, bool hardCoded)
 {
     // Remove define
@@ -265,6 +271,12 @@ void CppPreprocessor::removeScannedFile(const QString &filename)
     mFileUndefines.remove(filename);
 }
 
+QString CppPreprocessor::expandMacros(QString text) const
+{
+    QSet<QString> dummySet;
+    return expandMacros(text, dummySet);
+}
+
 QString CppPreprocessor::getNextPreprocessor()
 {
     skipToPreprocessor(); // skip until # at start of line
@@ -326,7 +338,7 @@ void CppPreprocessor::handleInclude(const QString &tokens, bool fromNext)
     QString s=tokens;
     QSet<QString> usedMacros;
     if (!s.startsWith('<') && !s.startsWith('\"'))
-        s = expandMacros(s, usedMacros);
+        s = expandMacros(s);
 
     fileName = getHeaderFilename(
                 file->fileName,
@@ -477,148 +489,123 @@ void CppPreprocessor::handleIncludeNext(const QString &tokens)
     handleInclude(tokens,true);
 }
 
-QString CppPreprocessor::expandMacros(const QString &text, QSet<QString> usedMacros) const
+QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosToBeIgnored) const
 {
-    QString word;
+
     QString newLine;
+    ContentType currentType = ContentType::Other;
     int lenLine = text.length();
     int i=0;
-    ContentType currentType = ContentType::Other;
+    QString word;
     QString delimiter;
     while (i< lenLine) {
         QChar ch=text[i];
-        if (isWordChar(ch)) {
-            word += ch;
-        } else {
-            if (!word.isEmpty() && currentType == ContentType::Other) {
-                expandMacro(text,newLine,word,i,usedMacros);
-            } else {
-                newLine += word;
-            }
-            word = "";
-            if (i< lenLine) {
-                newLine += text[i];
-            }
-            switch (ch.unicode()) {
-            case '"':
-                switch (currentType) {
-                case ContentType::String:
-                    currentType=ContentType::Other;
-                    break;
-                case ContentType::RawString:
-                    if (QStringView(text.constData(),i).endsWith(')'+delimiter))
-                        currentType = ContentType::Other;
-                    break;
-                case ContentType::Other:
-                    currentType=ContentType::String;
-                    break;
-                case ContentType::RawStringPrefix:
-                    delimiter+=ch;
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case '\'':
-                switch (currentType) {
-                case ContentType::Character:
-                    currentType=ContentType::Other;
-                    break;
-                case ContentType::Other:
-                    currentType=ContentType::Character;
-                    break;
-                case ContentType::RawStringPrefix:
-                    delimiter+=ch;
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case 'R':
-                if (currentType == ContentType::Other && i+1<lenLine && text[i+1]=='"') {
-                    i++;
-                    newLine += text[i];
-                    currentType=ContentType::RawStringPrefix;
-                    delimiter = "";
-                }
-                break;
-            case '(':
-                switch(currentType) {
-                case ContentType::RawStringPrefix:
-                    currentType = ContentType::RawString;
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case '\\':
-                switch (currentType) {
-                case ContentType::String:
-                case ContentType::Character:
-                    i++;
-                    newLine += text[i];
-                    break;
-                default:
-                    break;
-                }
-                break;
-            }
-        }
-        i++;
-    }
-    if (!word.isEmpty()) {
-        expandMacro(text,newLine,word,i, usedMacros);
-    }
-    return newLine;
-}
-
-QString CppPreprocessor::expandMacros()
-{
-    //prevent infinit recursion
-    QString word;
-    QString newLine;
-    QString line = mBuffer[mIndex];
-    QSet<QString> usedMacros;
-    int i=0;
-    while (mIndex < mBuffer.size() && i<line.length()) {
-        QChar ch=line[i];
-        if (isWordChar(ch)) {
+        if (currentType == ContentType::Other && isWordChar(ch)) {
             word += ch;
         } else {
             if (!word.isEmpty()) {
-                expandMacro(newLine,word,i,usedMacros);
-                if (mIndex>=mBuffer.length())
-                    return newLine;
-                line = mBuffer[mIndex];
+                QSet<QString> macrosUsed;
+                QString newWord = expandMacro(text,word,i,macrosToBeIgnored,macrosUsed);
+                if (!macrosUsed.isEmpty())
+                    newWord = expandMacros(newWord, macrosToBeIgnored+macrosUsed);
+                newLine += newWord;
+                word = "";
             }
-            word = "";
-            if (i< line.length()) {
-                newLine += line[i];
+            if (i<lenLine) {
+                ch = text[i];
+                newLine += text[i];
+                switch (ch.unicode()) {
+                case '"':
+                    switch (currentType) {
+                    case ContentType::String:
+                        currentType=ContentType::Other;
+                        break;
+                    case ContentType::RawString:
+                        if (QStringView(text.constData(),i).endsWith(')'+delimiter))
+                            currentType = ContentType::Other;
+                        break;
+                    case ContentType::Other:
+                        currentType=ContentType::String;
+                        break;
+                    case ContentType::RawStringPrefix:
+                        delimiter+=ch;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case '\'':
+                    switch (currentType) {
+                    case ContentType::Character:
+                        currentType=ContentType::Other;
+                        break;
+                    case ContentType::Other:
+                        currentType=ContentType::Character;
+                        break;
+                    case ContentType::RawStringPrefix:
+                        delimiter+=ch;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case 'R':
+                    if (currentType == ContentType::Other && i+1<lenLine && text[i+1]=='"') {
+                        i++;
+                        newLine += text[i];
+                        currentType=ContentType::RawStringPrefix;
+                        delimiter = "";
+                    }
+                    break;
+                case '(':
+                    switch(currentType) {
+                    case ContentType::RawStringPrefix:
+                        currentType = ContentType::RawString;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case '\\':
+                    switch (currentType) {
+                    case ContentType::String:
+                    case ContentType::Character:
+                        i++;
+                        newLine += text[i];
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                }
             }
         }
+        Q_ASSERT(currentType==ContentType::Other || word.isEmpty());
         i++;
     }
     if (!word.isEmpty()) {
-        expandMacro(newLine,word,i,usedMacros);
+        QSet<QString> macrosUsed;
+        QString newWord = expandMacro(text,word,i,macrosToBeIgnored,macrosUsed);
+        if (!macrosUsed.isEmpty())
+            newWord = expandMacros(newWord, macrosToBeIgnored+macrosUsed);
+        newLine += newWord;
     }
     return newLine;
 }
 
-void CppPreprocessor::expandMacro(const QString &text, QString &newText, const QString &word, int &i, QSet<QString> usedMacros) const
+QString CppPreprocessor::expandMacro(const QString &text, const QString &word, int &i, const QSet<QString> &macrosToBeIgnored, QSet<QString> &macrosUsed) const
 {
-    if (usedMacros.contains(word)) {
-        newText+=word;
-        return;
+    if (macrosToBeIgnored.contains(word)) {
+        return word;
     }
     int lenLine = text.length();
     PDefine define = getDefine(word);
     if (define && define->args=="" ) {
-        usedMacros.insert(word);
-        if (define->value != word ) {
-            newText += expandMacros(define->value,usedMacros);
-        } else
-            newText += word;
+        macrosUsed.insert(word);
+        return define->value;
     } else if (define && (define->args!="")) {
+        int oldI = i;
+        //skip spaces;
         while ((i<lenLine) && (text[i] == ' ' || text[i]=='\t'))
             i++;
         int argStart=-1;
@@ -651,111 +638,17 @@ void CppPreprocessor::expandMacro(const QString &text, QString &newText, const Q
             if (level==0) {
                 argEnd = i-2;
                 QString args = text.mid(argStart,argEnd-argStart+1).trimmed();
+                QString newArgs = expandMacros(args, macrosToBeIgnored);
+                if (newArgs != args)
+                    args = newArgs;
                 QString formattedValue = expandFunction(define,args);
-                usedMacros.insert(word);
-                newText += expandMacros(formattedValue,usedMacros);
+                macrosUsed.insert(word);
+                return formattedValue;
             }
         }
-    } else {
-        newText += word;
+        i=oldI;
     }
-    //    }
-}
-
-void CppPreprocessor::expandMacro(QString &newLine, const QString &word, int &i, QSet<QString> usedMacros)
-{
-    if (usedMacros.contains(word))
-        return;
-    QString line = mBuffer[mIndex];
-    PDefine define = getDefine(word);
-    if (define && define->args=="" ) {
-        usedMacros.insert(word);
-        if (define->value != word )
-            newLine += expandMacros(define->value,usedMacros);
-        else
-            newLine += word;
-    } else if (define && (define->args!="")) {
-        int origI=i;
-        int origIndex=mIndex;
-        while(true) {
-            while ((i<line.length()) && (line[i] == ' ' || line[i]=='\t'))
-                i++;
-            if (i<line.length())
-                break;
-            mIndex++;
-            if (mIndex>=mBuffer.length())
-                return;
-            line = mBuffer[mIndex];
-            i=0;
-        }
-        int argStart=-1;
-        int argEnd=-1;
-        int argLineStart=mIndex;
-        int argLineEnd=mIndex;
-        if ((i<line.length()) && (line[i]=='(')) {
-            argStart =i+1;
-            int level=0;
-            bool inString=false;
-            while (true) {
-                while (i<line.length()) {
-                    switch(line[i].unicode()) {
-                        case '\\':
-                            if (inString)
-                                i++;
-                        break;
-                        case '"':
-                            inString = !inString;
-                        break;
-                        case '(':
-                            if (!inString)
-                                level++;
-                        break;
-                        case ')':
-                            if (!inString)
-                                level--;
-                        break;
-                    }
-                    i++;
-                    if (level==0)
-                        break;
-                }
-                if (level==0)
-                    break;
-                mIndex++;
-                i=0;
-                if (mIndex>=mBuffer.length())
-                    break;
-                line = mBuffer[mIndex];
-                if (!inString && line.startsWith('#')) {
-                    break;
-                }
-            } ;
-            if (level==0) {
-                argEnd = i-1;
-                argLineEnd = mIndex;
-                QString args;
-                if (argLineStart==argLineEnd) {
-                    args = line.mid(argStart,argEnd-argStart).trimmed();
-                    //qDebug()<<"--"<<args;
-                } else {
-                    args = mBuffer[argLineStart].mid(argStart);
-                    for (int i=argLineStart+1;i<argLineEnd;i++) {
-                        args += mBuffer[i];
-                    }
-                    args += mBuffer[argLineEnd].left(argEnd);
-                }
-                QString formattedValue = expandFunction(define,args);
-                usedMacros.insert(word);
-                newLine += expandMacros(formattedValue,usedMacros);
-            }
-        } else {
-            newLine+=word;
-            i=origI;
-            mIndex=origIndex;
-        }
-    } else {
-        newLine += word;
-    }
+    return word;
 }
 
 QString CppPreprocessor::removeGCCAttributes(const QString &line)
@@ -1311,7 +1204,7 @@ void CppPreprocessor::skipToPreprocessor()
     while ((mIndex < bufferCount) && !mBuffer[mIndex].startsWith('#')) {
         if (getCurrentBranch()==BranchResult::isTrue) { // if not skipping, expand current macros
             int startIndex = mIndex;
-            QString expanded = expandMacros();
+            QString expanded = expandMacros(mBuffer[mIndex]);
             mResult.append(expanded);
             for (int i=startIndex;i<mIndex;i++) {
                 mResult.append("");
@@ -1477,7 +1370,7 @@ QString CppPreprocessor::expandFunction(PDefine define, const QString &args)
 //    }
 
     if (define->argUsed.length()==0) {
-        // do nothing
+        result = define->formatValue;
     } else if (define->argUsed.length()==1) {
         if (define->argUsed[0])
             result=result.arg(args);

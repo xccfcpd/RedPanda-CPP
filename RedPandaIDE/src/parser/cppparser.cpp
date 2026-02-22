@@ -107,11 +107,7 @@ CppParser::~CppParser()
 void CppParser::addHardDefineByLine(const QString &line)
 {
     QMutexLocker  locker(&mMutex);
-    if (line.startsWith('#')) {
-        mPreprocessor.addHardDefineByLine(line.mid(1).trimmed());
-    } else {
-        mPreprocessor.addHardDefineByLine(line);
-    }
+    mPreprocessor.addHardDefineByLine(line.trimmed());
 }
 
 void CppParser::addIncludePath(const QString &value)
@@ -165,7 +161,7 @@ QList<PStatement> CppParser::getListOfFunctions(const QString &fileName, const Q
         return result;
     if (statement->kind == StatementKind::Preprocessor) {
         if (statement->args.isEmpty()) {
-            QString name = expandMacro(statement->value);
+            QString name = expandMacros(statement->value);
             statement = doFindStatementOf(fileName, name ,line);
             if (!statement)
                 return result;
@@ -6887,10 +6883,9 @@ void CppParser::parseCommandTypeAndArgs(QString &command, QString &typeSuffix, Q
 
 }
 
-QString CppParser::expandMacro(const QString &text) const
+QString CppParser::expandMacros(const QString &text) const
 {
-    QSet<QString> usedMacros;
-    return mPreprocessor.expandMacros(text, usedMacros);
+    return mPreprocessor.expandMacros(text);
 }
 
 QStringList CppParser::splitExpression(const QString &expr)

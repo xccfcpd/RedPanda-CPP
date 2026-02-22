@@ -45,13 +45,14 @@ void TestCppPreprocessor::test_macros_1()
 void TestCppPreprocessor::test_macros_2()
 {
     CppPreprocessor preprocessor;
-    QFileInfo info("resources/preprocessor-macros-2.cpp");
-    preprocessor.preprocess(info.absoluteFilePath());
-    QStringList text1 = filterIncludes(preprocessor.result());
-    QStringList text2 = readFileToLines("resources/preprocessor-macros-2-result.cpp");
-    QVERIFY(!text1.isEmpty());
-    QVERIFY(!text2.isEmpty());
-    QCOMPARE(text1,text2);
+    preprocessor.addHardDefineByLine("#define EMPTY");
+    preprocessor.addHardDefineByLine("#define SCAN(x)     x");
+    preprocessor.addHardDefineByLine("#define EXAMPLE_()  EXAMPLE");
+    preprocessor.addHardDefineByLine("#define EXAMPLE(n)  EXAMPLE_ EMPTY()(n-1) (n)");
+    QCOMPARE("EXAMPLE_ ()(5-1) (5)",
+             preprocessor.expandMacros("EXAMPLE(5)"));
+    QCOMPARE("EXAMPLE_ ()(5-1-1) (5-1) (5)",
+             preprocessor.expandMacros("SCAN(EXAMPLE(5))"));
 }
 
 QStringList TestCppPreprocessor::filterIncludes(const QStringList &text)
