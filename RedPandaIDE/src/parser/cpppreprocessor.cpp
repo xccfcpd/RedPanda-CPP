@@ -638,9 +638,6 @@ QString CppPreprocessor::expandMacro(const QString &text, const QString &word, i
             if (level==0) {
                 argEnd = i-2;
                 QString args = text.mid(argStart,argEnd-argStart+1).trimmed();
-                QString newArgs = expandMacros(args, macrosToBeIgnored);
-                if (newArgs != args)
-                    args = newArgs;
                 QString formattedValue = expandFunction(define,args);
                 macrosUsed.insert(word);
                 return formattedValue;
