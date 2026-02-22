@@ -14,6 +14,7 @@ private slots:
     void test_combine_lines_ending_with_backslash();
     void test_replace_comments_with_space_char();
     void test_macros_1();
+    void test_macros_2();
 private:
     static QStringList filterIncludes(const QStringList& text);
 };

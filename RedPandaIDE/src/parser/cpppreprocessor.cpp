@@ -606,8 +606,10 @@ QString CppPreprocessor::expandMacros()
 
 void CppPreprocessor::expandMacro(const QString &text, QString &newText, const QString &word, int &i, QSet<QString> usedMacros) const
 {
-    if (usedMacros.contains(word))
+    if (usedMacros.contains(word)) {
+        newText+=word;
         return;
+    }
     int lenLine = text.length();
     PDefine define = getDefine(word);
     if (define && define->args=="" ) {

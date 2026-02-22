@@ -42,6 +42,18 @@ void TestCppPreprocessor::test_macros_1()
     QCOMPARE(text1,text2);
 }
 
+void TestCppPreprocessor::test_macros_2()
+{
+    CppPreprocessor preprocessor;
+    QFileInfo info("resources/preprocessor-macros-2.cpp");
+    preprocessor.preprocess(info.absoluteFilePath());
+    QStringList text1 = filterIncludes(preprocessor.result());
+    QStringList text2 = readFileToLines("resources/preprocessor-macros-2-result.cpp");
+    QVERIFY(!text1.isEmpty());
+    QVERIFY(!text2.isEmpty());
+    QCOMPARE(text1,text2);
+}
+
 QStringList TestCppPreprocessor::filterIncludes(const QStringList &text)
 {
     QStringList result;
