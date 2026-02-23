@@ -147,7 +147,7 @@ private:
 
     bool supportCPP23() const;
 
-    static QString expandFunction(PDefine define,const QString &args);
+    QString expandFunctionLikeMacro(PDefine define,const QString &args, const QSet<QString> &macrosToBeIgnored) const;
     void preprocessBuffer();
     void skipToPreprocessor();
     QString getNextPreprocessor();
