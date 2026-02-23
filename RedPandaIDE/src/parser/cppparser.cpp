@@ -64,8 +64,6 @@ CppParser::CppParser() : QObject{nullptr},
     //mCurrentClassScope;
     //mSkipList;
     mSharedByFiles = false;
-    mParseLocalHeaders = true;
-    mParseGlobalHeaders = true;
     mLockCount = 0;
     mIsSystemHeader = false;
     mIsHeader = false;
@@ -1212,8 +1210,6 @@ void CppParser::resetParser()
         emit  onBusy();
         mUniqId = 0;
 
-        mParseLocalHeaders = true;
-        mParseGlobalHeaders = true;
         mIsSystemHeader = false;
         mIsHeader = false;
         mIsProjectFile = false;
@@ -4622,7 +4618,7 @@ void CppParser::internalParse(const QString &fileName)
     });
     //timer.start();
     // Let the preprocessor augment the include records
-    mPreprocessor.setScanOptions(mParseGlobalHeaders, mParseLocalHeaders);
+    mPreprocessor.setScanOptions(true, true);
     mPreprocessor.preprocess(fileName);
 
     QStringList preprocessResult = mPreprocessor.result();
@@ -6978,16 +6974,6 @@ const StatementModel &CppParser::statementList() const
     return mStatementList;
 }
 
-bool CppParser::parseGlobalHeaders() const
-{
-    return mParseGlobalHeaders;
-}
-
-void CppParser::setParseGlobalHeaders(bool newParseGlobalHeaders)
-{
-    mParseGlobalHeaders = newParseGlobalHeaders;
-}
-
 const QSet<QString> &CppParser::includePaths()
 {
     return mPreprocessor.includePaths();
@@ -6996,16 +6982,6 @@ const QSet<QString> &CppParser::includePaths()
 const QSet<QString> &CppParser::projectIncludePaths()
 {
     return mPreprocessor.projectIncludePaths();
-}
-
-bool CppParser::parseLocalHeaders() const
-{
-    return mParseLocalHeaders;
-}
-
-void CppParser::setParseLocalHeaders(bool newParseLocalHeaders)
-{
-    mParseLocalHeaders = newParseLocalHeaders;
 }
 
 const QString &CppParser::serialId() const

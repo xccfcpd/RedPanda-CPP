@@ -496,14 +496,17 @@ QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosTo
     QString newLine;
     ContentType currentType = ContentType::Other;
     int lenLine = text.length();
+    int prevI = 0;
     int i=0;
     int wordStart = 0;
     QString word;
     QString delimiter;
     QMultiHash<int,QString> tempIngoreMacros; // endLine, name
     while (i< lenLine) {
+        for(int t=prevI+1;t<=i;t++)
+            tempIngoreMacros.remove(t);
+        prevI = i;
         QChar ch=text[i];
-        tempIngoreMacros.remove(i);
         if (currentType == ContentType::Other && isWordChar(ch)) {
             if (word.isEmpty())
                 wordStart = i;
@@ -516,6 +519,15 @@ QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosTo
                     ignores.insert(name);
                 QString newWord = expandMacro(text,word,i,ignores,macrosUsed);
                 if (!macrosUsed.isEmpty()) {
+                    //adjust ignore macro list
+                    QMultiHash<int,QString> tempMacros2 = tempIngoreMacros;
+                    tempIngoreMacros.clear();
+                    int diff = newWord.length()-word.length();
+                    foreach(int idx, tempMacros2.uniqueKeys()) {
+                        QList<QString> names = tempIngoreMacros.values(idx);
+                        foreach(const QString& name, names)
+                            tempIngoreMacros.insert(idx+diff,name);
+                    }
                     //rescan (see ISO/IEC 9899:1999 6.10.3.4 Rescanning and futher replacement)
                     foreach(const QString& name, macrosUsed) {
                         tempIngoreMacros.insert(wordStart+newWord.length(), name);
@@ -605,7 +617,7 @@ QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosTo
         QSet<QString> macrosUsed;
         QString newWord = expandMacro(text,word,i,macrosToBeIgnored,macrosUsed);
         if (!macrosUsed.isEmpty())
-            newWord = expandMacros(newWord, macrosToBeIgnored+macrosUsed);
+            newWord = expandMacros(newWord, macrosToBeIgnored+macrosUsed); //rescan
         newLine += newWord;
     }
     return newLine;
@@ -1451,13 +1463,15 @@ QString CppPreprocessor::expandFunctionLikeMacro(PDefine define, const QString &
             QStringList varArgs;
             for (int i=0;i<argValues.length();i++) {
                 QString argValue = argValues[i];
-                if (!define->argNotExpand[i])
-                    argValue = expandMacros(argValue,macrosToBeIgnored);
                 if (define->varArgIndex != -1
                      && i >= define->varArgIndex ) {
+                    if (!define->argNotExpand[define->varArgIndex])
+                        argValue = expandMacros(argValue,macrosToBeIgnored);
                     varArgs.append(argValue.trimmed());
                 } else if (i<define->argUsed.length()
                             && define->argUsed[i]) {                    
+                    if (!define->argNotExpand[i])
+                        argValue = expandMacros(argValue,macrosToBeIgnored);
                     result=result.arg(argValue.trimmed());
                 }
             }
