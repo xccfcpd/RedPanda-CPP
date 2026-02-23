@@ -503,7 +503,7 @@ QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosTo
     QString delimiter;
     QMultiHash<int,QString> tempIngoreMacros; // endLine, name
     while (i< lenLine) {
-        for(int t=prevI+1;t<=i;t++)
+        for(int t=prevI;t<i;t++)
             tempIngoreMacros.remove(t);
         prevI = i;
         QChar ch=text[i];
@@ -524,7 +524,7 @@ QString CppPreprocessor::expandMacros(QString text, const QSet<QString> macrosTo
                     tempIngoreMacros.clear();
                     int diff = newWord.length()-word.length();
                     foreach(int idx, tempMacros2.uniqueKeys()) {
-                        QList<QString> names = tempIngoreMacros.values(idx);
+                        QList<QString> names = tempMacros2.values(idx);
                         foreach(const QString& name, names)
                             tempIngoreMacros.insert(idx+diff,name);
                     }

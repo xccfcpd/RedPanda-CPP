@@ -30,7 +30,7 @@ void TestCppPreprocessor::test_replace_comments_with_space_char()
     QCOMPARE(text1,text2);
 }
 
-void TestCppPreprocessor::test_macros_1()
+void TestCppPreprocessor::test_macro_replace_1()
 {
     CppPreprocessor preprocessor;
     QFileInfo info("resources/preprocessor-macros-1.cpp");
@@ -42,7 +42,7 @@ void TestCppPreprocessor::test_macros_1()
     QCOMPARE(text1,text2);
 }
 
-void TestCppPreprocessor::test_macros_2()
+void TestCppPreprocessor::test_macro_replace_2()
 {
     CppPreprocessor preprocessor;
     preprocessor.addHardDefineByLine("#define EMPTY");
@@ -53,6 +53,34 @@ void TestCppPreprocessor::test_macros_2()
              preprocessor.expandMacros("EXAMPLE(5)"));
     QCOMPARE("EXAMPLE_ ()(5-1-1) (5-1) (5)",
              preprocessor.expandMacros("SCAN(EXAMPLE(5))"));
+}
+
+void TestCppPreprocessor::test_macro_replace_3()
+{
+    CppPreprocessor preprocessor;
+    preprocessor.addHardDefineByLine("#define TEST 123");
+    QCOMPARE("ttt 123 123",
+             preprocessor.expandMacros("ttt TEST TEST"));
+}
+
+void TestCppPreprocessor::test_macro_replace_4()
+{
+    CppPreprocessor preprocessor;
+    preprocessor.addHardDefineByLine("#define N TEST");
+    preprocessor.addHardDefineByLine("#define TEST N");
+    QCOMPARE("ttt TEST TEST",
+             preprocessor.expandMacros("ttt TEST TEST"));
+    QCOMPARE("ttt N N",
+             preprocessor.expandMacros("ttt N N"));
+}
+
+void TestCppPreprocessor::test_macro_replace_5()
+{
+    CppPreprocessor preprocessor;
+    preprocessor.addHardDefineByLine("#define NNN 123");
+    preprocessor.addHardDefineByLine("#define TEST NNN");
+    QCOMPARE("ttt 123 123",
+             preprocessor.expandMacros("ttt TEST TEST"));
 }
 
 QStringList TestCppPreprocessor::filterIncludes(const QStringList &text)
