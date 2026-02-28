@@ -773,14 +773,6 @@ void CompilerSet::setGCCProperties(const QString& binDir, const QString& c_prog)
         mDumpMachine = "i386-pc-mingw32";
     }
     mTarget = mDumpMachine.mid(0, mDumpMachine.indexOf('-'));
-    QByteArray version = getCompilerOutput(binDir, c_prog, {"-dumpfullversion"}).trimmed();
-    if (version.isEmpty())
-        version = getCompilerOutput(binDir, c_prog, {"-dumpversion"}).trimmed();
-    // QRegularExpression versionPattern = QRegularExpression("^[\\d]+\\.[\\d]+.*$");
-    // if (auto m = versionPattern.match(version); !m.hasMatch()) {
-    //     version = getCompilerOutput(binDir, c_prog, {"-dumpfullversion"}).trimmed();
-    // }
-    mVersion = QString(version).trimmed();
 
     // Obtain compiler distro
     bool outputFormatIsPe = false;
@@ -789,6 +781,8 @@ void CompilerSet::setGCCProperties(const QString& binDir, const QString& c_prog)
     int clangVersionPos = verboseOut.indexOf(targetStr);
     if (clangVersionPos >= 0) {
         mCompilerType = CompilerType::Clang;
+        QByteArray version = getCompilerOutput(binDir, c_prog, {"-dumpversion"}).trimmed();
+        mVersion = QString(version).trimmed();
         QRegularExpression ntPosixPattern = QRegularExpression("^(.*)-pc-windows-msys$");
         QRegularExpression mingwW64Pattern = QRegularExpression("^(.*)-w64-windows-gnu$");
         if (auto m = ntPosixPattern.match(mDumpMachine); m.hasMatch()) {
@@ -805,6 +799,14 @@ void CompilerSet::setGCCProperties(const QString& binDir, const QString& c_prog)
         }
     } else {
         mCompilerType = CompilerType::GCC;
+        QByteArray version = getCompilerOutput(binDir, c_prog, {"-dumpfullversion"}).trimmed();
+        if (version.isEmpty())
+            version = getCompilerOutput(binDir, c_prog, {"-dumpversion"}).trimmed();
+        // QRegularExpression versionPattern = QRegularExpression("^[\\d]+\\.[\\d]+.*$");
+        // if (auto m = versionPattern.match(version); !m.hasMatch()) {
+        //     version = getCompilerOutput(binDir, c_prog, {"-dumpfullversion"}).trimmed();
+        // }
+        mVersion = QString(version).trimmed();
         QRegularExpression ntPosixPattern = QRegularExpression("^(.*)-(.*)-(msys|cygwin)$");
         QRegularExpression mingwW64Pattern = QRegularExpression("^(.*)-w64-mingw32$");
         QRegularExpression mingwOrgPattern("^(.*)-(.*)-mingw32$");
@@ -829,6 +831,7 @@ void CompilerSet::setGCCProperties(const QString& binDir, const QString& c_prog)
                 mName = "GCC " + mVersion;
         }
     }
+
     if (outputFormatIsPe)
         setCompileOption(LINK_CMD_OPT_STACK_SIZE, "12");
 
