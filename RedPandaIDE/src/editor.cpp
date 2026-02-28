@@ -3164,9 +3164,10 @@ void Editor::showCompletion(const QString& preWord,bool autoComplete, CodeComple
     QString s;
     QSynedit::PTokenAttribute attr;
     CharPos pBeginPos, pEndPos;
+    int start;
     if (getTokenAttriAtRowCol(
                 CharPos{caretX() - 1,
-                caretY()}, s, attr)) {
+                caretY()}, s,start, attr)) {
         if (attr->tokenType() == QSynedit::TokenType::Preprocessor) {//Preprocessor
             word = getWordAtPosition(this,caretXY(),pBeginPos,pEndPos, WordPurpose::wpDirective);
             if (!word.startsWith('#')) {
@@ -3497,10 +3498,23 @@ void Editor::completionInsert(bool appendFunc)
 
 // delete the part of the word that's already been typed ...
     CharPos caretPos = caretXY();
-    CharPos pEnd = getTokenEnd(caretXY());
-    CharPos pStart = prevWordBegin(caretXY());
-    if (caretPos == pStart && caretPos.ch>0)
-        pStart = getTokenBegin(CharPos{caretPos.ch-1,caretPos.line});
+    CharPos pStart;
+    CharPos pEnd;
+    if (caretPos.ch == 0)
+        pStart = caretPos;
+    else {
+        CharPos p{caretPos.ch-1,caretPos.line};
+        if (syntaxer()->isIdentChar(charAt(p))) {
+            pStart = getTokenBegin(p);
+        } else
+            pStart = caretPos;
+    }
+    if (syntaxer()->isIdentChar(charAt(caretPos))) {
+        pEnd = getTokenEnd(caretPos);
+    } else
+        pEnd = caretPos;
+//    if (caretPos == pStart && caretPos.ch>0)
+//        pStart = getTokenBegin(CharPos{caretPos.ch-1,caretPos.line});
     setCaretAndSelection(pStart,pStart,pEnd);
 
     // if we are inserting a function,
