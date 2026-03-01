@@ -1451,6 +1451,7 @@ void Editor::cutToClipboard()
 
 void Editor::copyAsHTML()
 {
+    Q_ASSERT(mColorManager!=nullptr);
     if (!selAvail()) {
         doSelectLine();
     }
@@ -2138,8 +2139,6 @@ QStringList Editor::getExpressionAtPosition(
         const QSynedit::CharPos &pos)
 {
     QStringList result;
-    if (!parser())
-        return result;
     int line = pos.line;
     int ch = pos.ch;
     int symbolMatchingLevel = 0;
@@ -3040,6 +3039,7 @@ void Editor::insertCodeSnippet(const QString &code)
 
 void Editor::print()
 {
+    Q_ASSERT(mColorManager!=nullptr);
     QPrinter printer;
 
     QPrintDialog dialog(&printer, this);
@@ -3090,6 +3090,8 @@ void Editor::print()
 
 void Editor::exportAsRTF(const QString &rtfFilename)
 {
+    Q_ASSERT(mColorManager!=nullptr);
+
     QSynedit::RTFExporter exporter(tabSize(), pCharsetInfoManager->getDefaultSystemEncoding());
     exporter.setTitle(extractFileName(rtfFilename));
     exporter.setUseBackground(mEditorSettings->copyRTFUseBackground());
@@ -3114,6 +3116,8 @@ void Editor::exportAsRTF(const QString &rtfFilename)
 
 void Editor::exportAsHTML(const QString &htmlFilename)
 {
+    Q_ASSERT(mColorManager!=nullptr);
+
     QSynedit::HTMLExporter exporter(tabSize(), pCharsetInfoManager->getDefaultSystemEncoding());
     exporter.setTitle(extractFileName(htmlFilename));
     exporter.setUseBackground(mEditorSettings->copyHTMLUseBackground());
@@ -5355,6 +5359,8 @@ static QSynedit::PTokenAttribute createRainbowAttribute(ColorManager *colorManag
 
 void Editor::applyColorScheme(const QString& schemeName)
 {
+    if (mColorManager==nullptr)
+        return;
     QSynedit::EditorOptions options = getOptions();
     options.setFlag(QSynedit::EditorOption::ShowRainbowColor,
                     mEditorSettings->rainbowParenthesis()
@@ -5362,7 +5368,6 @@ void Editor::applyColorScheme(const QString& schemeName)
     setOptions(options);
     codeFolding().rainbowIndentGuides = mEditorSettings->rainbowIndentGuides();
     codeFolding().rainbowIndents = mEditorSettings->rainbowIndents();
-    Q_ASSERT(mColorManager!=nullptr);
     mColorManager->applySchemeToSyntaxer(syntaxer(),schemeName);
     if (mEditorSettings->rainbowParenthesis()) {
         QSynedit::PTokenAttribute attr0 =createRainbowAttribute(mColorManager, SYNS_AttrSymbol,
