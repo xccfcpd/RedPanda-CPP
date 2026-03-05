@@ -409,7 +409,11 @@ int main(int argc, char *argv[])
             setScreenDPI(mainWindow.screen()->logicalDotsPerInch());
 
         mainWindow.show();
-
+        //2026-3-5
+        // 设置应用程序图标（所有窗口将继承此图标）
+        qApp->setWindowIcon(QIcon(":/icons/images/devcpp.ico"));
+        //新增这行代码的作用是，用来解决帮助→关于→窗口的图标是错乱的问题
+        
         QStringList filesToOpen = app.arguments();
         filesToOpen.pop_front();
         if (!filesToOpen.isEmpty()) {
