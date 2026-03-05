@@ -1078,7 +1078,7 @@ void EditorSettings::doLoad()
     } else {
         mFontFamilies = fontFamilies;
     }
-    mFontSize = intValue("font_size",12);
+    mFontSize = intValue("font_size",10);
     mLineSpacing = doubleValue("line_spacing",1.1);
     mForceFixedFontWidth = boolValue("force_fixed_font_width", isCjk());
     // if (mForceFixedFontWidth)
