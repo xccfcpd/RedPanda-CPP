@@ -42,8 +42,8 @@ void EnvironmentSettings::doLoad()
     //Appearance
     mTheme = stringValue("theme","dark");
     mInterfaceFont = stringValue("interface_font", defaultUiFont());
-    mInterfaceFontSize = intValue("interface_font_size",11);
-    mIconZoomFactor = doubleValue("icon_zoom_factor",1.0);
+    mInterfaceFontSize = intValue("interface_font_size",9);
+    mIconZoomFactor = doubleValue("icon_zoom_factor",1.3);
     mLanguage = stringValue("language", QLocale::system().name());
     mIconSet = stringValue("icon_set","contrast");
     mUseCustomIconSet = boolValue("use_custom_icon_set", false);
