@@ -8731,7 +8731,7 @@ void MainWindow::on_btnReplace_clicked()
             QByteArray realEncoding;
             QFile toFile(file->filename);
             try {
-                editor->document()->saveToFile(toFile,editor->editorEncoding(), realEncoding);
+                editor->saveToFile(toFile,editor->editorEncoding(), realEncoding);
             } catch(FileError e) {
                 QMessageBox::critical(this,
                                       tr("Replace Error"),

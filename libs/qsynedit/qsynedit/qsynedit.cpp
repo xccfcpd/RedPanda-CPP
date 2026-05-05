@@ -251,7 +251,7 @@ int QSynEdit::maxScrollWidth() const
     if (maxWidth < 0)
         return -1;
     if (useCodeFolding())
-        maxWidth += stringWidth(syntaxer()->foldString(""),maxWidth);
+        maxWidth += stringWidth(mSyntaxer->foldString(""),maxWidth);
     if (mOptions.testFlag(EditorOption::ScrollPastEol))
         return std::max(maxWidth-2*mCharWidth, 0);
     else
@@ -4873,6 +4873,11 @@ CodeFoldingOptions &QSynEdit::codeFolding()
     return mCodeFolding;
 }
 
+void QSynEdit::saveToFile(QFile &file, const QByteArray &encoding, QByteArray &realEncoding) const
+{
+    mDocument->saveToFile(file,encoding,realEncoding);
+}
+
 QString QSynEdit::displayLineText()
 {
     return getDisplayStringAtLine(mCaretY);
@@ -4893,6 +4898,11 @@ size_t QSynEdit::lineSeq(int line) const
     return mDocument->getLineSeq(line);
 }
 
+PSyntaxState QSynEdit::lineSyntaxState(int line) const
+{
+    return mDocument->getSyntaxState(line);
+}
+
 bool QSynEdit::findLineTextBySeq(size_t lineSeq,  QString& text) const
 {
     PDocumentLine line = mDocument->findLineBySeq(lineSeq);
@@ -4904,7 +4914,7 @@ bool QSynEdit::findLineTextBySeq(size_t lineSeq,  QString& text) const
     return true;
 }
 
-PSyntaxer QSynEdit::syntaxer() const
+const PConstSyntaxer QSynEdit::syntaxer() const
 {
     return mSyntaxer;
 }
