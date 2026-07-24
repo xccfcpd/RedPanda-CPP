@@ -134,6 +134,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnCustomize">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>Create a customized copy</string>
         </property>
@@ -148,6 +151,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnReload">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>Refresh</string>
         </property>
@@ -162,6 +168,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnRemoveCustomTheme">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>Remove custom theme</string>
         </property>
@@ -176,6 +185,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnOpenCustomThemeFolder">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>Open custom themes folder</string>
         </property>
@@ -333,6 +345,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="chkUseCustomIconSet">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="text">
          <string>Use custom icon set</string>
         </property>
