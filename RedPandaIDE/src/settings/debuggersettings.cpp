@@ -231,7 +231,7 @@ void DebuggerSettings::doLoad()
     mShowDetailLog = boolValue("show_detail_log",false);
     mFontName = stringValue("font_name", defaultMonoFont());
     mOnlyShowMono = boolValue("only_show_mono",true);
-    mFontSize = intValue("font_size",14);
+    mFontSize = intValue("font_size",9);
     mUseIntelStyle = boolValue("use_intel_style",false);
     mBlendMode = boolValue("blend_mode",true);
     mSkipSystemLibraries = boolValue("skip_system_lib",true);
