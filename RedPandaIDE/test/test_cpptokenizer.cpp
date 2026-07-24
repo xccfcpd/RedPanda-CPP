@@ -49,6 +49,50 @@ void TestCppTokenizer::test_parse_scope_resolution_operators2()
 
 }
 
+void TestCppTokenizer::test_parse_scope_resolution_operators3()
+{
+    mTokenizer.clear();
+    mTokenizer.tokenize(QStringList{
+                            "template<typename _CharT, typename _Traits, typename _Alloc>"
+                            "basic_string<_CharT, _Traits, _Alloc>::"
+                            "basic_string"
+                         });
+    QCOMPARE(mTokenizer.tokenCount(),2);
+    QCOMPARE(mTokenizer[0]->text,"template");
+    QCOMPARE(mTokenizer[1]->text,"basic_string<_CharT, _Traits, _Alloc>::basic_string");
+
+}
+
+void TestCppTokenizer::test_parse_unend_char_literal()
+{
+    mTokenizer.clear();
+    mTokenizer.tokenize(QStringList{
+                            "ch='tt",
+                            "tttt';"
+                         });
+    QCOMPARE(mTokenizer.tokenCount(),5);
+    QCOMPARE(mTokenizer[0]->text,"ch");
+    QCOMPARE(mTokenizer[1]->text,"=");
+    QCOMPARE(mTokenizer[2]->text,"''");
+    QCOMPARE(mTokenizer[3]->text,"tttt");
+    QCOMPARE(mTokenizer[4]->text,"''");
+}
+
+void TestCppTokenizer::test_parse_unend_string_literal()
+{
+    mTokenizer.clear();
+    mTokenizer.tokenize(QStringList{
+                            "ch=\"tt",
+                            "tttt\";"
+                         });
+    QCOMPARE(mTokenizer.tokenCount(),5);
+    QCOMPARE(mTokenizer[0]->text,"ch");
+    QCOMPARE(mTokenizer[1]->text,"=");
+    QCOMPARE(mTokenizer[2]->text,"\"\"");
+    QCOMPARE(mTokenizer[3]->text,"tttt");
+    QCOMPARE(mTokenizer[4]->text,"\"\"");
+}
+
 void TestCppTokenizer::test_parse_string2()
 {
     mTokenizer.clear();

@@ -10,6 +10,7 @@ url='https://github.com/royqh1979/RedPanda-CPP'
 license=('GPL3')
 
 depends=(
+    make
     "${MINGW_PACKAGE_PREFIX}-qt6-base"
     "${MINGW_PACKAGE_PREFIX}-qt6-svg"
     "${MINGW_PACKAGE_PREFIX}-astyle"
@@ -61,13 +62,17 @@ build() {
             -DCMAKE_INSTALL_LIBEXECDIR=lib \
             "${extra_config[@]}" \
             -DFILESYSTEM_LAYOUT=hierarchy \
+            -DMAKE_INTERFACE=unix \
             -DPORTABLE_CONFIG=non
 
     cmake --build "build-${MSYSTEM}"
 }
 
 check() {
-    cmake --build "build-${MSYSTEM}" --target test
+    # TODO: `CTEST_OUTPUT_ON_FAILURE` does not work in CI
+    env \
+        CTEST_OUTPUT_ON_FAILURE=1 \
+            cmake --build "build-${MSYSTEM}" --target test
 }
 
 package() {

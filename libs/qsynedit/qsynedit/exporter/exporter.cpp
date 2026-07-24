@@ -30,8 +30,8 @@ Exporter::Exporter(int tabSize, const QByteArray charset):
     mTabSize{tabSize},
     mCharset{charset},
     mFont{QGuiApplication::font()},
-    mBackgroundColor{QGuiApplication::palette().color(QPalette::Base)},
-    mForegroundColor{QGuiApplication::palette().color(QPalette::Text)},
+    mBackgroundColor{QColor{Qt::white}},
+    mForegroundColor{QColor{Qt::black}},
     mUseBackground{false},
     mFileEndingType{NewlineType::Windows},
     mExportLineNumber(false),
@@ -51,7 +51,7 @@ void Exporter::clear()
 
 void Exporter::exportAll(const std::shared_ptr<const Document>& doc)
 {
-    exportRange(doc, CharPos{1, 1}, CharPos{INT_MAX, INT_MAX});
+    exportRange(doc, CharPos{0, 0}, CharPos{INT_MAX, INT_MAX});
 }
 
 void Exporter::exportRange(const std::shared_ptr<const Document>& doc, CharPos start, CharPos stop)
@@ -165,7 +165,8 @@ void Exporter::setSyntaxer(PSyntaxer value)
     if (mSyntaxer != value) {
         mSyntaxer = value;
         clear();
-        if ((mSyntaxer) && (mSyntaxer->whitespaceAttribute()) && mUseBackground)
+        if ((mSyntaxer) && (mSyntaxer->whitespaceAttribute()) && mUseBackground
+                && mSyntaxer->whitespaceAttribute()->background().isValid())
             mBackgroundColor = mSyntaxer->whitespaceAttribute()->background();
     }
 }
@@ -195,7 +196,8 @@ void Exporter::setUseBackground(bool Value)
     if (mUseBackground != Value) {
         mUseBackground = Value;
         clear();
-        if ((mSyntaxer) && (mSyntaxer->whitespaceAttribute()) && mUseBackground)
+        if ((mSyntaxer) && (mSyntaxer->whitespaceAttribute()) && mUseBackground
+                && mSyntaxer->whitespaceAttribute()->background().isValid())
             mBackgroundColor = mSyntaxer->whitespaceAttribute()->background();
     }
 }

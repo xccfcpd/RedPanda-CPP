@@ -272,43 +272,62 @@
 <context>
     <name>ChooseThemeDialog</name>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="14"/>
-        <location filename="../src/widgets/choosethemedialog.ui" line="24"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="140"/>
         <source>Choose Theme</source>
         <translation>Выбор темы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="62"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="103"/>
+        <source>Memory Usage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/choosethemedialog.ui" line="14"/>
+        <source>Settings</source>
+        <translation type="unfinished">Настройки</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/choosethemedialog.ui" line="110"/>
+        <source>Each file use its own parser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/choosethemedialog.ui" line="117"/>
+        <source>All files share one parser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/choosethemedialog.ui" line="178"/>
         <source>Dark Theme</source>
         <translation>Темная тема</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="69"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="185"/>
         <source>Light Theme</source>
         <translation>Светлая тема</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="76"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="192"/>
         <source>System Theme</source>
         <translation>Системная тема</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="89"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="39"/>
         <source>Default Language:</source>
         <translation>Язык по умолчанию:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="96"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="46"/>
         <source>C</source>
         <translation>C</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="106"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="56"/>
         <source>C++</source>
         <translation>C++</translation>
     </message>
     <message>
-        <location filename="../src/widgets/choosethemedialog.ui" line="173"/>
+        <location filename="../src/widgets/choosethemedialog.ui" line="243"/>
         <source>Ok</source>
         <translation>Ладно</translation>
     </message>
@@ -522,37 +541,37 @@
         <translation>[Замечание] </translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="767"/>
+        <location filename="../src/compiler/compiler.cpp" line="766"/>
         <source>Can&apos;t open file &quot;%1&quot; for write!</source>
         <translation>Невозможно открыть файл &quot;%1&quot; для записи!</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="819"/>
+        <location filename="../src/compiler/compiler.cpp" line="818"/>
         <source>The compiler process for &apos;%1&apos; failed to start.</source>
         <translation>Ошибка запуска процесса компиляции для &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="823"/>
+        <location filename="../src/compiler/compiler.cpp" line="822"/>
         <source>The compiler process crashed after starting successfully.</source>
         <translation>Процесс компиляции обрушился после успешного запуска.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="826"/>
+        <location filename="../src/compiler/compiler.cpp" line="825"/>
         <source>The last waitFor...() function timed out.</source>
         <translation>Время ожидания последнего вызова функции waitFor...() истекло.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="829"/>
+        <location filename="../src/compiler/compiler.cpp" line="828"/>
         <source>An error occurred when attempting to write to the compiler process.</source>
         <translation>Произошла ошибка при попытке записи в процесс компиляции.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="832"/>
+        <location filename="../src/compiler/compiler.cpp" line="831"/>
         <source>An error occurred when attempting to read from the compiler process.</source>
         <translation>Произошла ошибка при попытке чтения из процесса компиляции.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compiler.cpp" line="835"/>
+        <location filename="../src/compiler/compiler.cpp" line="834"/>
         <source>An unknown error occurred.</source>
         <translation>Произошла неизвестная ошибка.</translation>
     </message>
@@ -982,107 +1001,104 @@
         <translation>UTF-8</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="304"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="312"/>
         <source>Red Panda C++ will clear previously found compiler list and search for compilers in the following locations:&lt;br /&gt; &apos;%1&apos;&lt;br /&gt; &apos;%2&apos;&lt;br /&gt;Do you really want to continue?</source>
         <translation>Красная Панда Си++ очистит список ранее найденных компиляторов и выполнит поиск компиляторов в следующих местах:&lt;br /&gt; &apos;%1&apos;&lt;br /&gt; &apos;%2&apos;&lt;br /&gt; Вы действительно хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="309"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="317"/>
         <source>Red Panda C++ will clear previously found compiler list and search for compilers in the the PATH. &lt;br /&gt;Do you really want to continue?</source>
         <translation>Красная Панда Си++ очистит список ранее найденных компиляторов и выполнит поиск компиляторов в PATH&lt;br /&gt; Вы действительно хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="312"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="320"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="316"/>
         <source>Searching for compilers...</source>
-        <translation>Поиск компиляторов...</translation>
+        <translation type="vanished">Поиск компиляторов...</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="317"/>
         <source>Abort</source>
-        <translation>Прервать</translation>
+        <translation type="vanished">Прервать</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="324"/>
         <source>Searching...</source>
-        <translation>Поиск...</translation>
+        <translation type="vanished">Поиск...</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="331"/>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="359"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="328"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="356"/>
         <source>Failed</source>
         <translation>Провал</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="331"/>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="359"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="328"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="356"/>
         <source>Can&apos;t find any compiler.</source>
         <translation>Не удалось найти компилятор.</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="337"/>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="368"/>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="385"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="334"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="365"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="382"/>
         <source>Compiler Set Name</source>
         <translation>Имя набора компиляторов</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="337"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="334"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="350"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="347"/>
         <source>Compiler Folder</source>
         <translation>Каталог компилятора</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="368"/>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="385"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="365"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="382"/>
         <source>New name</source>
         <translation>Новое имя</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="369"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="366"/>
         <source>%1 Copy</source>
         <translation>%1 Копия</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="462"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="459"/>
         <source>Locate C Compiler</source>
         <translation>Обнаружение компилятора Си</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="474"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="471"/>
         <source>Locate C++ Compiler</source>
         <translation>Обнаружение компилятора Си++</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="486"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="483"/>
         <source>Locate Make</source>
         <translation>Обнаружение Make</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="498"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="495"/>
         <source>Locate GDB</source>
         <translation>Обнаружение GDB</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="510"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="507"/>
         <source>Locate GDB Server</source>
         <translation>Обнаружение GDB-сервера</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="522"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="519"/>
         <source>Locate windres</source>
         <translation>Обнаружение windres</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="532"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="529"/>
         <source>Compiler</source>
         <translation>Компилятор</translation>
     </message>
@@ -1090,31 +1106,31 @@
 <context>
     <name>CppRefacter</name>
     <message>
-        <location filename="../src/cpprefacter.cpp" line="133"/>
-        <location filename="../src/cpprefacter.cpp" line="146"/>
-        <location filename="../src/cpprefacter.cpp" line="426"/>
-        <location filename="../src/cpprefacter.cpp" line="468"/>
+        <location filename="../src/cpprefacter.cpp" line="132"/>
+        <location filename="../src/cpprefacter.cpp" line="145"/>
+        <location filename="../src/cpprefacter.cpp" line="427"/>
+        <location filename="../src/cpprefacter.cpp" line="469"/>
         <source>Rename Symbol Error</source>
         <translation>Ошибка переименования символа</translation>
     </message>
     <message>
-        <location filename="../src/cpprefacter.cpp" line="134"/>
+        <location filename="../src/cpprefacter.cpp" line="133"/>
         <source>Can&apos;t rename symbols not defined in this file.</source>
         <translation>Нельзя переименовать символы, не определенные в этом файле.</translation>
     </message>
     <message>
-        <location filename="../src/cpprefacter.cpp" line="147"/>
+        <location filename="../src/cpprefacter.cpp" line="146"/>
         <source>New symbol already exists!</source>
         <translation>Новый символ уже существует!</translation>
     </message>
     <message>
-        <location filename="../src/cpprefacter.cpp" line="273"/>
-        <location filename="../src/cpprefacter.cpp" line="284"/>
+        <location filename="../src/cpprefacter.cpp" line="272"/>
+        <location filename="../src/cpprefacter.cpp" line="285"/>
         <source>Searching...</source>
         <translation>Поиск...</translation>
     </message>
     <message>
-        <location filename="../src/cpprefacter.cpp" line="274"/>
+        <location filename="../src/cpprefacter.cpp" line="273"/>
         <source>Abort</source>
         <translation>Прекратить</translation>
     </message>
@@ -1366,65 +1382,81 @@
 <context>
     <name>Editor</name>
     <message>
-        <location filename="../src/editor.cpp" line="485"/>
+        <location filename="../src/editor.cpp" line="489"/>
         <source>Error Load File</source>
         <translation>Ошибка загрузки файла</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="365"/>
+        <location filename="../src/editor.cpp" line="366"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="297"/>
-        <location filename="../src/editor.cpp" line="414"/>
+        <location filename="../src/editor.cpp" line="298"/>
+        <location filename="../src/editor.cpp" line="418"/>
         <source>Save Error</source>
         <translation type="unfinished">Ошибка сохранения</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="330"/>
+        <location filename="../src/editor.cpp" line="331"/>
         <source>Save As</source>
         <translation>Сохранить как</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="366"/>
+        <location filename="../src/editor.cpp" line="367"/>
         <source>File %1 already opened!</source>
         <translation>Файл %1 уже открыт!</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="475"/>
+        <location filename="../src/editor.cpp" line="479"/>
         <source>Confirm Reload File</source>
         <translation>Подтверждение перезагрузки файла</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="476"/>
+        <location filename="../src/editor.cpp" line="480"/>
         <source>The editing file will be reloaded. &lt;br /&gt;All unsaved modifications will be lost. &lt;br /&gt;Are you sure to continue?</source>
         <translation>Редактируемый файл будет перезагружен. &lt;br /&gt; Все несохраненные изменения будут потеряны. &lt;br /&gt; Вы хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="1943"/>
+        <location filename="../src/editor.cpp" line="1957"/>
         <source>hex: %1</source>
         <translation>hex: %1</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="1945"/>
+        <location filename="../src/editor.cpp" line="1959"/>
         <source>dec: %1</source>
         <translation>dec: %1</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="3063"/>
+        <location filename="../src/editor.cpp" line="3077"/>
         <source>Print Document</source>
         <translation>Печать документа</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="3831"/>
-        <location filename="../src/editor.cpp" line="3857"/>
-        <location filename="../src/editor.cpp" line="3900"/>
+        <location filename="../src/editor.cpp" line="3130"/>
+        <location filename="../src/editor.cpp" line="3131"/>
+        <source>Printing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/editor.cpp" line="3130"/>
+        <source>Cancel</source>
+        <translation type="unfinished">Отмена</translation>
+    </message>
+    <message>
+        <location filename="../src/editor.cpp" line="3140"/>
+        <source>Printing Page %1 / %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/editor.cpp" line="3897"/>
+        <location filename="../src/editor.cpp" line="3923"/>
+        <location filename="../src/editor.cpp" line="3966"/>
         <source>Ctrl+click for more info</source>
         <translation>Ctrl+щелчок для подробностей</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="5094"/>
+        <location filename="../src/editor.cpp" line="5150"/>
         <source>Reformat Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1458,7 +1490,7 @@
         <translation type="vanished">Введите условие для точки останова:</translation>
     </message>
     <message>
-        <location filename="../src/editor.cpp" line="5501"/>
+        <location filename="../src/editor.cpp" line="5557"/>
         <source>Readonly</source>
         <translation>Только чтение</translation>
     </message>
@@ -1561,35 +1593,44 @@
         <translation>Копирование и экспорт в HTML</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="70"/>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="151"/>
         <source>Use background color</source>
-        <translation>Использовать фоновый цвет</translation>
+        <translation type="vanished">Использовать фоновый цвет</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="77"/>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="158"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="84"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="178"/>
         <source>Use editor&apos;s color scheme</source>
         <translation>Использовать цветовую схему редактора</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="84"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="70"/>
         <source>Copy with line number</source>
         <translation>Копирование с номерами строк</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="91"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="77"/>
         <source>Recalc line number</source>
         <translation>Пересчёт номеров строк</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="113"/>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="180"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="106"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="210"/>
+        <source>Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="129"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="200"/>
         <source>Color scheme</source>
         <translation>Цветовая схема</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="142"/>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="146"/>
+        <source>Foreground</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="169"/>
         <source>Export As RTF</source>
         <translation>Экспорт в RTF</translation>
     </message>
@@ -1617,12 +1658,11 @@
         <translation>Редакторы используют один и тот же анализатор кода</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="87"/>
         <source>Clear all parsed symbols when editor is hidden</source>
-        <translation>Очистить все проанализированные символы, когда редактор скрыт</translation>
+        <translation type="vanished">Очистить все проанализированные символы, когда редактор скрыт</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="94"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="87"/>
         <source>Show completion suggestions while typing</source>
         <translation>Показывать предложения по завершению при вводе текста</translation>
     </message>
@@ -1639,57 +1679,57 @@
         <translation type="vanished">Сканировать системные заголовочные файлы</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="101"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="94"/>
         <source>Show keywords in suggestions</source>
         <translation>Показывать ключевые слова в предложениях</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="108"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="101"/>
         <source>Show code snippets in suggestions</source>
         <translation>Показывать фрагменты кода в предложениях</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="115"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="108"/>
         <source>Append () when complete functions</source>
         <translation>Добавлять () при завершении функций</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="122"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="115"/>
         <source>Ignore case when search suggestions</source>
         <translation>Игнорировать регистр при поиска предложений</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="129"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="122"/>
         <source>Prefer local symbols</source>
         <translation>Предпочитать локальные символы</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="136"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="129"/>
         <source>Hide symbols start with underscore</source>
         <translation>Скрывать символы, начинающиеся со знака подчеркивания</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="143"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="136"/>
         <source>Hide symbols start with two underscores</source>
         <translation>Скрывать символы, начинающиеся с двух знаков подчеркивания</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="165"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="158"/>
         <source>Prefer symbols mostly used</source>
         <translation>Предпочитать наиболее часто используемые символы</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="185"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="178"/>
         <source>Clear usage data</source>
         <translation>Очистка данных об использовании</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="210"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="203"/>
         <source>Completion suggestion window width:</source>
         <translation>Ширина окна предложения дополнения:</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="240"/>
+        <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="233"/>
         <source>Completion suggestion window height:</source>
         <translation>Высота окна предложения дополнения:</translation>
     </message>
@@ -1792,55 +1832,55 @@
         <translation>Удалить...</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="369"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="422"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="431"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="444"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="457"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="474"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="489"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="512"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="370"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="423"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="432"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="445"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="458"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="475"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="490"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="513"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="411"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="412"/>
         <source>Open</source>
         <translation>Открыть</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="411"/>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="482"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="412"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="483"/>
         <source>Color Scheme Files (*.scheme)</source>
         <translation>Файлы цветовых схем (*.scheme)</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="422"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="423"/>
         <source>&apos;%1&apos; is not a valid name for color scheme file.</source>
         <translation>&apos;%1&apos; - некорректное имя для файла цветовой схемы.</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="440"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="441"/>
         <source>New scheme name</source>
         <translation>Имя новой схемы</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="444"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="445"/>
         <source>&apos;%1&apos; is not a valid scheme name!</source>
         <translation>&apos;%1&apos; - некорректное имя схемы!</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="482"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="483"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="498"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="499"/>
         <source>Confirm Delete Scheme</source>
         <translation>Подтверждение удаления схемы</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="499"/>
+        <location filename="../src/settingsdialog/editorcolorschemewidget.cpp" line="500"/>
         <source>Scheme &apos;%1&apos; will be deleted!&lt;br /&gt;Do you really want to continue?</source>
         <translation>Схема &apos;%1&apos; будет удалена!&lt;br /&gt;Вы действительно хотите продолжить?</translation>
     </message>
@@ -2311,7 +2351,7 @@
         <translation>Форма</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="334"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="337"/>
         <source>Use custom icon set</source>
         <translation>Использовать пользовательский набор значков</translation>
     </message>
@@ -2321,7 +2361,7 @@
         <translation>*Необходим перезапуск</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="309"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="312"/>
         <source>Language:</source>
         <translation>Язык:</translation>
     </message>
@@ -2336,7 +2376,7 @@
         <translation>Набор значков:</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="302"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="305"/>
         <source>Font:</source>
         <translation>Шрифт:</translation>
     </message>
@@ -2357,32 +2397,37 @@
     </message>
     <message>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="152"/>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="155"/>
         <source>Reload</source>
         <translation>Перезагрузка</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="163"/>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="166"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="169"/>
         <source>Remove custom theme</source>
         <translation>Удалить пользовательскую тему</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="177"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="180"/>
         <source>Open custom themes folder</source>
         <translation>Открыть пользовательский каталог с темами</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="180"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="183"/>
         <source>Open Folder</source>
         <translation>Открыть каталог</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="207"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="210"/>
         <source>Icon Zoom:</source>
         <translation>Масштаб значков:</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="370"/>
+        <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="373"/>
         <source>Change combobox&apos;s current selection by turning mouse wheel on it</source>
         <translation>Изменение текущего выбора поля со списком путем поворота колесика мыши на нем</translation>
     </message>
@@ -2528,6 +2573,11 @@
         <location filename="../src/settingsdialog/environmentperformancewidget.ui" line="33"/>
         <source>Auto clear parsed symbols when editor hidden</source>
         <translation>Автоматическая очистка проанализированных символов, когда редактор скрыт</translation>
+    </message>
+    <message>
+        <location filename="../src/settingsdialog/environmentperformancewidget.ui" line="43"/>
+        <source>Included files only parse once</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4188,15 +4238,15 @@
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="125"/>
-        <location filename="../src/mainwindow.cpp" line="8061"/>
-        <location filename="../src/mainwindow.cpp" line="8062"/>
-        <location filename="../src/mainwindow.cpp" line="8063"/>
+        <location filename="../src/mainwindow.cpp" line="8064"/>
+        <location filename="../src/mainwindow.cpp" line="8065"/>
+        <location filename="../src/mainwindow.cpp" line="8066"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="144"/>
-        <location filename="../src/mainwindow.cpp" line="3699"/>
+        <location filename="../src/mainwindow.cpp" line="3704"/>
         <source>Tools</source>
         <translation>Инструменты</translation>
     </message>
@@ -4222,1500 +4272,1505 @@
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="235"/>
-        <location filename="../src/mainwindow.ui" line="1315"/>
-        <location filename="../src/mainwindow.ui" line="2823"/>
-        <location filename="../src/mainwindow.cpp" line="8051"/>
+        <location filename="../src/mainwindow.ui" line="1316"/>
+        <location filename="../src/mainwindow.ui" line="2824"/>
+        <location filename="../src/mainwindow.cpp" line="8054"/>
         <source>Search</source>
         <translation>Поиск</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="246"/>
-        <location filename="../src/mainwindow.ui" line="409"/>
-        <location filename="../src/mainwindow.cpp" line="8055"/>
-        <location filename="../src/mainwindow.cpp" line="8056"/>
-        <location filename="../src/mainwindow.cpp" line="8057"/>
+        <location filename="../src/mainwindow.ui" line="410"/>
         <location filename="../src/mainwindow.cpp" line="8058"/>
         <location filename="../src/mainwindow.cpp" line="8059"/>
+        <location filename="../src/mainwindow.cpp" line="8060"/>
+        <location filename="../src/mainwindow.cpp" line="8061"/>
+        <location filename="../src/mainwindow.cpp" line="8062"/>
         <source>Code</source>
         <translation>Код</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="267"/>
+        <location filename="../src/mainwindow.ui" line="268"/>
         <source>Window</source>
         <translation>Окно</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="279"/>
-        <location filename="../src/mainwindow.ui" line="607"/>
-        <location filename="../src/mainwindow.ui" line="2759"/>
+        <location filename="../src/mainwindow.ui" line="280"/>
+        <location filename="../src/mainwindow.ui" line="608"/>
+        <location filename="../src/mainwindow.ui" line="2760"/>
         <source>Project</source>
         <translation>Проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="298"/>
+        <location filename="../src/mainwindow.ui" line="299"/>
         <source>Help</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="319"/>
+        <location filename="../src/mainwindow.ui" line="320"/>
         <source>Refactor</source>
         <translation>Переработка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="325"/>
+        <location filename="../src/mainwindow.ui" line="326"/>
         <source>View</source>
         <translation>Вид</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="329"/>
+        <location filename="../src/mainwindow.ui" line="330"/>
         <source>Tool Panels</source>
         <translation>Панели инструментов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="354"/>
+        <location filename="../src/mainwindow.ui" line="355"/>
         <source>Selection</source>
         <translation>Выделение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="387"/>
+        <location filename="../src/mainwindow.ui" line="388"/>
         <source>Main</source>
         <translation>Главная</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="424"/>
-        <location filename="../src/mainwindow.ui" line="2115"/>
-        <location filename="../src/mainwindow.ui" line="2118"/>
+        <location filename="../src/mainwindow.ui" line="425"/>
+        <location filename="../src/mainwindow.ui" line="2116"/>
+        <location filename="../src/mainwindow.ui" line="2119"/>
         <source>Compile</source>
         <translation>Компиляция</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="446"/>
-        <location filename="../src/mainwindow.ui" line="1052"/>
-        <location filename="../src/mainwindow.ui" line="2310"/>
-        <location filename="../src/mainwindow.ui" line="2313"/>
-        <location filename="../src/mainwindow.ui" line="2815"/>
+        <location filename="../src/mainwindow.ui" line="447"/>
+        <location filename="../src/mainwindow.ui" line="1053"/>
+        <location filename="../src/mainwindow.ui" line="2311"/>
+        <location filename="../src/mainwindow.ui" line="2314"/>
+        <location filename="../src/mainwindow.ui" line="2816"/>
+        <location filename="../src/mainwindow.cpp" line="518"/>
         <location filename="../src/mainwindow.cpp" line="519"/>
         <location filename="../src/mainwindow.cpp" line="520"/>
         <location filename="../src/mainwindow.cpp" line="521"/>
         <location filename="../src/mainwindow.cpp" line="522"/>
-        <location filename="../src/mainwindow.cpp" line="523"/>
-        <location filename="../src/mainwindow.cpp" line="8054"/>
+        <location filename="../src/mainwindow.cpp" line="8057"/>
         <source>Debug</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="473"/>
+        <location filename="../src/mainwindow.ui" line="474"/>
         <source>Compiler Set</source>
         <translation>Набор компиляоров</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="497"/>
+        <location filename="../src/mainwindow.ui" line="498"/>
         <source>Explorer</source>
         <translation>Проводник</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="526"/>
-        <location filename="../src/mainwindow.ui" line="2783"/>
+        <location filename="../src/mainwindow.ui" line="527"/>
+        <location filename="../src/mainwindow.ui" line="2784"/>
         <source>Files</source>
         <translation>Файлы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="657"/>
-        <location filename="../src/mainwindow.ui" line="2767"/>
+        <location filename="../src/mainwindow.ui" line="658"/>
+        <location filename="../src/mainwindow.ui" line="2768"/>
         <source>Watch</source>
         <translation>Наблюдение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="698"/>
-        <location filename="../src/mainwindow.ui" line="2775"/>
+        <location filename="../src/mainwindow.ui" line="699"/>
+        <location filename="../src/mainwindow.ui" line="2776"/>
         <source>Structure</source>
         <translation>Структура</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="736"/>
-        <location filename="../src/mainwindow.ui" line="760"/>
-        <location filename="../src/mainwindow.ui" line="2791"/>
+        <location filename="../src/mainwindow.ui" line="737"/>
+        <location filename="../src/mainwindow.ui" line="761"/>
+        <location filename="../src/mainwindow.ui" line="2792"/>
         <source>Problem Set</source>
         <translation>Набор проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="788"/>
-        <location filename="../src/mainwindow.cpp" line="2961"/>
-        <location filename="../src/mainwindow.cpp" line="8980"/>
+        <location filename="../src/mainwindow.ui" line="789"/>
+        <location filename="../src/mainwindow.cpp" line="2962"/>
+        <location filename="../src/mainwindow.cpp" line="8983"/>
         <source>New Problem Set</source>
         <translation>Новый набор проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="791"/>
+        <location filename="../src/mainwindow.ui" line="792"/>
         <source>NPS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="803"/>
-        <location filename="../src/mainwindow.cpp" line="3003"/>
+        <location filename="../src/mainwindow.ui" line="804"/>
+        <location filename="../src/mainwindow.cpp" line="3004"/>
         <source>Add Problem</source>
         <translation>Добавить проблему</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="806"/>
+        <location filename="../src/mainwindow.ui" line="807"/>
         <source>AP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="818"/>
-        <location filename="../src/mainwindow.cpp" line="3009"/>
+        <location filename="../src/mainwindow.ui" line="819"/>
+        <location filename="../src/mainwindow.cpp" line="3010"/>
         <source>Remove Problem</source>
         <translation>Удалить проблему</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="821"/>
+        <location filename="../src/mainwindow.ui" line="822"/>
         <source>RP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="833"/>
+        <location filename="../src/mainwindow.ui" line="834"/>
         <source>SP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="840"/>
-        <location filename="../src/mainwindow.cpp" line="2973"/>
-        <location filename="../src/mainwindow.cpp" line="9051"/>
+        <location filename="../src/mainwindow.ui" line="841"/>
+        <location filename="../src/mainwindow.cpp" line="2974"/>
+        <location filename="../src/mainwindow.cpp" line="9054"/>
         <source>Save Problem Set</source>
         <translation>Сохранить набор проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="843"/>
+        <location filename="../src/mainwindow.ui" line="844"/>
         <source>SPA</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="855"/>
-        <location filename="../src/mainwindow.cpp" line="2985"/>
-        <location filename="../src/mainwindow.cpp" line="9079"/>
+        <location filename="../src/mainwindow.ui" line="856"/>
+        <location filename="../src/mainwindow.cpp" line="2986"/>
+        <location filename="../src/mainwindow.cpp" line="9082"/>
         <source>Load Problem Set</source>
         <translation>Загрузка набора проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2991"/>
-        <location filename="../src/mainwindow.cpp" line="10330"/>
+        <location filename="../src/mainwindow.cpp" line="2992"/>
+        <location filename="../src/mainwindow.cpp" line="10333"/>
         <source>Import FPS Problem Set</source>
         <translation>Импорт набора проблем FPS</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2997"/>
-        <location filename="../src/mainwindow.cpp" line="10361"/>
+        <location filename="../src/mainwindow.cpp" line="2998"/>
+        <location filename="../src/mainwindow.cpp" line="10364"/>
         <source>Export FPS Problem Set</source>
         <translation>Экспорт набора проблем FPS</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="858"/>
+        <location filename="../src/mainwindow.ui" line="859"/>
         <source>LP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="870"/>
+        <location filename="../src/mainwindow.ui" line="871"/>
         <source>IFPS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="882"/>
+        <location filename="../src/mainwindow.ui" line="883"/>
         <source>EFPS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="941"/>
+        <location filename="../src/mainwindow.ui" line="942"/>
         <source>Messages</source>
         <translation>Сообщения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="967"/>
-        <location filename="../src/mainwindow.ui" line="2799"/>
-        <location filename="../src/mainwindow.cpp" line="6156"/>
-        <location filename="../src/mainwindow.cpp" line="6159"/>
-        <location filename="../src/mainwindow.cpp" line="6163"/>
-        <location filename="../src/mainwindow.cpp" line="6166"/>
-        <location filename="../src/mainwindow.cpp" line="8557"/>
+        <location filename="../src/mainwindow.ui" line="968"/>
+        <location filename="../src/mainwindow.ui" line="2800"/>
+        <location filename="../src/mainwindow.cpp" line="6167"/>
+        <location filename="../src/mainwindow.cpp" line="6170"/>
+        <location filename="../src/mainwindow.cpp" line="6174"/>
+        <location filename="../src/mainwindow.cpp" line="6177"/>
+        <location filename="../src/mainwindow.cpp" line="8560"/>
         <source>Issues</source>
         <translation>Ошибки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1017"/>
-        <location filename="../src/mainwindow.ui" line="2807"/>
+        <location filename="../src/mainwindow.ui" line="1018"/>
+        <location filename="../src/mainwindow.ui" line="2808"/>
         <source>Tools Output</source>
         <translation>Вывод компилятора</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1098"/>
+        <location filename="../src/mainwindow.ui" line="1099"/>
         <source>Evaluate:</source>
         <translation>Вычисление:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1139"/>
-        <location filename="../src/mainwindow.cpp" line="2093"/>
+        <location filename="../src/mainwindow.ui" line="1140"/>
+        <location filename="../src/mainwindow.cpp" line="2094"/>
         <source>Debug Console</source>
         <translation>Консоль отладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1165"/>
+        <location filename="../src/mainwindow.ui" line="1166"/>
         <source>Call Stack</source>
         <translation>Стек вызовов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1203"/>
+        <location filename="../src/mainwindow.ui" line="1204"/>
         <source>Breakpoints</source>
         <translation>Точки останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1241"/>
+        <location filename="../src/mainwindow.ui" line="1242"/>
         <source>Locals</source>
         <translation>Локальные</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1270"/>
+        <location filename="../src/mainwindow.ui" line="1271"/>
         <source>Memory</source>
         <translation>Память</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1276"/>
+        <location filename="../src/mainwindow.ui" line="1277"/>
         <source>Address Expression:</source>
         <translation>Выражение адреса:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1354"/>
+        <location filename="../src/mainwindow.ui" line="1355"/>
         <source>History:</source>
         <translation>История:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1389"/>
+        <location filename="../src/mainwindow.ui" line="1390"/>
         <source>Search Again</source>
         <translation>Искать снова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1427"/>
+        <location filename="../src/mainwindow.ui" line="1428"/>
         <source>Replace with:</source>
         <translation>Заменить на:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1453"/>
+        <location filename="../src/mainwindow.ui" line="1454"/>
         <source>Open file in editors</source>
         <translation>Открыть файл в редакторах</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1460"/>
+        <location filename="../src/mainwindow.ui" line="1461"/>
         <source>Replace</source>
         <translation>Замена</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1467"/>
+        <location filename="../src/mainwindow.ui" line="1468"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1498"/>
-        <location filename="../src/mainwindow.ui" line="2831"/>
+        <location filename="../src/mainwindow.ui" line="1499"/>
+        <location filename="../src/mainwindow.ui" line="2832"/>
         <source>TODO</source>
         <translation>Дела (TODO)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1524"/>
-        <location filename="../src/mainwindow.ui" line="2839"/>
+        <location filename="../src/mainwindow.ui" line="1525"/>
+        <location filename="../src/mainwindow.ui" line="2840"/>
         <source>Bookmark</source>
         <translation>Закладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1562"/>
-        <location filename="../src/mainwindow.ui" line="1605"/>
-        <location filename="../src/mainwindow.ui" line="2847"/>
-        <location filename="../src/mainwindow.cpp" line="3069"/>
-        <location filename="../src/mainwindow.cpp" line="3076"/>
-        <location filename="../src/mainwindow.cpp" line="3083"/>
+        <location filename="../src/mainwindow.ui" line="1563"/>
+        <location filename="../src/mainwindow.ui" line="1606"/>
+        <location filename="../src/mainwindow.ui" line="2848"/>
+        <location filename="../src/mainwindow.cpp" line="3070"/>
+        <location filename="../src/mainwindow.cpp" line="3077"/>
+        <location filename="../src/mainwindow.cpp" line="3084"/>
         <source>Problem</source>
         <translation>Проблемы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1657"/>
-        <location filename="../src/mainwindow.ui" line="1660"/>
+        <location filename="../src/mainwindow.ui" line="1658"/>
+        <location filename="../src/mainwindow.ui" line="1661"/>
         <source>Add Probem Case</source>
         <translation>Добавить проблемный случай</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1671"/>
-        <location filename="../src/mainwindow.ui" line="1674"/>
-        <location filename="../src/mainwindow.cpp" line="3048"/>
+        <location filename="../src/mainwindow.ui" line="1672"/>
+        <location filename="../src/mainwindow.ui" line="1675"/>
+        <location filename="../src/mainwindow.cpp" line="3049"/>
         <source>Remove Problem Case</source>
         <translation>Удалить проблемный случай</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1685"/>
-        <location filename="../src/mainwindow.ui" line="1688"/>
-        <location filename="../src/mainwindow.cpp" line="3054"/>
+        <location filename="../src/mainwindow.ui" line="1686"/>
+        <location filename="../src/mainwindow.ui" line="1689"/>
+        <location filename="../src/mainwindow.cpp" line="3055"/>
         <source>Open Anwser Source File</source>
         <translation>Открыть Ответный исходный файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1706"/>
-        <location filename="../src/mainwindow.ui" line="1709"/>
-        <location filename="../src/mainwindow.cpp" line="3067"/>
+        <location filename="../src/mainwindow.ui" line="1707"/>
+        <location filename="../src/mainwindow.ui" line="1710"/>
+        <location filename="../src/mainwindow.cpp" line="3068"/>
         <source>Run All Cases</source>
         <translation>Запуск Всех случаев</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1720"/>
-        <location filename="../src/mainwindow.cpp" line="3060"/>
+        <location filename="../src/mainwindow.ui" line="1721"/>
+        <location filename="../src/mainwindow.cpp" line="3061"/>
         <source>Problem Cases Validation Options</source>
         <translation>Параметры подтверждения проблемных случаев</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1756"/>
+        <location filename="../src/mainwindow.ui" line="1757"/>
         <source>%v/%m</source>
         <translation>%v/%m</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1838"/>
-        <location filename="../src/mainwindow.ui" line="1841"/>
+        <location filename="../src/mainwindow.ui" line="1839"/>
+        <location filename="../src/mainwindow.ui" line="1842"/>
         <source>Choose Input File</source>
         <translation>Выбор файла ввода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1852"/>
-        <location filename="../src/mainwindow.ui" line="1950"/>
-        <location filename="../src/mainwindow.ui" line="1953"/>
-        <location filename="../src/mainwindow.cpp" line="3136"/>
-        <location filename="../src/mainwindow.cpp" line="3157"/>
-        <location filename="../src/mainwindow.cpp" line="3338"/>
+        <location filename="../src/mainwindow.ui" line="1853"/>
+        <location filename="../src/mainwindow.ui" line="1951"/>
+        <location filename="../src/mainwindow.ui" line="1954"/>
+        <location filename="../src/mainwindow.cpp" line="3137"/>
+        <location filename="../src/mainwindow.cpp" line="3158"/>
+        <location filename="../src/mainwindow.cpp" line="3339"/>
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1859"/>
+        <location filename="../src/mainwindow.ui" line="1860"/>
         <source>Input</source>
         <translation>Ввод</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1933"/>
+        <location filename="../src/mainwindow.ui" line="1934"/>
         <source>Expected</source>
         <translation>Ожидается</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1960"/>
+        <location filename="../src/mainwindow.ui" line="1961"/>
         <source>Choose Expected Output File</source>
         <translation>Выберите файл вывода для ожиданий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="1989"/>
+        <location filename="../src/mainwindow.ui" line="1990"/>
         <source>Output</source>
         <translation>Вывод</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2040"/>
+        <location filename="../src/mainwindow.ui" line="2041"/>
         <source>New C/C++ File</source>
         <translation>Новый файл Си/Си++</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2043"/>
+        <location filename="../src/mainwindow.ui" line="2044"/>
         <source>New Source File</source>
         <translation>Новый исходный файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2046"/>
+        <location filename="../src/mainwindow.ui" line="2047"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2055"/>
+        <location filename="../src/mainwindow.ui" line="2056"/>
         <source>Open...</source>
         <translation>Открыть...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2058"/>
+        <location filename="../src/mainwindow.ui" line="2059"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2067"/>
+        <location filename="../src/mainwindow.ui" line="2068"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2070"/>
+        <location filename="../src/mainwindow.ui" line="2071"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2079"/>
+        <location filename="../src/mainwindow.ui" line="2080"/>
         <source>Save As...</source>
         <translation>Сохранить как...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2082"/>
+        <location filename="../src/mainwindow.ui" line="2083"/>
         <source>Save As</source>
         <translation>Сохранить как</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2085"/>
+        <location filename="../src/mainwindow.ui" line="2086"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2094"/>
+        <location filename="../src/mainwindow.ui" line="2095"/>
         <source>Save All</source>
         <translation>Сохранить Всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2097"/>
+        <location filename="../src/mainwindow.ui" line="2098"/>
         <source>Ctrl+K, Ctrl+S</source>
         <translation>Ctrl+K, Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2106"/>
+        <location filename="../src/mainwindow.ui" line="2107"/>
         <source>Options</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2121"/>
+        <location filename="../src/mainwindow.ui" line="2122"/>
         <source>F9</source>
         <translation>F9</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2130"/>
-        <location filename="../src/mainwindow.ui" line="2133"/>
+        <location filename="../src/mainwindow.ui" line="2131"/>
+        <location filename="../src/mainwindow.ui" line="2134"/>
         <source>Run</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2136"/>
+        <location filename="../src/mainwindow.ui" line="2137"/>
         <source>F11</source>
         <translation>F11</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2145"/>
+        <location filename="../src/mainwindow.ui" line="2146"/>
         <source>Undo</source>
         <translation>Отмена действия</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2148"/>
+        <location filename="../src/mainwindow.ui" line="2149"/>
         <source>Ctrl+Z</source>
         <translation>Ctrl+Z</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2157"/>
+        <location filename="../src/mainwindow.ui" line="2158"/>
         <source>Redo</source>
         <translation>Повтор действия</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2160"/>
+        <location filename="../src/mainwindow.ui" line="2161"/>
         <source>Ctrl+Y</source>
         <translation>Ctrl+Y</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2169"/>
+        <location filename="../src/mainwindow.ui" line="2170"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2172"/>
+        <location filename="../src/mainwindow.ui" line="2173"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2181"/>
-        <location filename="../src/mainwindow.cpp" line="3115"/>
-        <location filename="../src/mainwindow.cpp" line="3143"/>
-        <location filename="../src/mainwindow.cpp" line="3343"/>
+        <location filename="../src/mainwindow.ui" line="2182"/>
+        <location filename="../src/mainwindow.cpp" line="3116"/>
+        <location filename="../src/mainwindow.cpp" line="3144"/>
+        <location filename="../src/mainwindow.cpp" line="3344"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2184"/>
+        <location filename="../src/mainwindow.ui" line="2185"/>
         <source>Ctrl+C</source>
         <translation>Ctrl+C</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2193"/>
-        <location filename="../src/mainwindow.cpp" line="3122"/>
+        <location filename="../src/mainwindow.ui" line="2194"/>
+        <location filename="../src/mainwindow.cpp" line="3123"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2196"/>
+        <location filename="../src/mainwindow.ui" line="2197"/>
         <source>Ctrl+V</source>
         <translation>Ctrl+V</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2201"/>
-        <location filename="../src/mainwindow.cpp" line="3129"/>
-        <location filename="../src/mainwindow.cpp" line="3349"/>
+        <location filename="../src/mainwindow.ui" line="2202"/>
+        <location filename="../src/mainwindow.cpp" line="3130"/>
+        <location filename="../src/mainwindow.cpp" line="3350"/>
         <source>Select All</source>
         <translation>Выбрать Всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2204"/>
+        <location filename="../src/mainwindow.ui" line="2205"/>
         <source>Ctrl+A</source>
         <translation>Ctrl+A</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2213"/>
+        <location filename="../src/mainwindow.ui" line="2214"/>
         <source>Indent</source>
         <translation>Добавить отступ</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2216"/>
+        <location filename="../src/mainwindow.ui" line="2217"/>
         <source>Tab</source>
         <translation>Tab</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2225"/>
+        <location filename="../src/mainwindow.ui" line="2226"/>
         <source>UnIndent</source>
         <translation>Удалить отступ</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2228"/>
+        <location filename="../src/mainwindow.ui" line="2229"/>
         <source>Shift+Tab</source>
         <translation>Shift+Tab</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2233"/>
+        <location filename="../src/mainwindow.ui" line="2234"/>
         <source>Toggle Comment</source>
         <translation>Закомментировать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2236"/>
+        <location filename="../src/mainwindow.ui" line="2237"/>
         <source>Ctrl+/</source>
         <translation>Ctrl+/</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2244"/>
+        <location filename="../src/mainwindow.ui" line="2245"/>
         <source>Collapse All</source>
         <translation>Свернуть Всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2249"/>
+        <location filename="../src/mainwindow.ui" line="2250"/>
         <source>Uncollapse All</source>
         <translation>Развернуть Всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2254"/>
+        <location filename="../src/mainwindow.ui" line="2255"/>
         <source>Encode in ANSI</source>
         <translation>Перекодировка в ANSI</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2259"/>
+        <location filename="../src/mainwindow.ui" line="2260"/>
         <source>Encode in UTF-8</source>
         <translation>Перекодировка в UTF-8</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2264"/>
+        <location filename="../src/mainwindow.ui" line="2265"/>
         <source>Auto Detect</source>
         <translation>Автоопределение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2269"/>
+        <location filename="../src/mainwindow.ui" line="2270"/>
         <source>Convert to ANSI</source>
         <translation>Преобразование в ANSI</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2274"/>
+        <location filename="../src/mainwindow.ui" line="2275"/>
         <source>Convert to UTF-8</source>
         <translation>Преобразование в UTF-8</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2283"/>
-        <location filename="../src/mainwindow.ui" line="2286"/>
+        <location filename="../src/mainwindow.ui" line="2284"/>
+        <location filename="../src/mainwindow.ui" line="2287"/>
         <source>Rebuild All</source>
         <translation>Пересобрать Всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2289"/>
+        <location filename="../src/mainwindow.ui" line="2290"/>
         <source>F12</source>
         <translation>F12</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2298"/>
+        <location filename="../src/mainwindow.ui" line="2299"/>
         <source>Stop Execution</source>
         <translation>Остановка выполнения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2301"/>
+        <location filename="../src/mainwindow.ui" line="2302"/>
         <source>F6</source>
         <translation>F6</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2316"/>
+        <location filename="../src/mainwindow.ui" line="2317"/>
         <source>F5</source>
         <translation>F5</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2325"/>
+        <location filename="../src/mainwindow.ui" line="2326"/>
         <source>Step Over</source>
         <translation>Шаг через</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2328"/>
+        <location filename="../src/mainwindow.ui" line="2329"/>
         <source>F8</source>
         <translation>F8</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2337"/>
+        <location filename="../src/mainwindow.ui" line="2338"/>
         <source>Step Into</source>
         <translation>Шаг внутрь</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2340"/>
+        <location filename="../src/mainwindow.ui" line="2341"/>
         <source>F7</source>
         <translation>F7</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2349"/>
+        <location filename="../src/mainwindow.ui" line="2350"/>
         <source>Step Out</source>
         <translation>Шаг вовне</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2352"/>
+        <location filename="../src/mainwindow.ui" line="2353"/>
         <source>Ctrl+F8</source>
         <translation>Ctrl+F8</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2361"/>
+        <location filename="../src/mainwindow.ui" line="2362"/>
         <source>Run To Cursor</source>
         <translation>Выполнить до Курсора</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2364"/>
+        <location filename="../src/mainwindow.ui" line="2365"/>
         <source>Ctrl+F5</source>
         <translation>Ctrl+F5</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2373"/>
+        <location filename="../src/mainwindow.ui" line="2374"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2376"/>
+        <location filename="../src/mainwindow.ui" line="2377"/>
         <source>F4</source>
         <translation>F4</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2385"/>
+        <location filename="../src/mainwindow.ui" line="2386"/>
         <source>Add Watch...</source>
         <translation>Добавить наблюдаемую переменную...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2390"/>
+        <location filename="../src/mainwindow.ui" line="2391"/>
         <source>View CPU Window...</source>
         <translation>Показать Окно процессора...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2395"/>
+        <location filename="../src/mainwindow.ui" line="2396"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2400"/>
+        <location filename="../src/mainwindow.ui" line="2401"/>
         <source>Find...</source>
         <translation>Поиск...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2403"/>
+        <location filename="../src/mainwindow.ui" line="2404"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2408"/>
+        <location filename="../src/mainwindow.ui" line="2409"/>
         <source>Find in Files...</source>
         <translation>Поиск в файлах...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2411"/>
+        <location filename="../src/mainwindow.ui" line="2412"/>
         <source>Ctrl+Shift+F</source>
         <translation>Ctrl+Shift+F</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2416"/>
+        <location filename="../src/mainwindow.ui" line="2417"/>
         <source>Replace...</source>
         <translation>Замена...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2419"/>
+        <location filename="../src/mainwindow.ui" line="2420"/>
         <source>Ctrl+R</source>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2424"/>
+        <location filename="../src/mainwindow.ui" line="2425"/>
         <source>Find Next</source>
         <translation>Найти следующий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2427"/>
+        <location filename="../src/mainwindow.ui" line="2428"/>
         <source>F3</source>
         <translation>F3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2432"/>
+        <location filename="../src/mainwindow.ui" line="2433"/>
         <source>Find Previous</source>
         <translation>Найти предыдущий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2435"/>
+        <location filename="../src/mainwindow.ui" line="2436"/>
         <source>Shift+F3</source>
         <translation>Shift+F3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2444"/>
+        <location filename="../src/mainwindow.ui" line="2445"/>
         <source>Remove Watch</source>
         <translation>Удалить наблюдаемую переменную</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2449"/>
+        <location filename="../src/mainwindow.ui" line="2450"/>
         <source>Remove All Watches</source>
         <translation>Удалить Все наблюдаемые переменные</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2454"/>
+        <location filename="../src/mainwindow.ui" line="2455"/>
         <source>Modify Watch...</source>
         <translation>Редактировать наблюдаемую переменную...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2463"/>
+        <location filename="../src/mainwindow.ui" line="2464"/>
         <source>Reformat Code</source>
         <translation>Переформатировать код</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2466"/>
+        <location filename="../src/mainwindow.ui" line="2467"/>
         <source>Ctrl+Shift+A</source>
         <translation>Ctrl+Shift+A</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2475"/>
+        <location filename="../src/mainwindow.ui" line="2476"/>
         <source>Go back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2478"/>
+        <location filename="../src/mainwindow.ui" line="2479"/>
         <source>Ctrl+Alt+Left</source>
         <translation>Ctrl+Alt+Left</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2487"/>
+        <location filename="../src/mainwindow.ui" line="2488"/>
         <source>Forward</source>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2490"/>
+        <location filename="../src/mainwindow.ui" line="2491"/>
         <source>Ctrl+Alt+Right</source>
         <translation>Ctrl+Alt+Left</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2495"/>
+        <location filename="../src/mainwindow.ui" line="2496"/>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2498"/>
+        <location filename="../src/mainwindow.ui" line="2499"/>
         <source>Ctrl+W</source>
         <translation>Ctrl+W</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2503"/>
+        <location filename="../src/mainwindow.ui" line="2504"/>
         <source>Close All</source>
         <translation>Закрыть всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2506"/>
+        <location filename="../src/mainwindow.ui" line="2507"/>
         <source>Ctrl+Shift+W</source>
         <translation>Ctrl+Shift+W</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2511"/>
+        <location filename="../src/mainwindow.ui" line="2512"/>
         <source>Maximize Editor</source>
         <translation>Развернуть Редактор</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2514"/>
+        <location filename="../src/mainwindow.ui" line="2515"/>
         <source>Ctrl+F11</source>
         <translation>Ctrl+F11</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2519"/>
+        <location filename="../src/mainwindow.ui" line="2520"/>
         <source>Next</source>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2522"/>
+        <location filename="../src/mainwindow.ui" line="2523"/>
         <source>Ctrl+Tab</source>
         <translation>Ctrl+Tab</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2527"/>
+        <location filename="../src/mainwindow.ui" line="2528"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2530"/>
+        <location filename="../src/mainwindow.ui" line="2531"/>
         <source>Ctrl+Shift+Tab</source>
         <translation>Ctrl+Shift+Tab</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2540"/>
+        <location filename="../src/mainwindow.ui" line="2541"/>
         <source>Toggle breakpoint</source>
         <translation>Переключить точку останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2543"/>
+        <location filename="../src/mainwindow.ui" line="2544"/>
         <source>Ctrl+F4</source>
         <translation>Ctrl+F4</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2548"/>
-        <location filename="../src/mainwindow.cpp" line="7129"/>
+        <location filename="../src/mainwindow.ui" line="2549"/>
+        <location filename="../src/mainwindow.cpp" line="7141"/>
         <source>Clear all breakpoints</source>
         <translation>Удалить все точки останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2553"/>
+        <location filename="../src/mainwindow.ui" line="2554"/>
         <source>Breakpoint property...</source>
         <translation>Свойства точки останова...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2558"/>
+        <location filename="../src/mainwindow.ui" line="2559"/>
         <source>Goto Declaration</source>
         <translation>Перейтит к Объявлению</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2561"/>
+        <location filename="../src/mainwindow.ui" line="2562"/>
         <source>Ctrl+J</source>
         <translation>Ctrl+J</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2566"/>
+        <location filename="../src/mainwindow.ui" line="2567"/>
         <source>Goto Definition</source>
         <translation>Перейти к Определению</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2569"/>
+        <location filename="../src/mainwindow.ui" line="2570"/>
         <source>Ctrl+Shift+J</source>
         <translation>Ctrl+Shift+J</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2574"/>
+        <location filename="../src/mainwindow.ui" line="2575"/>
         <source>Find references</source>
         <translation>Найти ссылки/упоминания</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2579"/>
+        <location filename="../src/mainwindow.ui" line="2580"/>
         <source>Open containing folder</source>
         <translation>Открыть содержащий каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2587"/>
+        <location filename="../src/mainwindow.ui" line="2588"/>
         <source>Open a terminal here</source>
         <translation>Открыть терминал здесь</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2595"/>
+        <location filename="../src/mainwindow.ui" line="2596"/>
         <source>File Properties...</source>
         <translation>Свойства файла...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2600"/>
+        <location filename="../src/mainwindow.ui" line="2601"/>
         <source>Close Project</source>
         <translation>Закрыть проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2605"/>
+        <location filename="../src/mainwindow.ui" line="2606"/>
         <source>Project options</source>
         <translation>Параметры проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2610"/>
+        <location filename="../src/mainwindow.ui" line="2611"/>
         <source>New Project...</source>
         <translation>Новый проект...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2615"/>
-        <location filename="../src/mainwindow.ui" line="2618"/>
+        <location filename="../src/mainwindow.ui" line="2616"/>
+        <location filename="../src/mainwindow.ui" line="2619"/>
         <source>New Project File</source>
         <translation>Новый файл проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2623"/>
+        <location filename="../src/mainwindow.ui" line="2624"/>
         <source>Add to project...</source>
         <translation>Добавить в проект...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2628"/>
+        <location filename="../src/mainwindow.ui" line="2629"/>
         <source>Remove from project</source>
         <translation>Удалить из проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2633"/>
+        <location filename="../src/mainwindow.ui" line="2634"/>
         <source>View Makefile</source>
         <translation>Просмотр Makefile</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2638"/>
+        <location filename="../src/mainwindow.ui" line="2639"/>
         <source>Clean</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2643"/>
+        <location filename="../src/mainwindow.ui" line="2644"/>
         <source>Open Folder in Explorer</source>
         <translation>Открыть каталог в проводнике</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2648"/>
+        <location filename="../src/mainwindow.ui" line="2649"/>
         <source>Open In Terminal</source>
         <translation>Открыть в терминале</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2653"/>
+        <location filename="../src/mainwindow.ui" line="2654"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2658"/>
-        <location filename="../src/mainwindow.cpp" line="8496"/>
+        <location filename="../src/mainwindow.ui" line="2659"/>
+        <location filename="../src/mainwindow.cpp" line="8499"/>
         <source>Rename Symbol</source>
         <translation>Переименовать символ</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2661"/>
+        <location filename="../src/mainwindow.ui" line="2662"/>
         <source>Shift+F6</source>
         <translation>Shift+F6</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2666"/>
+        <location filename="../src/mainwindow.ui" line="2667"/>
         <source>Print...</source>
         <translation>Печать...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2669"/>
+        <location filename="../src/mainwindow.ui" line="2670"/>
         <source>Ctrl+P</source>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2674"/>
-        <location filename="../src/mainwindow.cpp" line="8775"/>
+        <location filename="../src/mainwindow.ui" line="2675"/>
+        <location filename="../src/mainwindow.cpp" line="8778"/>
         <source>Export As RTF</source>
         <translation>Экспорт в RTF</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2679"/>
-        <location filename="../src/mainwindow.cpp" line="8797"/>
+        <location filename="../src/mainwindow.ui" line="2680"/>
+        <location filename="../src/mainwindow.cpp" line="8800"/>
         <source>Export As HTML</source>
         <translation>Экспорт в HTML</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2684"/>
+        <location filename="../src/mainwindow.ui" line="2685"/>
         <source>Move To Other View</source>
         <translation>Переместить в другой вид</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2687"/>
+        <location filename="../src/mainwindow.ui" line="2688"/>
         <source>Ctrl+M</source>
         <translation>Ctrl+M</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2695"/>
-        <location filename="../src/mainwindow.ui" line="2698"/>
+        <location filename="../src/mainwindow.ui" line="2696"/>
+        <location filename="../src/mainwindow.ui" line="2699"/>
         <source>C++ Reference</source>
         <translation>Справочник по языку Си++</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2703"/>
+        <location filename="../src/mainwindow.ui" line="2704"/>
         <source>EGE Manual</source>
         <translation>Руководство EGE</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2708"/>
+        <location filename="../src/mainwindow.ui" line="2709"/>
         <source>Modify Bookmark Description</source>
         <translation>Изменить описание закладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2713"/>
+        <location filename="../src/mainwindow.ui" line="2714"/>
         <source>Locate in Files View</source>
         <translation>Показать расположение в файле</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2718"/>
-        <location filename="../src/mainwindow.ui" line="2721"/>
-        <location filename="../src/mainwindow.cpp" line="8959"/>
+        <location filename="../src/mainwindow.ui" line="2719"/>
+        <location filename="../src/mainwindow.ui" line="2722"/>
+        <location filename="../src/mainwindow.cpp" line="8962"/>
         <source>Choose Working Folder</source>
         <translation>Выбрать рабочий каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2730"/>
+        <location filename="../src/mainwindow.ui" line="2731"/>
         <source>Running Parameters...</source>
         <translation>Параметры запуска...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2735"/>
+        <location filename="../src/mainwindow.ui" line="2736"/>
         <source>C Reference</source>
         <translation>Справочник по языку Си</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2743"/>
+        <location filename="../src/mainwindow.ui" line="2744"/>
         <source>Show Tool Panels</source>
         <translation>Показать панель инструментов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2751"/>
+        <location filename="../src/mainwindow.ui" line="2752"/>
         <source>Status Bar</source>
         <translation>Панель статуса</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2852"/>
+        <location filename="../src/mainwindow.ui" line="2853"/>
         <source>Delete Line</source>
         <translation>Удалить строку</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2855"/>
+        <location filename="../src/mainwindow.ui" line="2856"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2860"/>
+        <location filename="../src/mainwindow.ui" line="2861"/>
         <source>Duplicate Line</source>
         <translation>Дублировать строку</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2863"/>
+        <location filename="../src/mainwindow.ui" line="2864"/>
         <source>Ctrl+D</source>
         <translation>Ctrl+D</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2868"/>
+        <location filename="../src/mainwindow.ui" line="2869"/>
         <source>Delete Word</source>
         <translation>Удалить слово</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2871"/>
+        <location filename="../src/mainwindow.ui" line="2872"/>
         <source>Ctrl+Shift+D</source>
         <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2876"/>
+        <location filename="../src/mainwindow.ui" line="2877"/>
         <source>Delete to EOL</source>
         <translation>Удалить до конца строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2879"/>
+        <location filename="../src/mainwindow.ui" line="2880"/>
         <source>Ctrl+Del</source>
         <translation>Ctrl+Del</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2884"/>
+        <location filename="../src/mainwindow.ui" line="2885"/>
         <source>Delete to BOL</source>
         <translation>Удалить до начала строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2887"/>
+        <location filename="../src/mainwindow.ui" line="2888"/>
         <source>Ctrl+Backspace</source>
         <translation>Ctrl+Backspace</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2896"/>
+        <location filename="../src/mainwindow.ui" line="2897"/>
         <source>Interrupt</source>
         <translation>Прерывание</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2901"/>
-        <location filename="../src/mainwindow.ui" line="2904"/>
+        <location filename="../src/mainwindow.ui" line="2902"/>
+        <location filename="../src/mainwindow.ui" line="2905"/>
         <source>Delete To Word Begin</source>
         <translation>Удалить до начала слова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2907"/>
+        <location filename="../src/mainwindow.ui" line="2908"/>
         <source>Ctrl+Shift+B</source>
         <translation>Ctrl+Shift+B</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2912"/>
+        <location filename="../src/mainwindow.ui" line="2913"/>
         <source>Delete to Word End</source>
         <translation>Удалить до конца слова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2915"/>
+        <location filename="../src/mainwindow.ui" line="2916"/>
         <source>Ctrl+Shift+E</source>
         <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2920"/>
+        <location filename="../src/mainwindow.ui" line="2921"/>
         <source>New Class...</source>
         <translation>Новый класс...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2925"/>
-        <location filename="../src/mainwindow.ui" line="2928"/>
+        <location filename="../src/mainwindow.ui" line="2926"/>
+        <location filename="../src/mainwindow.ui" line="2929"/>
         <source>New Header...</source>
         <translation>Новый заголовочный файл...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2933"/>
+        <location filename="../src/mainwindow.ui" line="2934"/>
         <source>Website</source>
         <translation>Сайт</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2941"/>
+        <location filename="../src/mainwindow.ui" line="2942"/>
         <source>Hide Non Support Files</source>
         <translation>Скрыть не поддерживаемые файлы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2946"/>
+        <location filename="../src/mainwindow.ui" line="2947"/>
         <source>Toggle Block Comment</source>
         <translation>Закомментировать блок кода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2949"/>
+        <location filename="../src/mainwindow.ui" line="2950"/>
         <source>Alt+Shift+A</source>
         <translation>Alt+Shift+A</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2954"/>
+        <location filename="../src/mainwindow.ui" line="2955"/>
         <source>Match Bracket</source>
         <translation>Совпадение скобок</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2957"/>
+        <location filename="../src/mainwindow.ui" line="2958"/>
         <source>Ctrl+]</source>
         <translation>Ctrl+]</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2962"/>
+        <location filename="../src/mainwindow.ui" line="2963"/>
         <source>Move Selection Up</source>
         <translation>Переместить выделенное вверх</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2965"/>
+        <location filename="../src/mainwindow.ui" line="2966"/>
         <source>Ctrl+Shift+Up</source>
         <translation>Ctrl+Shift+Вверх</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2970"/>
+        <location filename="../src/mainwindow.ui" line="2971"/>
         <source>Move Selection Down</source>
         <translation>Переместить выделенное вниз</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2973"/>
+        <location filename="../src/mainwindow.ui" line="2974"/>
         <source>Ctrl+Shift+Down</source>
         <translation>Ctrl+Shift+Вниз</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2978"/>
+        <location filename="../src/mainwindow.ui" line="2979"/>
         <source>Convert to UTF-8 BOM</source>
         <translation>Преобразовать в UTF-8 BOM</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2983"/>
+        <location filename="../src/mainwindow.ui" line="2984"/>
         <source>Encode in UTF-8 BOM</source>
         <translation>Перекодировка в UTF-8 BOM</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2992"/>
+        <location filename="../src/mainwindow.ui" line="2993"/>
         <source>Compiler Options...</source>
         <translation>Параметры компилятора...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="2997"/>
+        <location filename="../src/mainwindow.ui" line="2998"/>
         <source>Toggle Explorer Panel</source>
         <translation>Показать/Скрыть панель проводника</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3000"/>
+        <location filename="../src/mainwindow.ui" line="3001"/>
         <source>Ctrl+F9</source>
         <translation>Ctrl+F9</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3005"/>
+        <location filename="../src/mainwindow.ui" line="3006"/>
         <source>Toggle Messages Panel</source>
         <translation>Показать/Скрыть панель сообщений</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3008"/>
+        <location filename="../src/mainwindow.ui" line="3009"/>
         <source>Ctrl+F10</source>
         <translation>Ctrl+F10</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3013"/>
+        <location filename="../src/mainwindow.ui" line="3014"/>
         <source>Raylib Manual</source>
         <translation>Руководство по Raylib</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3018"/>
+        <location filename="../src/mainwindow.ui" line="3019"/>
         <source>Select Word</source>
         <translation>Выбор слова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3023"/>
+        <location filename="../src/mainwindow.ui" line="3024"/>
         <source>Go to Line...</source>
         <translation>Перейти к строке...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3026"/>
+        <location filename="../src/mainwindow.ui" line="3027"/>
         <source>Ctrl+G</source>
         <translation>Ctrl+G</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3031"/>
+        <location filename="../src/mainwindow.ui" line="3032"/>
         <source>New Template...</source>
         <translation>Новый шаблон...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3034"/>
+        <location filename="../src/mainwindow.ui" line="3035"/>
         <source>New Template from Project</source>
         <translation>Новый шаблон из проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3039"/>
+        <location filename="../src/mainwindow.ui" line="3040"/>
         <source>Goto block start</source>
         <translation>Перейти к началу блока</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3042"/>
+        <location filename="../src/mainwindow.ui" line="3043"/>
         <source>Ctrl+Alt+Up</source>
         <translation>Ctrl+Alt+Вверх</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3047"/>
+        <location filename="../src/mainwindow.ui" line="3048"/>
         <source>Goto block end</source>
         <translation>Перейти к концу блока</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3050"/>
+        <location filename="../src/mainwindow.ui" line="3051"/>
         <source>Ctrl+Alt+Down</source>
         <translation>Ctrl+Alt+Вниз</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3055"/>
+        <location filename="../src/mainwindow.ui" line="3056"/>
         <source>Switch header/source</source>
         <translation>Переключение заголовочного/исходного файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3058"/>
+        <location filename="../src/mainwindow.ui" line="3059"/>
         <source>Switch Header/Source</source>
         <translation>Переключение Заголовочного/Исходного файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3063"/>
+        <location filename="../src/mainwindow.ui" line="3064"/>
         <source>Generate Assembly</source>
         <translation>Сформировать код Ассемблера</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3066"/>
+        <location filename="../src/mainwindow.ui" line="3067"/>
         <source>Ctrl+F12</source>
         <translation>Ctrl+F12</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3071"/>
+        <location filename="../src/mainwindow.ui" line="3072"/>
         <source>Trim trailing spaces</source>
         <translation>Обрезка конечных пробелов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3076"/>
+        <location filename="../src/mainwindow.ui" line="3077"/>
         <source>Toggle Readonly</source>
         <translation>Переключить режим &quot;только чтение&quot;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3079"/>
+        <location filename="../src/mainwindow.ui" line="3080"/>
         <source>Ctrl+Shift+R</source>
         <translation>Ctrl+Shift+R</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3084"/>
+        <location filename="../src/mainwindow.ui" line="3085"/>
         <source>Submit Issues</source>
         <translation>Подтвердить предложение</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3089"/>
+        <location filename="../src/mainwindow.ui" line="3090"/>
         <source>Document</source>
         <translation>Документ</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3092"/>
+        <location filename="../src/mainwindow.ui" line="3093"/>
         <source>F1</source>
         <translation>F1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3097"/>
+        <location filename="../src/mainwindow.ui" line="3098"/>
         <source>New GAS File</source>
         <translation>Новый файл GAS</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3102"/>
+        <location filename="../src/mainwindow.ui" line="3103"/>
         <source>GNU Assembler Manual</source>
         <translation>Руководство по Ассемблеру GNU</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3107"/>
+        <location filename="../src/mainwindow.ui" line="3108"/>
         <source>x86 Assembly Language Reference Manual</source>
         <translation>Справочное руководство по языку Ассемблера x86</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3112"/>
+        <location filename="../src/mainwindow.ui" line="3113"/>
         <source>IA-32 Assembly Language Reference Manual</source>
         <translation>Руководство по языку Ассемблера IA-32</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3117"/>
+        <location filename="../src/mainwindow.ui" line="3118"/>
         <source>Add Watchpoint...</source>
         <translation>Добавить Точку наблюдения...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3120"/>
+        <location filename="../src/mainwindow.ui" line="3121"/>
         <source>Add a watchpoint that&apos;s triggered when it&apos;s modified.</source>
         <translation>Добавить точку наблюдения, которая срабатывает при ее изменении.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3125"/>
+        <location filename="../src/mainwindow.ui" line="3126"/>
         <source>New Text File</source>
         <translation>Новый текстовый файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3130"/>
+        <location filename="../src/mainwindow.ui" line="3131"/>
         <source>Page Up</source>
         <translation>На страницу вверх</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3138"/>
+        <location filename="../src/mainwindow.ui" line="3139"/>
         <source>Page Down</source>
         <translation>На страницу вниз</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3146"/>
+        <location filename="../src/mainwindow.ui" line="3147"/>
         <source>Goto Line Start</source>
         <translation>Перейти на начало строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3154"/>
+        <location filename="../src/mainwindow.ui" line="3155"/>
         <source>Goto Line End</source>
         <translation>Перейти на конец строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3162"/>
+        <location filename="../src/mainwindow.ui" line="3163"/>
         <source>Goto File Start</source>
         <translation>Перейти к началу файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3170"/>
+        <location filename="../src/mainwindow.ui" line="3171"/>
         <source>Goto File End</source>
         <translation>Перейти к концу файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3178"/>
+        <location filename="../src/mainwindow.ui" line="3179"/>
         <source>Page Up and Select</source>
         <translation>Выделить Страницу Вверх</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3186"/>
+        <location filename="../src/mainwindow.ui" line="3187"/>
         <source>Page Down and Select</source>
         <translation>Выделить Страницу Вниз</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3194"/>
+        <location filename="../src/mainwindow.ui" line="3195"/>
         <source>Goto Page Start</source>
         <translation>Перейти к началу страницы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3202"/>
+        <location filename="../src/mainwindow.ui" line="3203"/>
         <source>Goto Page End</source>
         <translation>Перейти к концу страницы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3210"/>
+        <location filename="../src/mainwindow.ui" line="3211"/>
         <source>Goto Page Start and Select</source>
         <translation>Выделить до начала страницы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3218"/>
+        <location filename="../src/mainwindow.ui" line="3219"/>
         <source>Goto Page End and Select</source>
         <translation>Выделить до конца страницы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3226"/>
+        <location filename="../src/mainwindow.ui" line="3227"/>
         <source>Goto Line Start and Select</source>
         <translation>Выделить до начала строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3234"/>
+        <location filename="../src/mainwindow.ui" line="3235"/>
         <source>Goto Line End and Select</source>
         <translation>Выделить до конца строки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3242"/>
+        <location filename="../src/mainwindow.ui" line="3243"/>
         <source>Goto File Start and Select</source>
         <translation>Выделить до начала файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3250"/>
+        <location filename="../src/mainwindow.ui" line="3251"/>
         <source>Goto File End and Select</source>
         <translation>Выделить до конца файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3258"/>
+        <location filename="../src/mainwindow.ui" line="3259"/>
         <source>Close Others</source>
         <translation>Закрыть другие</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3266"/>
+        <location filename="../src/mainwindow.ui" line="3267"/>
         <source>OI Wiki</source>
         <translation>OI Wiki</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3274"/>
+        <location filename="../src/mainwindow.ui" line="3275"/>
         <source>Turtle Graphics Tutorial</source>
         <translation>Руководство по графике Turtle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3282"/>
+        <location filename="../src/mainwindow.ui" line="3283"/>
         <source>Toggle Bookmark</source>
         <translation>Сделать закладку</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3285"/>
+        <location filename="../src/mainwindow.ui" line="3286"/>
         <source>Ctrl+B</source>
         <translation>Ctrl+B</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3293"/>
+        <location filename="../src/mainwindow.ui" line="3294"/>
         <source>Code Completion</source>
         <translation>Дополнение кода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3296"/>
+        <location filename="../src/mainwindow.ui" line="3297"/>
         <source>Ctrl+Shift+/</source>
         <translation>Ctrl+Shift+/</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3307"/>
+        <location filename="../src/mainwindow.ui" line="3308"/>
         <source>C/C++ Header</source>
         <translation>Заголовок Си/Си++</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3365"/>
+        <location filename="../src/mainwindow.ui" line="3366"/>
         <source>GNU Assembly</source>
         <translation>GNU Ассемблер</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3370"/>
+        <location filename="../src/mainwindow.ui" line="3371"/>
         <source>New NASM File</source>
         <translation>Новый файл NASM</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.ui" line="3376"/>
+        <source>Reparse Code</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>AT&amp;&amp;T ASM</source>
         <translation type="vanished">Ассемблер AT&amp;&amp;T</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3315"/>
+        <location filename="../src/mainwindow.ui" line="3316"/>
         <source>Text File</source>
         <translation>Тектовый файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3323"/>
+        <location filename="../src/mainwindow.ui" line="3324"/>
         <source>C File</source>
         <translation>Файл Си</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3331"/>
+        <location filename="../src/mainwindow.ui" line="3332"/>
         <source>C++ File</source>
         <translation>Файл Си++</translation>
     </message>
@@ -5724,27 +5779,27 @@
         <translation type="vanished">Ассемблер Intel</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3336"/>
+        <location filename="../src/mainwindow.ui" line="3337"/>
         <source>Generate GIMPLE</source>
         <translation>Формирование GIMPLE</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3339"/>
+        <location filename="../src/mainwindow.ui" line="3340"/>
         <source>Ctrl+Shift+F12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3344"/>
+        <location filename="../src/mainwindow.ui" line="3345"/>
         <source>Preprocess</source>
         <translation>Предобработка (preprocess)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3349"/>
+        <location filename="../src/mainwindow.ui" line="3350"/>
         <source>Paste indentation</source>
         <translation>Вставка отступа</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.ui" line="3357"/>
+        <location filename="../src/mainwindow.ui" line="3358"/>
         <source>NASM</source>
         <translation></translation>
     </message>
@@ -5769,15 +5824,17 @@
         <location filename="../src/mainwindow.cpp" line="325"/>
         <location filename="../src/mainwindow.cpp" line="333"/>
         <location filename="../src/mainwindow.cpp" line="342"/>
-        <location filename="../src/mainwindow.cpp" line="414"/>
-        <location filename="../src/mainwindow.cpp" line="1891"/>
-        <location filename="../src/mainwindow.cpp" line="3740"/>
-        <location filename="../src/mainwindow.cpp" line="3857"/>
-        <location filename="../src/mainwindow.cpp" line="5648"/>
-        <location filename="../src/mainwindow.cpp" line="5818"/>
-        <location filename="../src/mainwindow.cpp" line="6549"/>
-        <location filename="../src/mainwindow.cpp" line="6561"/>
-        <location filename="../src/mainwindow.cpp" line="10150"/>
+        <location filename="../src/mainwindow.cpp" line="413"/>
+        <location filename="../src/mainwindow.cpp" line="1892"/>
+        <location filename="../src/mainwindow.cpp" line="3745"/>
+        <location filename="../src/mainwindow.cpp" line="3862"/>
+        <location filename="../src/mainwindow.cpp" line="5659"/>
+        <location filename="../src/mainwindow.cpp" line="5829"/>
+        <location filename="../src/mainwindow.cpp" line="6560"/>
+        <location filename="../src/mainwindow.cpp" line="6572"/>
+        <location filename="../src/mainwindow.cpp" line="8788"/>
+        <location filename="../src/mainwindow.cpp" line="8810"/>
+        <location filename="../src/mainwindow.cpp" line="10153"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -5807,8 +5864,8 @@
         <translation>Вставить фрагмент кода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="373"/>
-        <location filename="../src/mainwindow.cpp" line="8989"/>
+        <location filename="../src/mainwindow.cpp" line="372"/>
+        <location filename="../src/mainwindow.cpp" line="8992"/>
         <source>Problem Set %1</source>
         <translation>Набор проблем %1</translation>
     </message>
@@ -5900,1089 +5957,1089 @@
         <translation>Перезапись</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2389"/>
+        <location filename="../src/mainwindow.cpp" line="2390"/>
         <source>Missing Project Files</source>
         <translation>Утраченные файлы проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2390"/>
+        <location filename="../src/mainwindow.cpp" line="2391"/>
         <source>The following files is missing, can&apos;t build the project:</source>
         <translation>Следующие файлы утрачены, сборка проекта невозможна:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2481"/>
+        <location filename="../src/mainwindow.cpp" line="2482"/>
         <source>Source file is not compiled.</source>
         <translation>Исходный файл не скомпилирован.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2583"/>
-        <location filename="../src/mainwindow.cpp" line="2790"/>
-        <location filename="../src/mainwindow.cpp" line="6257"/>
-        <location filename="../src/mainwindow.cpp" line="6264"/>
+        <location filename="../src/mainwindow.cpp" line="2584"/>
+        <location filename="../src/mainwindow.cpp" line="2791"/>
+        <location filename="../src/mainwindow.cpp" line="6268"/>
+        <location filename="../src/mainwindow.cpp" line="6275"/>
         <source>Wrong Compiler Settings</source>
         <translation>Неправильные настройки компилятора</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2584"/>
-        <location filename="../src/mainwindow.cpp" line="2791"/>
-        <location filename="../src/mainwindow.cpp" line="6258"/>
-        <location filename="../src/mainwindow.cpp" line="6265"/>
+        <location filename="../src/mainwindow.cpp" line="2585"/>
+        <location filename="../src/mainwindow.cpp" line="2792"/>
+        <location filename="../src/mainwindow.cpp" line="6269"/>
+        <location filename="../src/mainwindow.cpp" line="6276"/>
         <source>Compiler is set not to generate executable.</source>
         <translation>Компилятор не настроен для формирования исполнимого файла.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2585"/>
-        <location filename="../src/mainwindow.cpp" line="6259"/>
+        <location filename="../src/mainwindow.cpp" line="2586"/>
+        <location filename="../src/mainwindow.cpp" line="6270"/>
         <source>We need the executabe to run problem case.</source>
         <translation>Необходим исполнимый файл для запуска проблемного случая.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2600"/>
+        <location filename="../src/mainwindow.cpp" line="2601"/>
         <source>No compiler set</source>
         <translation>Нет набора компиляторов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2601"/>
+        <location filename="../src/mainwindow.cpp" line="2602"/>
         <source>No compiler set is configured.</source>
         <translation>Набор компиляторов не настроен.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2601"/>
+        <location filename="../src/mainwindow.cpp" line="2602"/>
         <source>Can&apos;t start debugging.</source>
         <translation>Нельзя запустить отладку.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2621"/>
-        <location filename="../src/mainwindow.cpp" line="2744"/>
-        <location filename="../src/mainwindow.cpp" line="5419"/>
+        <location filename="../src/mainwindow.cpp" line="2622"/>
+        <location filename="../src/mainwindow.cpp" line="2745"/>
+        <location filename="../src/mainwindow.cpp" line="5430"/>
         <source>Correct compile settings for debug</source>
         <translation>Правильные настройки компилятора для отладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2622"/>
-        <location filename="../src/mainwindow.cpp" line="2745"/>
+        <location filename="../src/mainwindow.cpp" line="2623"/>
+        <location filename="../src/mainwindow.cpp" line="2746"/>
         <source>The generated executable won&apos;t have debug symbol infos, and can&apos;t be debugged.</source>
         <translation>Создаваемый исполнимый файл не содержит информации для отладки и не может быть отлажен.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2624"/>
-        <location filename="../src/mainwindow.cpp" line="2747"/>
-        <location filename="../src/mainwindow.cpp" line="5422"/>
+        <location filename="../src/mainwindow.cpp" line="2625"/>
+        <location filename="../src/mainwindow.cpp" line="2748"/>
+        <location filename="../src/mainwindow.cpp" line="5433"/>
         <source>If you are using the Release compiler set, please use choose the Debug version from toolbar.</source>
         <translation>Если Вы использует набор компиляторов Выпуск(Release), пожалуйста выберите версию Отладка(Debug) на панели инструментов.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2626"/>
-        <location filename="../src/mainwindow.cpp" line="2749"/>
-        <location filename="../src/mainwindow.cpp" line="5424"/>
+        <location filename="../src/mainwindow.cpp" line="2627"/>
+        <location filename="../src/mainwindow.cpp" line="2750"/>
+        <location filename="../src/mainwindow.cpp" line="5435"/>
         <source>Or you can manually change the following settings in the options dialog&apos;s compiler set page:</source>
         <translation>Или Вы можете вручную изменить следующие настройки на странице настройки компилятора в диалоговом окне &quot;Параметры&quot;:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2628"/>
-        <location filename="../src/mainwindow.cpp" line="2751"/>
-        <location filename="../src/mainwindow.cpp" line="5426"/>
+        <location filename="../src/mainwindow.cpp" line="2629"/>
+        <location filename="../src/mainwindow.cpp" line="2752"/>
+        <location filename="../src/mainwindow.cpp" line="5437"/>
         <source> - Turned on the &quot;Generate debug info (-g3)&quot; option.</source>
         <translation> - Включен параметр &quot;Включение отладочной информации (-g3)&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2630"/>
-        <location filename="../src/mainwindow.cpp" line="2753"/>
-        <location filename="../src/mainwindow.cpp" line="5428"/>
+        <location filename="../src/mainwindow.cpp" line="2631"/>
+        <location filename="../src/mainwindow.cpp" line="2754"/>
+        <location filename="../src/mainwindow.cpp" line="5439"/>
         <source> - Turned off the &quot;Strip executable (-s)&quot; option.</source>
         <translation> - Выключен парамет &quot;Сжимать исполнимые файлы&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2632"/>
-        <location filename="../src/mainwindow.cpp" line="2755"/>
-        <location filename="../src/mainwindow.cpp" line="5430"/>
+        <location filename="../src/mainwindow.cpp" line="2633"/>
+        <location filename="../src/mainwindow.cpp" line="2756"/>
+        <location filename="../src/mainwindow.cpp" line="5441"/>
         <source> - Turned off the &quot;Optimization level (-O)&quot; option or set it to &quot;Debug (-Og)&quot;.</source>
         <translation> - Выключен параметр &quot;Уровень оптимизации (-O)&quot; или установлен параметр &quot;Отладка (-Og)&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2634"/>
-        <location filename="../src/mainwindow.cpp" line="2757"/>
-        <location filename="../src/mainwindow.cpp" line="5432"/>
-        <location filename="../src/mainwindow.cpp" line="5434"/>
+        <location filename="../src/mainwindow.cpp" line="2635"/>
+        <location filename="../src/mainwindow.cpp" line="2758"/>
+        <location filename="../src/mainwindow.cpp" line="5443"/>
+        <location filename="../src/mainwindow.cpp" line="5445"/>
         <source>You should recompile after change the compiler set or it&apos;s settings.</source>
         <translation>Вам следует перекомпилировать файл после изменения набора компиляторов или его настроек.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2636"/>
-        <location filename="../src/mainwindow.cpp" line="2759"/>
-        <location filename="../src/mainwindow.cpp" line="5436"/>
+        <location filename="../src/mainwindow.cpp" line="2637"/>
+        <location filename="../src/mainwindow.cpp" line="2760"/>
+        <location filename="../src/mainwindow.cpp" line="5447"/>
         <source>Do you want to mannually change the compiler set settings now?</source>
         <translation>Хотите ли Вы сейчас вручную изменить настройки набора компиляторов?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2686"/>
+        <location filename="../src/mainwindow.cpp" line="2687"/>
         <source>Host applcation missing</source>
         <translation>Host-приложение отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2687"/>
+        <location filename="../src/mainwindow.cpp" line="2688"/>
         <source>DLL project needs a host application to run.</source>
         <translation>DLL-проект нуждается в host-приложении для запуска.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2689"/>
+        <location filename="../src/mainwindow.cpp" line="2690"/>
         <source>But it&apos;s missing.</source>
         <translation>Но оно утрачено.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2694"/>
+        <location filename="../src/mainwindow.cpp" line="2695"/>
         <source>Host application not exists</source>
         <translation>Host-приложение не существует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2695"/>
+        <location filename="../src/mainwindow.cpp" line="2696"/>
         <source>Host application file &apos;%1&apos; doesn&apos;t exist.</source>
         <translation>Файл Host-приложения &apos;%1&apos; не существует.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2792"/>
-        <location filename="../src/mainwindow.cpp" line="6266"/>
+        <location filename="../src/mainwindow.cpp" line="2793"/>
+        <location filename="../src/mainwindow.cpp" line="6277"/>
         <source>Please correct this before start debugging</source>
         <translation>Пожалуйста, исправьте это перед началом отладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2951"/>
+        <location filename="../src/mainwindow.cpp" line="2952"/>
         <source>Auto Save Error</source>
         <translation>Ошибка автосохранения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2952"/>
+        <location filename="../src/mainwindow.cpp" line="2953"/>
         <source>Auto save &quot;%1&quot; to &quot;%2&quot; failed:%3</source>
         <translation>Автосохранение &quot;%1&quot; в &quot;%2&quot; не удалось:%3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2967"/>
+        <location filename="../src/mainwindow.cpp" line="2968"/>
         <source>Rename Problem Set</source>
         <translation>Переименование набора проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2979"/>
+        <location filename="../src/mainwindow.cpp" line="2980"/>
         <source>Save Problem Set As</source>
         <translation>Сохранить Набор проблем как</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3016"/>
+        <location filename="../src/mainwindow.cpp" line="3017"/>
         <source>Open Source File</source>
         <translation>Открытие исходного файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3022"/>
+        <location filename="../src/mainwindow.cpp" line="3023"/>
         <source>Rename Problem</source>
         <translation>Переименование проблемы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3028"/>
+        <location filename="../src/mainwindow.cpp" line="3029"/>
         <source>Goto Url</source>
         <translation>Перейти на адрес</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3034"/>
+        <location filename="../src/mainwindow.cpp" line="3035"/>
         <source>Properties...</source>
         <translation>Свойства...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3042"/>
+        <location filename="../src/mainwindow.cpp" line="3043"/>
         <source>Add Problem Case</source>
         <translation>Добавить проблемный случай</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3074"/>
+        <location filename="../src/mainwindow.cpp" line="3075"/>
         <source>Run Current Case</source>
         <translation>Запуск проблемного случая</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3081"/>
-        <location filename="../src/mainwindow.cpp" line="4558"/>
+        <location filename="../src/mainwindow.cpp" line="3082"/>
+        <location filename="../src/mainwindow.cpp" line="4563"/>
         <source>Batch Set Cases</source>
         <translation>Пакетный набор случаев</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3090"/>
+        <location filename="../src/mainwindow.cpp" line="3091"/>
         <source>Remove</source>
         <translation>Удаление</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3096"/>
+        <location filename="../src/mainwindow.cpp" line="3097"/>
         <source>Remove All Bookmarks</source>
         <translation>Удалить все закладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3101"/>
+        <location filename="../src/mainwindow.cpp" line="3102"/>
         <source>Modify Description</source>
         <translation>Изменить описание</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3108"/>
+        <location filename="../src/mainwindow.cpp" line="3109"/>
         <source>Show detail debug logs</source>
         <translation>Показать детальный протокол отладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3150"/>
+        <location filename="../src/mainwindow.cpp" line="3151"/>
         <source>Copy all</source>
         <translation>Копировать всё</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3164"/>
+        <location filename="../src/mainwindow.cpp" line="3165"/>
         <source>Remove this search</source>
         <translation>Удалить найденное</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3170"/>
+        <location filename="../src/mainwindow.cpp" line="3171"/>
         <source>Clear all searches</source>
         <translation>Очистить все результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3177"/>
+        <location filename="../src/mainwindow.cpp" line="3178"/>
         <source>Breakpoint condition...</source>
         <translation>Условие точки останова...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3183"/>
+        <location filename="../src/mainwindow.cpp" line="3184"/>
         <source>Remove All Breakpoints</source>
         <translation>Удалить все точки останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3188"/>
+        <location filename="../src/mainwindow.cpp" line="3189"/>
         <source>Remove Breakpoint</source>
         <translation>Удалить точку останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3195"/>
+        <location filename="../src/mainwindow.cpp" line="3196"/>
         <source>Rename File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3200"/>
-        <location filename="../src/mainwindow.cpp" line="5170"/>
+        <location filename="../src/mainwindow.cpp" line="3201"/>
+        <location filename="../src/mainwindow.cpp" line="5175"/>
         <source>Add Folder</source>
         <translation>Добавить каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3206"/>
+        <location filename="../src/mainwindow.cpp" line="3207"/>
         <source>Rename Folder</source>
         <translation>Переименовать каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3212"/>
+        <location filename="../src/mainwindow.cpp" line="3213"/>
         <source>Remove Folder</source>
         <translation>Удалить каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3217"/>
+        <location filename="../src/mainwindow.cpp" line="3218"/>
         <source>Switch to normal view</source>
         <translation>Переключить на нормальный вид</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3223"/>
+        <location filename="../src/mainwindow.cpp" line="3224"/>
         <source>Switch to custom view</source>
         <translation>Переключить на пользовательский вид</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3230"/>
+        <location filename="../src/mainwindow.cpp" line="3231"/>
         <source>Sort By Type</source>
         <translation>Сортировка по типу</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3234"/>
+        <location filename="../src/mainwindow.cpp" line="3235"/>
         <source>Sort alphabetically</source>
         <translation>Сортировка по алфавиту</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3238"/>
+        <location filename="../src/mainwindow.cpp" line="3239"/>
         <source>Show inherited members</source>
         <translation>Показать унаследованные элементы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3242"/>
+        <location filename="../src/mainwindow.cpp" line="3243"/>
         <source>Goto declaration</source>
         <translation>Перейти к объявлению</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3245"/>
+        <location filename="../src/mainwindow.cpp" line="3246"/>
         <source>Goto definition</source>
         <translation>Перейти к определению</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3248"/>
+        <location filename="../src/mainwindow.cpp" line="3249"/>
         <source>In current file</source>
         <translation>В текущем файле</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3252"/>
+        <location filename="../src/mainwindow.cpp" line="3253"/>
         <source>In current project</source>
         <translation>В текущем проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3281"/>
-        <location filename="../src/mainwindow.cpp" line="4723"/>
+        <location filename="../src/mainwindow.cpp" line="3282"/>
+        <location filename="../src/mainwindow.cpp" line="4728"/>
         <source>New Folder</source>
         <translation>Новый каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3287"/>
+        <location filename="../src/mainwindow.cpp" line="3288"/>
         <source>New File</source>
         <translation>Новй файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3293"/>
+        <location filename="../src/mainwindow.cpp" line="3294"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3299"/>
-        <location filename="../src/mainwindow.cpp" line="4787"/>
-        <location filename="../src/mainwindow.cpp" line="4794"/>
-        <location filename="../src/mainwindow.cpp" line="4800"/>
-        <location filename="../src/mainwindow.cpp" line="7913"/>
+        <location filename="../src/mainwindow.cpp" line="3300"/>
+        <location filename="../src/mainwindow.cpp" line="4792"/>
+        <location filename="../src/mainwindow.cpp" line="4799"/>
+        <location filename="../src/mainwindow.cpp" line="4805"/>
+        <location filename="../src/mainwindow.cpp" line="7925"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3307"/>
+        <location filename="../src/mainwindow.cpp" line="3308"/>
         <source>Open in Editor</source>
         <translation>Открыть в редакторе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3317"/>
+        <location filename="../src/mainwindow.cpp" line="3318"/>
         <source>Open in External Program</source>
         <translation>Открыть во внешней программе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3323"/>
+        <location filename="../src/mainwindow.cpp" line="3324"/>
         <source>Open in Terminal</source>
         <translation>Открыть в терминале</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3330"/>
+        <location filename="../src/mainwindow.cpp" line="3331"/>
         <source>Open in Windows Explorer</source>
         <translation>Открыть в проводнике Windows</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3546"/>
-        <location filename="../src/mainwindow.cpp" line="3554"/>
+        <location filename="../src/mainwindow.cpp" line="3547"/>
+        <location filename="../src/mainwindow.cpp" line="3555"/>
         <source>Save last open info error</source>
         <translation>Сохранение информации об ошибке последнего открытия</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3547"/>
+        <location filename="../src/mainwindow.cpp" line="3548"/>
         <source>Can&apos;t open last open information file &apos;%1&apos; for write!</source>
         <translation>Невозможно открыть для записи файл с информацией о последнем открытии &apos;%1&apos;!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3555"/>
+        <location filename="../src/mainwindow.cpp" line="3556"/>
         <source>Can&apos;t save last open info file &apos;%1&apos;</source>
         <translation>Невозможно сохранить файл с информацией о последнем открытии &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3576"/>
-        <location filename="../src/mainwindow.cpp" line="3586"/>
+        <location filename="../src/mainwindow.cpp" line="3577"/>
+        <location filename="../src/mainwindow.cpp" line="3587"/>
         <source>Load last open info error</source>
         <translation>Ошибка загрузки информации о последнем открытии</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3577"/>
-        <location filename="../src/mainwindow.cpp" line="3587"/>
+        <location filename="../src/mainwindow.cpp" line="3578"/>
+        <location filename="../src/mainwindow.cpp" line="3588"/>
         <source>Can&apos;t load last open info file &apos;%1&apos;</source>
         <translation>Невозможно загрузить файл с информацией о последнем открытии &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3832"/>
+        <location filename="../src/mainwindow.cpp" line="3837"/>
         <source>Character sets</source>
         <translation>Набор символов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3866"/>
+        <location filename="../src/mainwindow.cpp" line="3871"/>
         <source>File Encoding</source>
         <translation>Кодировка файлов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3882"/>
+        <location filename="../src/mainwindow.cpp" line="3887"/>
         <source>Convert to %1</source>
         <translation>Преобразовать в %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3888"/>
-        <location filename="../src/mainwindow.cpp" line="6578"/>
-        <location filename="../src/mainwindow.cpp" line="6592"/>
-        <location filename="../src/mainwindow.cpp" line="10133"/>
+        <location filename="../src/mainwindow.cpp" line="3893"/>
+        <location filename="../src/mainwindow.cpp" line="6589"/>
+        <location filename="../src/mainwindow.cpp" line="6603"/>
+        <location filename="../src/mainwindow.cpp" line="10136"/>
         <source>Confirm Convertion</source>
         <translation>Подтверждение преобразования</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3889"/>
-        <location filename="../src/mainwindow.cpp" line="6579"/>
-        <location filename="../src/mainwindow.cpp" line="6593"/>
-        <location filename="../src/mainwindow.cpp" line="10134"/>
+        <location filename="../src/mainwindow.cpp" line="3894"/>
+        <location filename="../src/mainwindow.cpp" line="6590"/>
+        <location filename="../src/mainwindow.cpp" line="6604"/>
+        <location filename="../src/mainwindow.cpp" line="10137"/>
         <source>The editing file will be saved using %1 encoding. &lt;br /&gt;This operation can&apos;t be reverted. &lt;br /&gt;Are you sure to continue?</source>
         <translation>Редактируемый файл будет сохранен в кодировке %1 encoding. &lt;br /&gt;Операция не обратима. &lt;br /&gt;Вы уверены в том, что хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="3909"/>
+        <location filename="../src/mainwindow.cpp" line="3914"/>
         <source>Newline</source>
         <translation>Newline</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4010"/>
+        <location filename="../src/mainwindow.cpp" line="4015"/>
         <source>%1 files autosaved</source>
         <translation>%1 файлы автоматически сохранены</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4136"/>
-        <location filename="../src/mainwindow.cpp" line="4297"/>
+        <location filename="../src/mainwindow.cpp" line="4141"/>
+        <location filename="../src/mainwindow.cpp" line="4302"/>
         <source>Version Control</source>
         <translation>Контроль версий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4363"/>
+        <location filename="../src/mainwindow.cpp" line="4368"/>
         <source>Set answer to...</source>
         <translation>Установить ответ в...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4395"/>
+        <location filename="../src/mainwindow.cpp" line="4400"/>
         <source>select other file...</source>
         <translation>выбор другого файла...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4400"/>
+        <location filename="../src/mainwindow.cpp" line="4405"/>
         <source>Select Answer Source File</source>
         <translation>Выбрать исходный файл ответа</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4402"/>
+        <location filename="../src/mainwindow.cpp" line="4407"/>
         <source>C/C++ Source Files (*.c *.cpp *.cc *.cxx)</source>
         <translation>Исходные файлы Си/Си++ (*.c *.cpp *.cc *.cxx)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4559"/>
+        <location filename="../src/mainwindow.cpp" line="4564"/>
         <source>This operation will remove all cases for the current problem.</source>
         <translation>Эта операци удалит все ситуации для текущей проблемы.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4561"/>
-        <location filename="../src/mainwindow.cpp" line="6061"/>
+        <location filename="../src/mainwindow.cpp" line="4566"/>
+        <location filename="../src/mainwindow.cpp" line="6072"/>
         <source>Do you really want to do that?</source>
         <translation>Вы действительно хотите это сделать?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4570"/>
+        <location filename="../src/mainwindow.cpp" line="4575"/>
         <source>Choose input files</source>
         <translation>Выбор файла для ввода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4572"/>
+        <location filename="../src/mainwindow.cpp" line="4577"/>
         <source>Input data files (*.in)</source>
         <translation>Файлы исходных данных (*.in)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4598"/>
+        <location filename="../src/mainwindow.cpp" line="4603"/>
         <source>Problem &apos;%1&apos; received (%2/%3).</source>
         <translation>Проблема &apos;%1&apos; получена (%2/%3).</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4727"/>
+        <location filename="../src/mainwindow.cpp" line="4732"/>
         <source>New Folder %1</source>
         <translation>Новый каталог %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4770"/>
+        <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Create File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4770"/>
+        <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Failed to create file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4788"/>
-        <location filename="../src/mainwindow.cpp" line="4795"/>
+        <location filename="../src/mainwindow.cpp" line="4793"/>
+        <location filename="../src/mainwindow.cpp" line="4800"/>
         <source>Do you really want to delete %1?</source>
         <translation>Вы действительно хотите удалить %1?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4801"/>
+        <location filename="../src/mainwindow.cpp" line="4806"/>
         <source>Do you really want to delete %1 files?</source>
         <translation>Вы действительно хотите удалить %1 файлов?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4871"/>
+        <location filename="../src/mainwindow.cpp" line="4876"/>
         <source>Set Problem Set Name</source>
         <translation>Назначить имя набору проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4872"/>
+        <location filename="../src/mainwindow.cpp" line="4877"/>
         <source>Problem Set Name:</source>
         <translation>Имя набора проблем:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4913"/>
-        <location filename="../src/mainwindow.cpp" line="8880"/>
-        <location filename="../src/mainwindow.cpp" line="10695"/>
+        <location filename="../src/mainwindow.cpp" line="4918"/>
+        <location filename="../src/mainwindow.cpp" line="8883"/>
+        <location filename="../src/mainwindow.cpp" line="10698"/>
         <source>Bookmark Description</source>
         <translation>Описание закладки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="4914"/>
-        <location filename="../src/mainwindow.cpp" line="8881"/>
-        <location filename="../src/mainwindow.cpp" line="10696"/>
+        <location filename="../src/mainwindow.cpp" line="4919"/>
+        <location filename="../src/mainwindow.cpp" line="8884"/>
+        <location filename="../src/mainwindow.cpp" line="10699"/>
         <source>Description:</source>
         <translation>Описание:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5162"/>
-        <location filename="../src/mainwindow.cpp" line="5165"/>
+        <location filename="../src/mainwindow.cpp" line="5167"/>
+        <location filename="../src/mainwindow.cpp" line="5170"/>
         <source>New folder</source>
         <translation>Новый каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5171"/>
+        <location filename="../src/mainwindow.cpp" line="5176"/>
         <source>Folder name:</source>
         <translation>Имя каталога:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5420"/>
+        <location filename="../src/mainwindow.cpp" line="5431"/>
         <source>The executable doesn&apos;t have symbol table, and can&apos;t be debugged.</source>
         <translation>Исполнимый файл не содержит таблицы символов и не может быть отлажен.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5476"/>
+        <location filename="../src/mainwindow.cpp" line="5487"/>
         <source>Watchpoint hitted</source>
         <translation>Попадание в Точку наблюдения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5477"/>
+        <location filename="../src/mainwindow.cpp" line="5488"/>
         <source>Value of &quot;%1&quot; has changed:</source>
         <translation>Значение &quot;%1&quot; было изменено:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5479"/>
+        <location filename="../src/mainwindow.cpp" line="5490"/>
         <source>Old value: %1</source>
         <translation>Старое значение: %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5481"/>
+        <location filename="../src/mainwindow.cpp" line="5492"/>
         <source>New value: %1</source>
         <translation>Новое значение: %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5528"/>
+        <location filename="../src/mainwindow.cpp" line="5539"/>
         <source>Save project</source>
         <translation>Сохранение проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5529"/>
+        <location filename="../src/mainwindow.cpp" line="5540"/>
         <source>The project &apos;%1&apos; has modifications.</source>
         <translation>В проекте &apos;%1&apos; произошли изменения.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5531"/>
-        <location filename="../src/mainwindow.cpp" line="8983"/>
+        <location filename="../src/mainwindow.cpp" line="5542"/>
+        <location filename="../src/mainwindow.cpp" line="8986"/>
         <source>Do you want to save it?</source>
         <translation>Хотите сохранить его?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5637"/>
-        <location filename="../src/mainwindow.cpp" line="5655"/>
+        <location filename="../src/mainwindow.cpp" line="5648"/>
+        <location filename="../src/mainwindow.cpp" line="5666"/>
         <source>File Changed</source>
         <translation>Файл изменился</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5638"/>
+        <location filename="../src/mainwindow.cpp" line="5649"/>
         <source>File &apos;%1&apos; was changed.</source>
         <translation>Файл &apos;%1&apos; был изменен.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5638"/>
+        <location filename="../src/mainwindow.cpp" line="5649"/>
         <source>Reload its content from disk?</source>
         <translation>Перезагрузить содержимое с диска?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5656"/>
+        <location filename="../src/mainwindow.cpp" line="5667"/>
         <source>File &apos;%1&apos; was removed.</source>
         <translation>Файл &apos;%1&apos; был удалён.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5656"/>
+        <location filename="../src/mainwindow.cpp" line="5667"/>
         <source>Keep it open?</source>
         <translation>Держать его открытым?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5675"/>
+        <location filename="../src/mainwindow.cpp" line="5686"/>
         <source>Project folder removed.</source>
         <translation>Каталог проекта удален.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5676"/>
+        <location filename="../src/mainwindow.cpp" line="5687"/>
         <source>Folder for project &apos;%1&apos; was removed.</source>
         <translation>Каталог проекта &apos;%1&apos; был удален.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5678"/>
+        <location filename="../src/mainwindow.cpp" line="5689"/>
         <source>It will be closed.</source>
         <translation>Он будет закрыт.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5742"/>
-        <location filename="../src/mainwindow.cpp" line="10406"/>
-        <location filename="../src/mainwindow.cpp" line="10422"/>
-        <location filename="../src/mainwindow.cpp" line="10491"/>
+        <location filename="../src/mainwindow.cpp" line="5753"/>
+        <location filename="../src/mainwindow.cpp" line="10409"/>
+        <location filename="../src/mainwindow.cpp" line="10425"/>
+        <location filename="../src/mainwindow.cpp" line="10494"/>
         <source>New Project File?</source>
         <translation>Новый файл проекта?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5743"/>
-        <location filename="../src/mainwindow.cpp" line="10407"/>
-        <location filename="../src/mainwindow.cpp" line="10423"/>
-        <location filename="../src/mainwindow.cpp" line="10492"/>
+        <location filename="../src/mainwindow.cpp" line="5754"/>
+        <location filename="../src/mainwindow.cpp" line="10410"/>
+        <location filename="../src/mainwindow.cpp" line="10426"/>
+        <location filename="../src/mainwindow.cpp" line="10495"/>
         <source>Do you want to add the new file to the project?</source>
         <translation>Вы хотите добавить новый файл в проект?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5811"/>
+        <location filename="../src/mainwindow.cpp" line="5822"/>
         <source>Open</source>
         <translation>Открыть</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5863"/>
-        <location filename="../src/mainwindow.cpp" line="5876"/>
-        <location filename="../src/mainwindow.cpp" line="5889"/>
-        <location filename="../src/mainwindow.cpp" line="5899"/>
-        <location filename="../src/mainwindow.cpp" line="8141"/>
+        <location filename="../src/mainwindow.cpp" line="5874"/>
+        <location filename="../src/mainwindow.cpp" line="5887"/>
+        <location filename="../src/mainwindow.cpp" line="5900"/>
+        <location filename="../src/mainwindow.cpp" line="5910"/>
+        <location filename="../src/mainwindow.cpp" line="8144"/>
         <source>Save Error</source>
         <translation>Ошибка сохранения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="5864"/>
+        <location filename="../src/mainwindow.cpp" line="5875"/>
         <source>Save settings failed!</source>
         <translation>Сохранение настроек не удалось!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6058"/>
+        <location filename="../src/mainwindow.cpp" line="6069"/>
         <source>Change Project Compiler Set</source>
         <translation>Изменение набора компиляторов проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6059"/>
+        <location filename="../src/mainwindow.cpp" line="6070"/>
         <source>Change the project&apos;s compiler set will lose all custom compiler set options.</source>
         <translation>Изменение набора компиляторов проекта приведет к потере всех пользовательских параметров набора компиляторов.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6217"/>
-        <location filename="../src/mainwindow.cpp" line="6324"/>
+        <location filename="../src/mainwindow.cpp" line="6228"/>
+        <location filename="../src/mainwindow.cpp" line="6335"/>
         <source>Compile Failed</source>
         <translation>Компиляция не удалась</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6218"/>
+        <location filename="../src/mainwindow.cpp" line="6229"/>
         <source>Failed to generate the executable.</source>
         <translation>Не удалось сформировать исполнимый файл.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6219"/>
+        <location filename="../src/mainwindow.cpp" line="6230"/>
         <source>Please check detail info in &quot;Tools Output&quot; panel.</source>
         <translation>Пожалуйста, проверьте детальную информацию в панели &quot;Инструменты вывода&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6330"/>
+        <location filename="../src/mainwindow.cpp" line="6341"/>
         <source>Run Failed</source>
         <translation>Запуск не удался</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6719"/>
+        <location filename="../src/mainwindow.cpp" line="6730"/>
         <source>New Watch Expression</source>
         <translation>Новое выражение для наблюдаемой переменной</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6720"/>
+        <location filename="../src/mainwindow.cpp" line="6731"/>
         <source>Enter Watch Expression (it is recommended to use &apos;this-&gt;&apos; for class members):</source>
         <translation>Введите выражение для наблюдаемой переменной (рекомендуется использовать &apos;this-&gt;&apos; для членов классов):</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6776"/>
+        <location filename="../src/mainwindow.cpp" line="6787"/>
         <source>Parsing file %1 of %2: &quot;%3&quot;</source>
         <translation>Разбор файла %1 из %2: &quot;%3&quot;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6797"/>
-        <location filename="../src/mainwindow.cpp" line="6803"/>
+        <location filename="../src/mainwindow.cpp" line="6808"/>
+        <location filename="../src/mainwindow.cpp" line="6814"/>
         <source>Done parsing %1 files in %2 seconds</source>
         <translation>Завершен разбор %1 файлов за %2 секунд</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6800"/>
+        <location filename="../src/mainwindow.cpp" line="6811"/>
         <source>(%1 files per second)</source>
         <translation>(%1 файлов в секунду)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6998"/>
+        <location filename="../src/mainwindow.cpp" line="7010"/>
         <source>Modify Watch</source>
         <translation>Изменение наблюдаемой переменной</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="6999"/>
+        <location filename="../src/mainwindow.cpp" line="7011"/>
         <source>Watch Expression</source>
         <translation>Выражение для наблюдаемоей переменной</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7130"/>
+        <location filename="../src/mainwindow.cpp" line="7142"/>
         <source>Do you really want to clear all breakpoints in this file?</source>
         <translation>Вы действительно хотите удалить все точки останова из этого файла?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7331"/>
+        <location filename="../src/mainwindow.cpp" line="7343"/>
         <source>New project</source>
         <translation>Новый проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7332"/>
+        <location filename="../src/mainwindow.cpp" line="7344"/>
         <source>Close %1 and start new project?</source>
         <translation>Закрыть %1 и начать новый проект?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7345"/>
+        <location filename="../src/mainwindow.cpp" line="7357"/>
         <source>Folder not exist</source>
         <translation>Каталог не существует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7346"/>
+        <location filename="../src/mainwindow.cpp" line="7358"/>
         <source>Folder &apos;%1&apos; doesn&apos;t exist. Create it now?</source>
         <translation>Каталог &apos;%1&apos; не существует. Создать его?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7353"/>
+        <location filename="../src/mainwindow.cpp" line="7365"/>
         <source>Can&apos;t create folder</source>
         <translation>Не получилось создать каталог</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7354"/>
+        <location filename="../src/mainwindow.cpp" line="7366"/>
         <source>Failed to create folder &apos;%1&apos;.</source>
         <translation>Не удалось создать каталог &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7364"/>
+        <location filename="../src/mainwindow.cpp" line="7376"/>
         <source>Folder Not Empty</source>
         <translation>Каталог не пуст</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7365"/>
+        <location filename="../src/mainwindow.cpp" line="7377"/>
         <source>The project folder is not empty, existing files may be overwritten.</source>
         <translation>Каталог проекта не пуст, существующие файлы могут быть перезаписаны.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7367"/>
+        <location filename="../src/mainwindow.cpp" line="7379"/>
         <source>Do you want to proceed?</source>
         <translation>Вы хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7380"/>
+        <location filename="../src/mainwindow.cpp" line="7392"/>
         <source>Save new project as</source>
         <translation>Сохранить новый проект как</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7382"/>
+        <location filename="../src/mainwindow.cpp" line="7394"/>
         <source>Red Panda C++ project file (*.dev)</source>
         <translation>Файл проекта Red Panda C++ (*.dev)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7395"/>
+        <location filename="../src/mainwindow.cpp" line="7407"/>
         <source>New project fail</source>
         <translation>Не удалось создать новый проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7396"/>
+        <location filename="../src/mainwindow.cpp" line="7408"/>
         <source>Can&apos;t assign project template</source>
         <translation>Не удалось назначить шаблон проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7454"/>
+        <location filename="../src/mainwindow.cpp" line="7466"/>
         <source>Add to project</source>
         <translation>Добавление в проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7502"/>
+        <location filename="../src/mainwindow.cpp" line="7514"/>
         <source>Remove file</source>
         <translation>Удаление файла</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7503"/>
+        <location filename="../src/mainwindow.cpp" line="7515"/>
         <source>Remove the file from disk?</source>
         <translation>Удалить файл с диска?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7820"/>
+        <location filename="../src/mainwindow.cpp" line="7832"/>
         <source>New Project File Name</source>
         <translation>Имя файла нового проекта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7821"/>
+        <location filename="../src/mainwindow.cpp" line="7833"/>
         <source>File Name:</source>
         <translation>Имя файла:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7829"/>
+        <location filename="../src/mainwindow.cpp" line="7841"/>
         <source>File Already Exists!</source>
         <translation>Файл уже существует!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7830"/>
+        <location filename="../src/mainwindow.cpp" line="7842"/>
         <source>File &apos;%1&apos; already exists!</source>
         <translation>Файл &apos;%1&apos; уже сущесвует!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7866"/>
+        <location filename="../src/mainwindow.cpp" line="7878"/>
         <source>Input Data File is too large to display!</source>
         <translation>Файл данных ввода слишком большой для отображения!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7871"/>
-        <location filename="../src/mainwindow.cpp" line="7890"/>
+        <location filename="../src/mainwindow.cpp" line="7883"/>
+        <location filename="../src/mainwindow.cpp" line="7902"/>
         <source>File doesn&apos;t exist!</source>
         <translation>Файл не существует!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7914"/>
+        <location filename="../src/mainwindow.cpp" line="7926"/>
         <source>Folder %1 is not empty.</source>
         <translation>Каталог %1 не пуст.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7915"/>
+        <location filename="../src/mainwindow.cpp" line="7927"/>
         <source>Do you really want to delete it?</source>
         <translation>Вы действительно хотите удалить его?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7150"/>
-        <location filename="../src/mainwindow.cpp" line="8018"/>
+        <location filename="../src/mainwindow.cpp" line="7162"/>
+        <location filename="../src/mainwindow.cpp" line="8021"/>
         <source>Break point condition</source>
         <translation>Условие для точки останова</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="7151"/>
-        <location filename="../src/mainwindow.cpp" line="8019"/>
+        <location filename="../src/mainwindow.cpp" line="7163"/>
+        <location filename="../src/mainwindow.cpp" line="8022"/>
         <source>Enter the condition of the breakpoint:</source>
         <translation>Введите условие для точки останова:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8111"/>
+        <location filename="../src/mainwindow.cpp" line="8114"/>
         <source>Error in Compiler Set</source>
         <translation>Ошибка в наборе компиляторов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8112"/>
+        <location filename="../src/mainwindow.cpp" line="8115"/>
         <source>Current Compiler set has the following critical error: 
 
 </source>
         <translation>Текущий набор компиляторов имеет следующую критическую ошибку:  </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8462"/>
+        <location filename="../src/mainwindow.cpp" line="8465"/>
         <source>Rename Error</source>
         <translation>Ошибка переименования</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8463"/>
+        <location filename="../src/mainwindow.cpp" line="8466"/>
         <source>Symbol &apos;%1&apos; is defined in system header.</source>
         <translation>Символ &apos;%1&apos; определен в системном заголовочном файле.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8497"/>
+        <location filename="../src/mainwindow.cpp" line="8500"/>
         <source>New Name</source>
         <translation>Новое имя</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8683"/>
-        <location filename="../src/mainwindow.cpp" line="8705"/>
-        <location filename="../src/mainwindow.cpp" line="8716"/>
-        <location filename="../src/mainwindow.cpp" line="8735"/>
+        <location filename="../src/mainwindow.cpp" line="8686"/>
+        <location filename="../src/mainwindow.cpp" line="8708"/>
+        <location filename="../src/mainwindow.cpp" line="8719"/>
+        <location filename="../src/mainwindow.cpp" line="8738"/>
         <source>Replace Error</source>
         <translation>Ошибка замены</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8684"/>
+        <location filename="../src/mainwindow.cpp" line="8687"/>
         <source>Can&apos;t open file &apos;%1&apos; for replace!</source>
         <translation>Невозможно открыть файл &apos;%1&apos; для замены!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8717"/>
+        <location filename="../src/mainwindow.cpp" line="8720"/>
         <source>Contents has changed since last search!</source>
         <translation>Содержимое изменилось с момента последнего поиска!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8777"/>
+        <location filename="../src/mainwindow.cpp" line="8780"/>
         <source>Rich Text Format Files (*.rtf)</source>
         <translation>Файлы Rich Text Format (*.rtf)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8799"/>
+        <location filename="../src/mainwindow.cpp" line="8802"/>
         <source>HTML Files (*.html)</source>
         <translation>HTML-файлы (*.html)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8903"/>
+        <location filename="../src/mainwindow.cpp" line="8906"/>
         <source>Change working folder</source>
         <translation>Смена рабочего каталога</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8904"/>
+        <location filename="../src/mainwindow.cpp" line="8907"/>
         <source>File &apos;%1&apos; is not in the current working folder.</source>
         <translation>Файл &apos;%1&apos; не в текущем рабочем каталоге.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8907"/>
+        <location filename="../src/mainwindow.cpp" line="8910"/>
         <source>Do you want to change working folder to &apos;%1&apos;?</source>
         <translation>Хотите изменить рабочий каталог на &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8981"/>
+        <location filename="../src/mainwindow.cpp" line="8984"/>
         <source>The current problem set is not empty.</source>
         <translation>Текущий набор проблем не пуст.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9000"/>
+        <location filename="../src/mainwindow.cpp" line="9003"/>
         <source>Problem %1</source>
         <translation>Проблема %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9058"/>
-        <location filename="../src/mainwindow.cpp" line="9081"/>
+        <location filename="../src/mainwindow.cpp" line="9061"/>
+        <location filename="../src/mainwindow.cpp" line="9084"/>
         <source>Problem Set Files (*.pbs)</source>
         <translation>Файлы набора проблем (*.pbs)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9095"/>
-        <location filename="../src/mainwindow.cpp" line="10340"/>
+        <location filename="../src/mainwindow.cpp" line="9098"/>
+        <location filename="../src/mainwindow.cpp" line="10343"/>
         <source>Load Error</source>
         <translation>Ошибка загрузки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9109"/>
+        <location filename="../src/mainwindow.cpp" line="9112"/>
         <source>Problem Case %1</source>
         <translation>Проблемный случай %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9510"/>
-        <location filename="../src/mainwindow.cpp" line="9559"/>
+        <location filename="../src/mainwindow.cpp" line="9513"/>
+        <location filename="../src/mainwindow.cpp" line="9562"/>
         <source>Header Exists</source>
         <translation>Заголовочный файл существует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9511"/>
-        <location filename="../src/mainwindow.cpp" line="9560"/>
+        <location filename="../src/mainwindow.cpp" line="9514"/>
+        <location filename="../src/mainwindow.cpp" line="9563"/>
         <source>Header file &quot;%1&quot; already exists!</source>
         <translation>Заголовочный файл &quot;%1&quot; уже существует!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9565"/>
+        <location filename="../src/mainwindow.cpp" line="9568"/>
         <source>Source Exists</source>
         <translation>Исходный файл существует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9566"/>
+        <location filename="../src/mainwindow.cpp" line="9569"/>
         <source>Source file &quot;%1&quot; already exists!</source>
         <translation>Исходный файл &quot;%1&quot; уже существует!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9720"/>
+        <location filename="../src/mainwindow.cpp" line="9723"/>
         <source>Can&apos;t commit!</source>
         <translation>Невозможно фиксировать измения (commit)!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9721"/>
+        <location filename="../src/mainwindow.cpp" line="9724"/>
         <source>The following files are in conflicting:</source>
         <translation>Следующие файлы конфликтуют:</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9726"/>
+        <location filename="../src/mainwindow.cpp" line="9729"/>
         <source>Commit Message</source>
         <translation>Сообщение о фиксировании изменений (commit)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9726"/>
+        <location filename="../src/mainwindow.cpp" line="9729"/>
         <source>Commit Message:</source>
         <translation>Сообщение о фиксировании изменений (commit):</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9729"/>
+        <location filename="../src/mainwindow.cpp" line="9732"/>
         <source>Commit Failed</source>
         <translation>Фиксировать изменения (commit) не удалось</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9730"/>
+        <location filename="../src/mainwindow.cpp" line="9733"/>
         <source>Commit message shouldn&apos;t be empty!</source>
         <translation>Сообщение о фиксировании изменений (commit) не может быть пустым!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9741"/>
+        <location filename="../src/mainwindow.cpp" line="9744"/>
         <source>Can&apos;t Commit</source>
         <translation>Невозможно фиксировать измения (commit)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9742"/>
+        <location filename="../src/mainwindow.cpp" line="9745"/>
         <source>Git needs user info to commit.</source>
         <translation>Git требует информацию о пользователе для фиксирования изменений.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10010"/>
+        <location filename="../src/mainwindow.cpp" line="10013"/>
         <source>Choose Input Data File</source>
         <translation>Выбор файла данных ввода</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10012"/>
-        <location filename="../src/mainwindow.cpp" line="10067"/>
+        <location filename="../src/mainwindow.cpp" line="10015"/>
+        <location filename="../src/mainwindow.cpp" line="10070"/>
         <source>All files (*.*)</source>
         <translation>Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10065"/>
+        <location filename="../src/mainwindow.cpp" line="10068"/>
         <source>Choose Expected Output Data File</source>
         <translation>Выберите файл вывода для ожиданий</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10230"/>
+        <location filename="../src/mainwindow.cpp" line="10233"/>
         <source>Go to Line</source>
         <translation>Перейти к строке</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10230"/>
+        <location filename="../src/mainwindow.cpp" line="10233"/>
         <source>Line</source>
         <translation>Строка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10251"/>
+        <location filename="../src/mainwindow.cpp" line="10254"/>
         <source>Template Exists</source>
         <translation>Шаблон существует</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10252"/>
+        <location filename="../src/mainwindow.cpp" line="10255"/>
         <source>Template %1 already exists. Do you want to overwrite?</source>
         <translation>Шаблон %1 уже существует. Хотите перезаписать?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10332"/>
+        <location filename="../src/mainwindow.cpp" line="10335"/>
         <source>FPS Problem Set Files (*.fps;*.xml)</source>
         <translation>Файлы набора проблем FPS (*.fps;*.xml)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10363"/>
+        <location filename="../src/mainwindow.cpp" line="10366"/>
         <source>FPS Problem Set Files (*.fps)</source>
         <translation>Файлы набора проблем FPS (*.fps)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10368"/>
+        <location filename="../src/mainwindow.cpp" line="10371"/>
         <source>Export Error</source>
         <translation>Ошибка экспорта</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10476"/>
+        <location filename="../src/mainwindow.cpp" line="10479"/>
         <source>Watchpoint variable name</source>
         <translation>Имя переменной для точки наблюдения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10477"/>
+        <location filename="../src/mainwindow.cpp" line="10480"/>
         <source>Stop execution when the following variable is modified (it must be visible from the currect scope):</source>
         <translation>Остановать выполнение, если следующая переменная изменилась (она должна быть видима из текущей области видимости):</translation>
     </message>
@@ -7635,42 +7692,42 @@
         <translation>- Файл ресурсов: %1</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="610"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="614"/>
         <source>Compiling project changes...</source>
         <translation>Компиляция изменений проекта...</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="612"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="616"/>
         <source>- Project Filename: %1</source>
         <translation>- Имя файла проекта: %1</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="613"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="617"/>
         <source>- Compiler Set Name: %1</source>
         <translation>- Имя набора компиляторов: %1</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="622"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="626"/>
         <source>Make program &apos;%1&apos; doesn&apos;t exists!</source>
         <translation>Программа сборки &apos;%1&apos; не существует!</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="624"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="628"/>
         <source>Please check the &quot;program&quot; page of compiler settings.</source>
         <translation>Пожалуйста, проверьте вкладку &quot;Программа&quot; настроек компилятора.</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="664"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="668"/>
         <source>Processing makefile:</source>
         <translation>Обработка makefile:</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="666"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="670"/>
         <source>- makefile processer: %1</source>
         <translation>- обработчик makefile: %1</translation>
     </message>
     <message>
-        <location filename="../src/compiler/projectcompiler.cpp" line="668"/>
+        <location filename="../src/compiler/projectcompiler.cpp" line="672"/>
         <source>- Command: %1</source>
         <translation>- Команда: %1</translation>
     </message>
@@ -8280,7 +8337,7 @@
 <context>
     <name>QApplication</name>
     <message>
-        <location filename="../src/main.cpp" line="462"/>
+        <location filename="../src/main.cpp" line="468"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -8584,7 +8641,7 @@
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="92"/>
-        <location filename="../src/compiler/compilerinfo.cpp" line="367"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="369"/>
         <source>Code Generation</source>
         <translation>Генерация кода</translation>
     </message>
@@ -8594,112 +8651,112 @@
         <translation>Уровень оптимизации (-Ox)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="119"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="121"/>
         <source>C++ Language standard (-std)</source>
         <translation>Стандарт языка Си++ (-std)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="134"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="136"/>
         <source>C Language standard (-std)</source>
         <translation>Стандарт языка Си (-std)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="184"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="186"/>
         <source>Enable use of specific instructions (-mx)</source>
         <translation>Разрешить использование специфических инструкций (-mx)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="188"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="190"/>
         <source>32-bit pointer, 32-bit instruction (-m32)</source>
         <translation>32-битные указатели, 32-битные инструкции (-m32)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="189"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="191"/>
         <source>32-bit pointer, 64-bit instruction (-mx32)</source>
         <translation>32-битные указатели, 64-битные инструкции (-mx32)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="190"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="192"/>
         <source>64-bit pointer, 64-bit instruction (-m64)</source>
         <translation>64-битные указатели, 64-битные инструкции (-m64)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="191"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="193"/>
         <source>x86 multilib (-mx)</source>
         <translation>x86 multilib (-mx)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="193"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="195"/>
         <source>Generate debugging information (-g3)</source>
         <translation>Встраивать отладочную информацию (-g3)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="194"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="196"/>
         <source>Generate profiling info for analysis (-pg)</source>
         <translation>Добавить информацию профилирования для анализа (-pg)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="195"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="197"/>
         <source>Only check the code for syntax errors (-fsyntax-only)</source>
         <translation>Проверять код только на синтаксические ошибки (-fsyntax-only)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="196"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="198"/>
         <source>Enable experimental support for GCC standard library modules (-fmodules)</source>
         <translation>Включить экспериментальную поддержку модулей стандартной библиотеки GCC (-fmodules)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="199"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="201"/>
         <source>Warnings</source>
         <translation>Предупреждения</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="200"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="202"/>
         <source>Inhibit all warning messages (-w)</source>
         <translation>Отключить все предупреждающие сообщения (-w)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="201"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="203"/>
         <source>Show most warnings (-Wall)</source>
         <translation>Показывать большинство предупреждений (-Wall)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="202"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="204"/>
         <source>Show some more warnings (-Wextra)</source>
         <translation>Показывать больше предупреждений (-Wextra)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="203"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="205"/>
         <source>Check ISO C/C++ conformance (-pedantic)</source>
         <translation>Проверка соответствия ISO Си/Си++ (-pedantic)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="204"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="206"/>
         <source>Don&apos;t accept MSVC non-standard syntax (-fno-ms-extentions)</source>
         <translation>Не разрешать нестандартный синтаксис MSVC (-fno-ms-extentions)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="205"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="207"/>
         <source>Make all warnings into errors (-Werror)</source>
         <translation>Превратить все предупреждения в ошибки (-Werror)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="206"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="208"/>
         <source>Abort compilation on first error (-Wfatal-errors)</source>
         <translation>Прервать компиляцию при первой ошибке (-Wfatal-errors)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="212"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="214"/>
         <source>Check for stack smashing attacks (-fstack-protector)</source>
         <translation>Проверять наличие атак, разрушающих стек (-fstack-protector)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="219"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="221"/>
         <source>Enable Sanitizer (-fsanitize=)</source>
         <translation>Включить Санитайзер (-fsanitize=)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="222"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="224"/>
         <source>Errors</source>
         <translation>Ошибки</translation>
     </message>
@@ -8708,149 +8765,149 @@
         <translation type="vanished">Функция без типа возвращаемого значения (return-type)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="223"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="225"/>
         <source>No return statement in non-void function (return-type)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="224"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="226"/>
         <source>Declaration does not specify a type (implicit-int)</source>
         <translation>В объявлении не указан тип (implicit-int)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="225"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="227"/>
         <source>Uninitialized variable visited (uninitialized)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="226"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="228"/>
         <source>Variable lenght array (vla)</source>
         <translation>Массив переменной длины (vla)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="235"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="237"/>
         <source>Linker</source>
         <translation>Связывание</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="236"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="238"/>
         <source>PE Stack Size</source>
         <translation>Размер стека PE</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="238"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="240"/>
         <source>Use pipes instead of temporary files during compilation (-pipe)</source>
         <translation>Использовать каналы (pipes) вместо временных файлов во время компиляции (-pipe)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="240"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="242"/>
         <source>Do not use standard system libraries (-nostdlib)</source>
         <translation>Не использовать стандартные системные библиотеки (-nostdlib)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="241"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="243"/>
         <source>Do not create a console window (-mwindows)</source>
         <translation>Не создавать консольное окно (-mwindows)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="242"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="244"/>
         <source>Strip executable (-s)</source>
         <translation>Удаление несущественной информации (strip) из исполнимых файлов (-s)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="386"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="388"/>
         <source>Processor (-m)</source>
         <translation>Процессор (-m)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="400"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="402"/>
         <source>Language standard (--std)</source>
         <translation>Стандарт Языка (--std)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="408"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="410"/>
         <source>Memory model (--model)</source>
         <translation>Модель памяти (--model)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="410"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="412"/>
         <source>Use external stack</source>
         <translation>Использовать внешний стек</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="411"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="413"/>
         <source>Use movc instead of movx to read from external ram</source>
         <translation>Использовать movc вместо movx для чтения из внешней памяти</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="412"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="414"/>
         <source>Replaces lcall/ljmp with acall/ajmp</source>
         <translation>Заменять lcall/ljmp на acall/ajmp</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="413"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="415"/>
         <source>Don&apos;t memcpy initialized xram from code</source>
         <translation>Не позволять memcpy инициализировать xram из кода</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="414"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="416"/>
         <source>Don&apos;t generate startup code</source>
         <translation>Не создавать код запуска</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="416"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="418"/>
         <source>MCU Specification</source>
         <translation>Спецификация MCU</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="418"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="420"/>
         <source>Internal ram size</source>
         <translation>Размер внутренней памяти</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="419"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="421"/>
         <source>External ram start location</source>
         <translation>Начало размещения внешней памяти</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="420"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="422"/>
         <source>External ram size</source>
         <translation>Размер внешней памяти</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="421"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="423"/>
         <source>Stack pointer initial value</source>
         <translation>Начальный адрес указателя стека</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="422"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="424"/>
         <source>External stack start location</source>
         <translation>Начало размещения внешнего стека</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="423"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="425"/>
         <source>Direct data start location</source>
         <translation>Начало размещения первичных данных (direct data)</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="424"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="426"/>
         <source>Code segment location</source>
         <translation>Размещение сегмента кода</translation>
     </message>
     <message>
-        <location filename="../src/compiler/compilerinfo.cpp" line="425"/>
+        <location filename="../src/compiler/compilerinfo.cpp" line="427"/>
         <source>Code segment size</source>
         <translation>Размер сегмента кода</translation>
     </message>
     <message>
-        <location filename="../src/editormanager.cpp" line="536"/>
-        <location filename="../src/mainwindow.cpp" line="3510"/>
+        <location filename="../src/editormanager.cpp" line="564"/>
+        <location filename="../src/mainwindow.cpp" line="3511"/>
         <source>Save</source>
         <translation>Сохранение</translation>
     </message>
     <message>
-        <location filename="../src/editormanager.cpp" line="537"/>
-        <location filename="../src/mainwindow.cpp" line="3511"/>
+        <location filename="../src/editormanager.cpp" line="565"/>
+        <location filename="../src/mainwindow.cpp" line="3512"/>
         <source>Save changes to %1?</source>
         <translation>Сохранить изменения в %1?</translation>
     </message>
@@ -8865,17 +8922,17 @@
         <translation>Невозможна запись в конфигурационный файл %1</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="398"/>
+        <location filename="../src/main.cpp" line="404"/>
         <source>Can&apos;t load autolink settings</source>
         <translation>Невозможно загрузить настройки автосвязывания</translation>
     </message>
     <message>
-        <location filename="../src/parser/cppparser.cpp" line="1350"/>
+        <location filename="../src/parser/cppparser.cpp" line="1361"/>
         <source>constructor</source>
         <translation>constructor</translation>
     </message>
     <message>
-        <location filename="../src/parser/cppparser.cpp" line="1357"/>
+        <location filename="../src/parser/cppparser.cpp" line="1368"/>
         <source>destructor</source>
         <translation>destructor</translation>
     </message>
@@ -8900,64 +8957,84 @@
         <translation>Ошибка записи файла &quot;%1&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1528"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1556"/>
         <source>C Compiler &quot;%1&quot; is missing!</source>
         <translation>Компилятор Си &quot;%1&quot; утрачен!</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1531"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1559"/>
         <source>C++ Compiler &quot;%1&quot; is missing!</source>
         <translation>Компилятор Си++ &quot;%1&quot; утрачен!</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1534"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1562"/>
         <source>Debugger &quot;%1&quot; is missing!</source>
         <translation>Отладчик &quot;%1&quot; утрачен!</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1537"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1565"/>
         <source>Make program &quot;%1&quot; is missing!</source>
         <translation>Программа сборки &quot;%1&quot; утрачена!</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1813"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1844"/>
         <source>Error executing platform compiler hint add-on</source>
         <translatorcomment>Сомнительный перевод, надо переделать</translatorcomment>
         <translation>Ошибка при запуске дополнения с подсказкой компилятора платформы</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1959"/>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1965"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1885"/>
+        <source>Searching for compilers...</source>
+        <translation type="unfinished">Поиск компиляторов...</translation>
+    </message>
+    <message>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1886"/>
+        <source>Abort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1893"/>
+        <source>Searching...</source>
+        <translation type="unfinished">Поиск...</translation>
+    </message>
+    <message>
+        <location filename="../src/settings/compilersetsettings.cpp" line="1915"/>
+        <source>Searching %1/%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2011"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2017"/>
         <source>Compiler set not configuared.</source>
         <translation>Набор компиляторов не настроен.</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1961"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2013"/>
         <source>Would you like Red Panda C++ to search for compilers in the following locations: &lt;BR /&gt;&apos;%1&apos;&lt;BR /&gt;&apos;%2&apos;? </source>
         <translation>Вы хотели бы, чтобы Красная Панда Си++ поискала компиляторы в следующих местах: &lt;BR /&gt;&apos;%1&apos;&lt;BR /&gt;&apos;%2&apos;? </translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1967"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2019"/>
         <source>Would you like Red Panda C++ to search for compilers in PATH?</source>
         <translation>Вы хотели бы, чтобы Красная Панда Си++ поискала компиляторы в PATH?</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1969"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2021"/>
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1978"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2030"/>
         <source>No Compiler Set</source>
         <translation>Нет набора компиляторов</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1979"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2031"/>
         <source>Can&apos;t find a C/C++ compiler.</source>
         <translation>Не могу найти компилятор Си/Си++.</translation>
     </message>
     <message>
-        <location filename="../src/settings/compilersetsettings.cpp" line="1981"/>
+        <location filename="../src/settings/compilersetsettings.cpp" line="2033"/>
         <source>You must have a compiler to compile and execute C/C++ files.</source>
         <translation>Вы должны иметь компилятор, чтобы компилировать файлы Си/Си++.</translation>
     </message>
@@ -8982,12 +9059,12 @@
         <translation>Подключаемые файлы Си++</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="399"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="396"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="400"/>
+        <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="397"/>
         <source>Do you really want to remove &quot;%1&quot;?</source>
         <translation>Вы действительно хотите удалить &quot;%1&quot;?</translation>
     </message>
@@ -9782,21 +9859,34 @@
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="176"/>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="211"/>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="285"/>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="296"/>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="304"/>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="316"/>
         <source>Searching...</source>
         <translation>Поиск...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="177"/>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="286"/>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="189"/>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="305"/>
         <source>Abort</source>
         <translation>Прервать</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchinfiledialog.cpp" line="454"/>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="188"/>
+        <source>Calculating files for searching...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="220"/>
+        <source>Calculating files for searching (%1)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="229"/>
+        <source>Searching %1/%2...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchinfiledialog.cpp" line="483"/>
         <source>Choose Folder</source>
         <translation>Выбор каталога</translation>
     </message>
@@ -9804,40 +9894,67 @@
 <context>
     <name>SearchResultListModel</name>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="389"/>
         <source>Current File:</source>
-        <translation>Текущий файл:</translation>
+        <translation type="vanished">Текущий файл:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="391"/>
         <source>Files In Project:</source>
-        <translation>Файлы в проекте:</translation>
+        <translation type="vanished">Файлы в проекте:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="393"/>
         <source>Open Files:</source>
-        <translation>Открытые файлы:</translation>
+        <translation type="vanished">Открытые файлы:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="395"/>
         <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation>&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
+        <translation type="vanished">&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="399"/>
         <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation>Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
+        <translation type="vanished">Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <source>Find Usages in Project: &apos;%1&apos;</source>
+        <translation type="vanished">Поиск употреблений в проекте: &apos;%1&apos;</translation>
+    </message>
+</context>
+<context>
+    <name>SearchResultModel</name>
+    <message>
+        <location filename="../src/widgets/searchresultview.cpp" line="400"/>
+        <source>Current File:</source>
+        <translation type="unfinished">Текущий файл:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="402"/>
+        <source>Files In Project:</source>
+        <translation type="unfinished">Файлы в проекте:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchresultview.cpp" line="404"/>
+        <source>Open Files:</source>
+        <translation type="unfinished">Открытые файлы:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchresultview.cpp" line="406"/>
+        <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
+        <translation type="unfinished">&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchresultview.cpp" line="410"/>
+        <source>Find Usages in Current File: &apos;%1&apos;</source>
+        <translation type="unfinished">Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/searchresultview.cpp" line="413"/>
         <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation>Поиск употреблений в проекте: &apos;%1&apos;</translation>
+        <translation type="unfinished">Поиск употреблений в проекте: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
     <name>SearchResultTreeModel</name>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="241"/>
+        <location filename="../src/widgets/searchresultview.cpp" line="266"/>
         <source>Line</source>
         <translation>Строка</translation>
     </message>
@@ -9845,8 +9962,8 @@
 <context>
     <name>SearchResultTreeViewDelegate</name>
     <message>
-        <location filename="../src/widgets/searchresultview.cpp" line="451"/>
-        <location filename="../src/widgets/searchresultview.cpp" line="470"/>
+        <location filename="../src/widgets/searchresultview.cpp" line="461"/>
+        <location filename="../src/widgets/searchresultview.cpp" line="480"/>
         <source>Line</source>
         <translation>Строка</translation>
     </message>
@@ -9893,18 +10010,18 @@
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2639"/>
-        <location filename="../src/mainwindow.cpp" line="2762"/>
-        <location filename="../src/mainwindow.cpp" line="10171"/>
-        <location filename="../src/mainwindow.cpp" line="10176"/>
+        <location filename="../src/mainwindow.cpp" line="2640"/>
+        <location filename="../src/mainwindow.cpp" line="2763"/>
+        <location filename="../src/mainwindow.cpp" line="10174"/>
+        <location filename="../src/mainwindow.cpp" line="10179"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="171"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="272"/>
         <source>Compiler Set</source>
         <translation>Набор компиляторов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2640"/>
-        <location filename="../src/mainwindow.cpp" line="10177"/>
+        <location filename="../src/mainwindow.cpp" line="2641"/>
+        <location filename="../src/mainwindow.cpp" line="10180"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="266"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="269"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="272"/>
@@ -9919,10 +10036,10 @@
         <translation>Проект</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="2763"/>
-        <location filename="../src/mainwindow.cpp" line="10161"/>
-        <location filename="../src/mainwindow.cpp" line="10167"/>
-        <location filename="../src/mainwindow.cpp" line="10172"/>
+        <location filename="../src/mainwindow.cpp" line="2764"/>
+        <location filename="../src/mainwindow.cpp" line="10164"/>
+        <location filename="../src/mainwindow.cpp" line="10170"/>
+        <location filename="../src/mainwindow.cpp" line="10175"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="171"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="174"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="177"/>
@@ -9931,7 +10048,7 @@
         <translation>Компилятор</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8970"/>
+        <location filename="../src/mainwindow.cpp" line="8973"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="183"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="224"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="230"/>
@@ -9942,27 +10059,27 @@
         <translation>Основное</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="8971"/>
-        <location filename="../src/mainwindow.cpp" line="9457"/>
+        <location filename="../src/mainwindow.cpp" line="8974"/>
+        <location filename="../src/mainwindow.cpp" line="9460"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="224"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="227"/>
         <source>Program Runner</source>
         <translation>Запуск программ</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="9456"/>
+        <location filename="../src/mainwindow.cpp" line="9459"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="227"/>
         <source>Problem Set</source>
         <translation>Набор проблем</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10160"/>
+        <location filename="../src/mainwindow.cpp" line="10163"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="180"/>
         <source>NASM</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="10166"/>
+        <location filename="../src/mainwindow.cpp" line="10169"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="177"/>
         <source>GNU Assembler</source>
         <translation>GNU Assembler</translation>

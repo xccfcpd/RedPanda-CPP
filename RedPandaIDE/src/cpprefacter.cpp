@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <QCoreApplication>
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressDialog>
@@ -63,11 +64,10 @@ bool CppRefacter::findOccurence(Editor *editor, const CharPos &pos)
             doFindOccurenceInEditor(statement,editor,editor->parser());
         }
     }
-    mMainWindow->searchResultModel()->notifySearchResultsUpdated();
     return true;
 }
 
-bool CppRefacter::findOccurence(Editor * editor, const QString &statementFullname, SearchFileScope scope)
+bool CppRefacter::findOccurence(Editor * editor, const QString &keyword, const QString& scopeFullName, SearchFileScope scope)
 {
     if (!editor->parser())
         return false;
@@ -76,10 +76,15 @@ bool CppRefacter::findOccurence(Editor * editor, const QString &statementFullnam
     auto action = finally([&editor]{
         editor->parser()->unFreeze();
     });
-    PStatement statement = editor->parser()->findStatement(statementFullname);
-    if (!statement)
-        return false;
-
+    PStatement statement;
+    if (!scopeFullName.isEmpty()) {
+        PStatement scopeStatement = editor->parser()->findStatement(scopeFullName);
+        if (!scopeStatement)
+            return false;
+        statement = scopeStatement->children.value(keyword);
+    } else {
+        statement = editor->parser()->findStatement(keyword);
+    }
     if (statement->scope == StatementScope::Local) {
         doFindOccurenceInEditor(statement,editor,editor->parser());
     } else {
@@ -90,7 +95,6 @@ bool CppRefacter::findOccurence(Editor * editor, const QString &statementFullnam
             doFindOccurenceInEditor(statement,editor,editor->parser());
         }
     }
-    mMainWindow->searchResultModel()->notifySearchResultsUpdated();
     return true;
 }
 
@@ -244,9 +248,9 @@ void CppRefacter::renameUndefinedLocalVariable(Editor *editor, const CharPos &po
     editor->setCaretXY(editor->ensureCharPosValid(editor->caretXY()));
     editor->endEditing();
 }
-
-void CppRefacter::doFindOccurenceInEditor(const PStatement &statement , Editor *editor, const PCppParser &parser)
-{
+void CppRefacter::doFindOccurenceInEditor(const PStatement &statement , Editor *editor, const PCppParser &parser){
+    PStatement parentScope  = statement->parentScope.lock();
+    QString scopeFullName = parentScope?parentScope->fullName:"";
     PSearchResults results = mMainWindow->searchResultModel()->addSearchResults(
                 statement->command,
                 statement->fullName,
@@ -258,15 +262,17 @@ void CppRefacter::doFindOccurenceInEditor(const PStatement &statement , Editor *
                 statement,
                 parser);
     if (item && !(item->results.isEmpty())) {
-        results->results.append(item);
+        mMainWindow->searchResultModel()->addResultToSearchResults(results,item);
     }
 }
 
 void CppRefacter::doFindOccurenceInProject(const PStatement &statement, std::shared_ptr<Project> project, const PCppParser &parser)
 {
+    PStatement parentScope  = statement->parentScope.lock();
+    QString scopeFullName = parentScope?parentScope->fullName:"";
     PSearchResults results = mMainWindow->searchResultModel()->addSearchResults(
                 statement->command,
-                statement->fullName,
+                scopeFullName,
                 SearchFileScope::wholeProject
                 );
     QProgressDialog progressDlg(
@@ -276,13 +282,15 @@ void CppRefacter::doFindOccurenceInProject(const PStatement &statement, std::sha
                 mMainWindow->project()->unitList().count(),
                 mMainWindow);
     progressDlg.setWindowModality(Qt::WindowModal);
+    progressDlg.setMinimumDuration(500);
+    progressDlg.show();
     int i=0;
     foreach (const PProjectUnit& unit, project->unitList()) {
         i++;
         if (isCFile(unit->fileName()) || isHFile(unit->fileName())) {
             progressDlg.setValue(i);
             progressDlg.setLabelText(tr("Searching...")+"<br/>"+unit->fileName());
-
+            QCoreApplication::processEvents();
             if (progressDlg.wasCanceled())
                 break;
             PSearchResultTreeItem item = findOccurenceInFile(
@@ -291,7 +299,7 @@ void CppRefacter::doFindOccurenceInProject(const PStatement &statement, std::sha
                         statement,
                         parser);
             if (item && !(item->results.isEmpty())) {
-                results->results.append(item);
+                mMainWindow->searchResultModel()->addResultToSearchResults(results,item);
             }
         }
     }

@@ -23,10 +23,12 @@
 CppTokenizer::CppTokenizer():
 mLastTokenType{TokenType::None}
 {
+    mStopForParserReset = false;
 }
 
 void CppTokenizer::clear()
 {
+    mStopForParserReset = false;
     mTokenList.clear();
     mBuffer.clear();
     mBufferStr.clear();
@@ -60,6 +62,10 @@ void CppTokenizer::tokenize(const QStringList &buffer)
 
     TokenType tokenType = TokenType::None;
     while (true) {
+        if (mStopForParserReset) {
+            mTokenList.clear();
+            return;
+        }
         mLastTokenType = tokenType;
         mLastToken = s;
         s = getNextToken(&tokenType);
@@ -426,7 +432,7 @@ QString CppTokenizer::getNextToken(TokenType *pTokenType)
                     countLines();
                     result = "\"\"";
                     done = true;
-                    advance();
+                    skipDoubleQuotes();
                 }
                 break;
             case 'R':
@@ -440,7 +446,7 @@ QString CppTokenizer::getNextToken(TokenType *pTokenType)
                 countLines();
                 result = "\'\'";
                 done = true;
-                advance();
+                skipSingleQuote();
                 break;
             default:
                 advance();
@@ -486,8 +492,6 @@ QString CppTokenizer::getPreprocessor()
 
 QString CppTokenizer::getWord()
 {
-    // Skip spaces
-    skipToNextToken();
     QString result;
     // Get next word...
     while (true) {
@@ -506,7 +510,9 @@ QString CppTokenizer::getWord()
         if (currentWord.isEmpty()) {
             break;
         } else {
-            if (currentWord!="operator") {
+            //skip spaces
+            skipToNextToken();
+            if (currentWord!="operator" && currentWord != "auto") {
                 // Skip template contents, but keep template variable types
                 if (*mCurrent == '<') {
                     const QChar* offset = mCurrent;
@@ -544,6 +550,8 @@ QString CppTokenizer::getWord()
             mCurrent+=2;
         } else
             break;
+        //skip spaces
+        skipToNextToken();
     }
 
     return result;
@@ -626,13 +634,13 @@ void CppTokenizer::simplifyArgs(QString &output)
 void CppTokenizer::skipDoubleQuotes()
 {
     mCurrent++;
-    while (!(*mCurrent=='"' || *mCurrent == 0)) {
+    while (!(*mCurrent=='"' || *mCurrent == 0 || *mCurrent == '\r' || *mCurrent == '\n')) {
         if (*mCurrent == '\\')
             mCurrent+=2; // skip escaped char
         else
             mCurrent++;
     }
-    if (*mCurrent!=0) {
+    if (*mCurrent=='"') {
         mCurrent++;
     }
 }
@@ -791,13 +799,13 @@ void CppTokenizer::skipRawString()
 void CppTokenizer::skipSingleQuote()
 {
     mCurrent++;
-    while (!(*mCurrent=='\'' || *mCurrent == 0)) {
+    while (!(*mCurrent=='\'' || *mCurrent == 0 || *mCurrent == '\r' || *mCurrent == '\n')) {
         if (*mCurrent == '\\')
             mCurrent+=2; // skip escaped char
         else
             mCurrent++;
     }
-    if (*mCurrent!=0) {
+    if (*mCurrent=='\'') {
         mCurrent++;
     }
 }
@@ -821,6 +829,7 @@ void CppTokenizer::skipTemplateArgs()
             break;
         case '>':
             lastBracketPos = mCurrent;
+            shouldExit = true;
             break;
         }
         if (shouldExit)
