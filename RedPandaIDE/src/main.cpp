@@ -365,30 +365,41 @@ int main(int argc, char *argv[])
         pSettings->load();
         if (firstRun) {
             //set theme
-            ChooseThemeDialog themeDialog;
-            themeDialog.setFont(QFont(defaultUiFont(),11));
-            themeDialog.exec();
-            switch (themeDialog.theme()) {
-            case ChooseThemeDialog::Theme::AutoFollowSystem:
-                setTheme("system");
-                break;
-            case ChooseThemeDialog::Theme::Dark:
-                setTheme("dark");
-                break;
-            case ChooseThemeDialog::Theme::Light:
-                setTheme("default");
-                break;
-            default:
-                setTheme("default");
-            }
+            // ChooseThemeDialog themeDialog;
+            // themeDialog.setFont(QFont(defaultUiFont(),11));
+            // themeDialog.exec();
+            // switch (themeDialog.theme()) {
+            // case ChooseThemeDialog::Theme::AutoFollowSystem:
+            //     setTheme("system");
+            //     break;
+            // case ChooseThemeDialog::Theme::Dark:
+            //     setTheme("dark");
+            //     break;
+            // case ChooseThemeDialog::Theme::Light:
+            //     setTheme("default");
+            //     break;
+            // default:
+            //     setTheme("default");
+            // }
 
-            pSettings->editor().setDefaultFileCpp(themeDialog.language()==ChooseThemeDialog::Language::CPlusPlus);
-            if (themeDialog.shareParser()) {
-                pSettings->codeCompletion().setShareParser(true);
-                pSettings->codeCompletion().setClearWhenEditorHidden(true);
-            } else {
-                pSettings->codeCompletion().setShareParser(false);
-            }
+            // pSettings->editor().setDefaultFileCpp(themeDialog.language()==ChooseThemeDialog::Language::CPlusPlus);
+            // if (themeDialog.shareParser()) {
+            //     pSettings->codeCompletion().setShareParser(true);
+            //     pSettings->codeCompletion().setClearWhenEditorHidden(true);
+            // } else {
+            //     pSettings->codeCompletion().setShareParser(false);
+            // }
+// 修改开始 260725
+            // First-run wizard dialog is skipped: use the locked defaults.
+//  - Language:     C++
+//  - Memory:       Share a single parser across all files
+//  - Theme:        Light ("default" in resources/themes/default.json)
+setTheme("default");
+ 
+pSettings->editor().setDefaultFileCpp(true);
+pSettings->codeCompletion().setShareParser(true);
+pSettings->codeCompletion().setClearWhenEditorHidden(true);
+// 修改结束 260725
             pSettings->editor().save();
 
             //auto detect git in path
