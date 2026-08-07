@@ -47,6 +47,7 @@ Red Panda C++ Version 3.5
   - enhancement: "Reparse Code" in "Code" menu.
   - change: Switch mouse cursor to arrow if it is over selection.\
   - fix: Double clicking watch value  can't modify it. (github #753)
+  - fix: Modify watch doesn't work.
 
 Red Panda C++ Version 3.4
   - enhancement: Auto hide option "Auto clear parsed symbols when editor hidden" if "editors share one parser" is unchecked.
