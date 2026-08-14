@@ -338,6 +338,7 @@ public:
     bool including(const QString &fileName) const { return mIncludes.contains(fileName); }
     PStatement findScopeAtLine(int line) const { return mScopes.findScopeAtLine(line); }
     void addStatement(const PStatement &statement) { mStatements.insert(statement->fullName,statement); }
+    void removeStatement(const PStatement &statement) { mStatements.remove(statement->fullName,statement); }
     void clearStatements() { mStatements.clear(); }
     void addScope(int line, const PStatement &scope) { mScopes.addScope(line,scope); }
     void removeLastScope() { mScopes.removeLastScope(); }

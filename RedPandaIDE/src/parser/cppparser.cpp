@@ -1507,31 +1507,48 @@ PStatement CppParser::addStatement(const PStatement& parent,
         newCommand = newCommand.left(pos);
     }
     newCommand.squeeze();
-//    if (newCommand.startsWith("::") && parent && kind!=StatementKind::skBlock ) {
-//        qDebug()<<command<<fileName<<line<<kind<<parent->fullName;
-//    }
-
-    if (kind == StatementKind::Constructor
-            || kind == StatementKind::Function
-            || kind == StatementKind::OverloadedOperator
-            || kind == StatementKind::LiteralOperator
-            || kind == StatementKind::Destructor
-            || kind == StatementKind::Variable
-            ) {
-        //find
-        if (properties.testFlag(StatementProperty::HasDefinition)) {
-            PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
-            if (oldStatement  && !oldStatement->hasDefinition()) {
-                oldStatement->setHasDefinition(true);
-                if (oldStatement->fileName!=fileName) {
-                    PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(fileName);
-                    if (fileInfo) {
-                        fileInfo->addStatement(oldStatement);
+    if (newCommand == "test") {
+        qDebug()<<newCommand;
+    }
+    bool overrided = false;
+    //override
+    if (kind == StatementKind::Function
+            && !properties.testFlag(StatementProperty::Inherited)
+            && parent
+            && parent->kind == StatementKind::Class) {
+        PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
+        if (oldStatement && oldStatement->properties.testFlag(StatementProperty::Inherited)) {
+            overrided = true;
+            PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(oldStatement->fileName);
+            if (fileInfo) {
+                fileInfo->removeStatement(oldStatement);
+            }
+            mStatementList.deleteStatement(oldStatement);
+        }
+    }
+    if (!overrided) {
+        if (kind == StatementKind::Constructor
+                || kind == StatementKind::Function
+                || kind == StatementKind::OverloadedOperator
+                || kind == StatementKind::LiteralOperator
+                || kind == StatementKind::Destructor
+                || kind == StatementKind::Variable
+                ) {
+            //find
+            if (properties.testFlag(StatementProperty::HasDefinition)) {
+                PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
+                if (oldStatement  && !oldStatement->hasDefinition()) {
+                    oldStatement->setHasDefinition(true);
+                    if (oldStatement->fileName!=fileName) {
+                        PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(fileName);
+                        if (fileInfo) {
+                            fileInfo->addStatement(oldStatement);
+                        }
                     }
+                    oldStatement->definitionLine = line;
+                    oldStatement->definitionFileName = fileName;
+                    return oldStatement;
                 }
-                oldStatement->definitionLine = line;
-                oldStatement->definitionFileName = fileName;
-                return oldStatement;
             }
         }
     }
