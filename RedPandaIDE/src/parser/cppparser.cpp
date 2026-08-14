@@ -4696,6 +4696,7 @@ void CppParser::internalParse(const QString &fileName)
 void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                                       const PStatement& base, StatementAccessibility access)
 {
+    Q_ASSERT(derived->fullName != base->fullName);
     //differentiate class and struct
     if (access == StatementAccessibility::None) {
         if (isStruct)
@@ -4708,19 +4709,6 @@ void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                 || statement->kind == StatementKind::Constructor
                 || statement->kind == StatementKind::Destructor)
             continue;
-//        if (derived->children.contains(statement->command)) {
-//            // Check if it's overwritten(hidden) by the derived
-//            QList<PStatement> children = derived->children.values(statement->command);
-//            bool overwritten = false;
-//            foreach(const PStatement& child, children) {
-//                if (!child->isInherited() && child->noNameArgs == statement->noNameArgs) {
-//                    overwritten = true;
-//                    break;
-//                }
-//            }
-//            if (overwritten)
-//                continue;
-//        }
         StatementAccessibility m_acc;
         switch(access) {
         case StatementAccessibility::Public:
