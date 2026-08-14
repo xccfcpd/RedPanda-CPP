@@ -1507,9 +1507,9 @@ PStatement CppParser::addStatement(const PStatement& parent,
         newCommand = newCommand.left(pos);
     }
     newCommand.squeeze();
-    if (newCommand == "allocId") {
-        qDebug()<<newCommand;
-    }
+//    if (newCommand == "allocId") {
+//        qDebug()<<newCommand;
+//    }
     bool overrided = false;
     //override
     if (kind == StatementKind::Function
