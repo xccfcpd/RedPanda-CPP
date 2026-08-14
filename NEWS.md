@@ -48,7 +48,8 @@ Red Panda C++ Version 3.5
   - change: Switch mouse cursor to arrow if it is over selection.\
   - fix: Double clicking watch value  can't modify it. (github #753)
   - fix: Modify watch doesn't work.
-  - fix: Overrided parent methods is still shown in class browser ( github #755 )
+  - fix: Overrided parent methods is still shown in class browser. ( github #755 )
+  - fix: Class inheritance is not correctly handled. ( github #755 )
 
 Red Panda C++ Version 3.4
   - enhancement: Auto hide option "Auto clear parsed symbols when editor hidden" if "editors share one parser" is unchecked.

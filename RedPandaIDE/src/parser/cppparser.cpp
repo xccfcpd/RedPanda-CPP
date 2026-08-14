@@ -1507,7 +1507,7 @@ PStatement CppParser::addStatement(const PStatement& parent,
         newCommand = newCommand.left(pos);
     }
     newCommand.squeeze();
-    if (newCommand == "test") {
+    if (newCommand == "allocId") {
         qDebug()<<newCommand;
     }
     bool overrided = false;
@@ -1747,7 +1747,7 @@ void CppParser::setInheritance(int index, const PStatement& classStatement, bool
             } else {
                 QString basename = currentText;
                 bool isGlobal = false;
-                index++;
+
                 //remove template staff
                 if (basename.endsWith('>')) {
                     int pBegin = basename.indexOf('<');
@@ -4708,19 +4708,19 @@ void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                 || statement->kind == StatementKind::Constructor
                 || statement->kind == StatementKind::Destructor)
             continue;
-        if (derived->children.contains(statement->command)) {
-            // Check if it's overwritten(hidden) by the derived
-            QList<PStatement> children = derived->children.values(statement->command);
-            bool overwritten = false;
-            foreach(const PStatement& child, children) {
-                if (!child->isInherited() && child->noNameArgs == statement->noNameArgs) {
-                    overwritten = true;
-                    break;
-                }
-            }
-            if (overwritten)
-                continue;
-        }
+//        if (derived->children.contains(statement->command)) {
+//            // Check if it's overwritten(hidden) by the derived
+//            QList<PStatement> children = derived->children.values(statement->command);
+//            bool overwritten = false;
+//            foreach(const PStatement& child, children) {
+//                if (!child->isInherited() && child->noNameArgs == statement->noNameArgs) {
+//                    overwritten = true;
+//                    break;
+//                }
+//            }
+//            if (overwritten)
+//                continue;
+//        }
         StatementAccessibility m_acc;
         switch(access) {
         case StatementAccessibility::Public:
