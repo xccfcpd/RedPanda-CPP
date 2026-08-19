@@ -265,7 +265,7 @@ void Project::open()
                 !isEncodingAvailable(newUnit->encoding())) {
             newUnit->setEncoding(ENCODING_PROJECT);
         }
-        newUnit->setRealEncoding(ini.GetValue(groupName, "RealEncoding",ENCODING_ASCII));
+        newUnit->setRealEncoding(ini.GetValue(groupName, "RealEncoding",""));
 
         PProjectModelNode parentNode;
         if (mOptions.modelType==ProjectModelType::FileSystem) {
