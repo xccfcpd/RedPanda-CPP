@@ -10827,4 +10827,3 @@ void MainWindow::on_actionReparse_Code_triggered()
         }
     }
 }
-

@@ -1507,31 +1507,48 @@ PStatement CppParser::addStatement(const PStatement& parent,
         newCommand = newCommand.left(pos);
     }
     newCommand.squeeze();
-//    if (newCommand.startsWith("::") && parent && kind!=StatementKind::skBlock ) {
-//        qDebug()<<command<<fileName<<line<<kind<<parent->fullName;
+//    if (newCommand == "allocId") {
+//        qDebug()<<newCommand;
 //    }
-
-    if (kind == StatementKind::Constructor
-            || kind == StatementKind::Function
-            || kind == StatementKind::OverloadedOperator
-            || kind == StatementKind::LiteralOperator
-            || kind == StatementKind::Destructor
-            || kind == StatementKind::Variable
-            ) {
-        //find
-        if (properties.testFlag(StatementProperty::HasDefinition)) {
-            PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
-            if (oldStatement  && !oldStatement->hasDefinition()) {
-                oldStatement->setHasDefinition(true);
-                if (oldStatement->fileName!=fileName) {
-                    PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(fileName);
-                    if (fileInfo) {
-                        fileInfo->addStatement(oldStatement);
+    bool overrided = false;
+    //override
+    if (kind == StatementKind::Function
+            && !properties.testFlag(StatementProperty::Inherited)
+            && parent
+            && parent->kind == StatementKind::Class) {
+        PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
+        if (oldStatement && oldStatement->properties.testFlag(StatementProperty::Inherited)) {
+            overrided = true;
+            PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(oldStatement->fileName);
+            if (fileInfo) {
+                fileInfo->removeStatement(oldStatement);
+            }
+            mStatementList.deleteStatement(oldStatement);
+        }
+    }
+    if (!overrided) {
+        if (kind == StatementKind::Constructor
+                || kind == StatementKind::Function
+                || kind == StatementKind::OverloadedOperator
+                || kind == StatementKind::LiteralOperator
+                || kind == StatementKind::Destructor
+                || kind == StatementKind::Variable
+                ) {
+            //find
+            if (properties.testFlag(StatementProperty::HasDefinition)) {
+                PStatement oldStatement = findStatementInScope(newCommand,noNameArgs,kind,parent);
+                if (oldStatement  && !oldStatement->hasDefinition()) {
+                    oldStatement->setHasDefinition(true);
+                    if (oldStatement->fileName!=fileName) {
+                        PParsedFileInfo fileInfo = mPreprocessor.findFileInfo(fileName);
+                        if (fileInfo) {
+                            fileInfo->addStatement(oldStatement);
+                        }
                     }
+                    oldStatement->definitionLine = line;
+                    oldStatement->definitionFileName = fileName;
+                    return oldStatement;
                 }
-                oldStatement->definitionLine = line;
-                oldStatement->definitionFileName = fileName;
-                return oldStatement;
             }
         }
     }
@@ -1730,7 +1747,7 @@ void CppParser::setInheritance(int index, const PStatement& classStatement, bool
             } else {
                 QString basename = currentText;
                 bool isGlobal = false;
-                index++;
+
                 //remove template staff
                 if (basename.endsWith('>')) {
                     int pBegin = basename.indexOf('<');
@@ -4679,6 +4696,7 @@ void CppParser::internalParse(const QString &fileName)
 void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                                       const PStatement& base, StatementAccessibility access)
 {
+    Q_ASSERT(derived->fullName != base->fullName);
     //differentiate class and struct
     if (access == StatementAccessibility::None) {
         if (isStruct)
@@ -4691,19 +4709,6 @@ void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                 || statement->kind == StatementKind::Constructor
                 || statement->kind == StatementKind::Destructor)
             continue;
-        if (derived->children.contains(statement->command)) {
-            // Check if it's overwritten(hidden) by the derived
-            QList<PStatement> children = derived->children.values(statement->command);
-            bool overwritten = false;
-            foreach(const PStatement& child, children) {
-                if (!child->isInherited() && child->noNameArgs == statement->noNameArgs) {
-                    overwritten = true;
-                    break;
-                }
-            }
-            if (overwritten)
-                continue;
-        }
         StatementAccessibility m_acc;
         switch(access) {
         case StatementAccessibility::Public:

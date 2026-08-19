@@ -5819,7 +5819,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+5"/>
         <source>Modify Watch...</source>
-        <translation>修改监视值</translation>
+        <translation>修改监视表达式...</translation>
     </message>
     <message>
         <location line="+9"/>
