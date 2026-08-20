@@ -4696,6 +4696,9 @@ void CppParser::internalParse(const QString &fileName)
 void CppParser::inheritClassStatement(const PStatement& derived, bool isStruct,
                                       const PStatement& base, StatementAccessibility access)
 {
+    //TODO: handle parameterized template class/struct inherit
+    if (derived == base)
+        return;
     Q_ASSERT(derived->fullName != base->fullName);
     //differentiate class and struct
     if (access == StatementAccessibility::None) {

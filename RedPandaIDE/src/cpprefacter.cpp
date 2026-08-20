@@ -85,6 +85,8 @@ bool CppRefacter::findOccurence(Editor * editor, const QString &keyword, const Q
     } else {
         statement = editor->parser()->findStatement(keyword);
     }
+    if (!statement)
+        return false;
     if (statement->scope == StatementScope::Local) {
         doFindOccurenceInEditor(statement,editor,editor->parser());
     } else {
