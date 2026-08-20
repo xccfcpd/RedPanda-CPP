@@ -255,7 +255,7 @@ void CppRefacter::doFindOccurenceInEditor(const PStatement &statement , Editor *
     QString scopeFullName = parentScope?parentScope->fullName:"";
     PSearchResults results = mMainWindow->searchResultModel()->addSearchResults(
                 statement->command,
-                statement->fullName,
+                scopeFullName,
                 SearchFileScope::currentFile
                 );
     PSearchResultTreeItem item = findOccurenceInFile(
