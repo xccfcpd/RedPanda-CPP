@@ -359,7 +359,7 @@ int main(int argc, char *argv[])
         //load settings
         pSettings = settings.get();
         if (firstRun) {
-            pSettings->compilerSets().findSets(true);
+            pSettings->compilerSets().findSets(false); //由true调整为false,首次打开软件时仍会静默搜索并保存编译器设置，但不再弹出“正在搜索…”进度窗口.
             pSettings->compilerSets().saveSets();
         }
         pSettings->load();
