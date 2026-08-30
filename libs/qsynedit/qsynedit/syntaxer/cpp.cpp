@@ -1770,7 +1770,6 @@ void CppSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq
                 || (mRange.state == RangeState::rsChar)
                 || (mRange.state == RangeState::rsCppComment)
                 || (mRange.state == RangeState::rsCharEscaping)
-                || (mRange.state == RangeState::rsCppComment)
                 || (mRange.state == RangeState::rsDefineRemaining)
                 || (mRange.state == RangeState::rsMultiLineDirective) )
             mRange.state=RangeState::rsUnknown;
