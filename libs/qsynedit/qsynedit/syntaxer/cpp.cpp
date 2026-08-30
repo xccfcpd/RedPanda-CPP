@@ -1429,6 +1429,7 @@ void CppSyntaxer::popIndents(IndentType indentType)
 
 void CppSyntaxer::pushIndents(IndentType indentType, size_t lineSeq, const QString& keyword)
 {
+    mRange.lastUnindent = IndentInfo{IndentType::None, 0, ""};
     mRange.indents.push_back(IndentInfo{indentType,lineSeq, keyword});
 }
 
