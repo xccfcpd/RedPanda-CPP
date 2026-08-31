@@ -2464,7 +2464,9 @@ bool Editor::handleSymbolCompletion(QChar key)
         bool inNumber = false;
         if (caretX() <= 0) {
             if (caretY()>0) {
-                inComment = syntaxer()->isCommentNotFinished(document()->getSyntaxState(caretY() - 1));
+                QSynedit::PSyntaxer pSyntaxer = syntaxer()->createInstance();
+                startParseLine(pSyntaxer.get(), caretY(), "");
+                inComment = pSyntaxer->isCommentNotFinished(pSyntaxer->getState());
             }
         } else {
             CharPos  highlightPos = CharPos{caretX()-1, caretY()};

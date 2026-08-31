@@ -1429,6 +1429,7 @@ void CppSyntaxer::popIndents(IndentType indentType)
 
 void CppSyntaxer::pushIndents(IndentType indentType, size_t lineSeq, const QString& keyword)
 {
+    mRange.lastUnindent = IndentInfo{IndentType::None, 0, ""};
     mRange.indents.push_back(IndentInfo{indentType,lineSeq, keyword});
 }
 
@@ -1769,7 +1770,6 @@ void CppSyntaxer::setLine(int lineNumber, const QString &newLine, size_t lineSeq
                 || (mRange.state == RangeState::rsChar)
                 || (mRange.state == RangeState::rsCppComment)
                 || (mRange.state == RangeState::rsCharEscaping)
-                || (mRange.state == RangeState::rsCppComment)
                 || (mRange.state == RangeState::rsDefineRemaining)
                 || (mRange.state == RangeState::rsMultiLineDirective) )
             mRange.state=RangeState::rsUnknown;

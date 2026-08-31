@@ -2398,3 +2398,21 @@ void TestEditorSymbolCompletion::test_input_docstring()
     QVERIFY(!mEditor->canUndo());
 
 }
+
+void TestEditorSymbolCompletion::test_input_after_cpp_comment()
+{
+    QStringList text1{
+        "//abc",
+        "",
+    };
+    QStringList text2{
+        "//abc",
+        "{}",
+    };
+    mEditor->clear();
+    mEditor->setContent(text1);
+    mEditor->setCaretXY(mEditor->fileEnd());
+    QTest::keyPress(mEditor.get(),'{');
+    QCOMPARE(mEditor->content(),text2);
+
+}

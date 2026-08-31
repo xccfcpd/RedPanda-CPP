@@ -1752,7 +1752,7 @@ void TestQSyneditCpp::test_input_chars_at_file_begin_end_overwrite_mode()
                                       (StatusChange::CaretX | StatusChange::Modified),
              }));
     QCOMPARE(mReparseStarts, QList<int>({2,2,2}));
-    QCOMPARE(mReparseCounts, QList<int>({2,1,1}));
+    QCOMPARE(mReparseCounts, QList<int>({1,1,1}));
 
     //undo
     clearSignalDatas();
@@ -1770,7 +1770,7 @@ void TestQSyneditCpp::test_input_chars_at_file_begin_end_overwrite_mode()
                                       (StatusChange::CaretX | StatusChange::Modified),
              }));
     QCOMPARE(mReparseStarts, QList<int>({2,2,2}));
-    QCOMPARE(mReparseCounts, QList<int>({1,1,2}));
+    QCOMPARE(mReparseCounts, QList<int>({1,1,1}));
 
     clearSignalDatas();
     mEdit->undo();
@@ -1859,7 +1859,7 @@ void TestQSyneditCpp::test_input_chars_at_file_begin_end_overwrite_mode()
                                       (StatusChange::CaretX | StatusChange::CaretY | StatusChange::Modified),
              }));
     QCOMPARE(mReparseStarts, QList<int>({2,2,2}));
-    QCOMPARE(mReparseCounts, QList<int>({2,1,1}));
+    QCOMPARE(mReparseCounts, QList<int>({1,1,1}));
 
     QVERIFY(!mEdit->canRedo());
 
@@ -1879,7 +1879,7 @@ void TestQSyneditCpp::test_input_chars_at_file_begin_end_overwrite_mode()
                                       (StatusChange::CaretX | StatusChange::Modified),
              }));
     QCOMPARE(mReparseStarts, QList<int>({2,2,2}));
-    QCOMPARE(mReparseCounts, QList<int>({1,1,2}));
+    QCOMPARE(mReparseCounts, QList<int>({1,1,1}));
 
     clearSignalDatas();
     mEdit->undo();
@@ -9185,7 +9185,7 @@ void TestQSyneditCpp::test_toggle_comment_select_multiple_lines()
                                       StatusChange::Modified | StatusChange::Selection
                                   }));
     QCOMPARE(mReparseStarts, QList<int>({3,2,1}));
-    QCOMPARE(mReparseCounts, QList<int>({6,7,3}));
+    QCOMPARE(mReparseCounts, QList<int>({6,7,1}));
 
     QCOMPARE(mEdit->codeBlockCount(),3);
     QVERIFY(mEdit->hasCodeBlock(0,8));
@@ -9305,7 +9305,7 @@ void TestQSyneditCpp::test_toggle_comment_select_multiple_lines()
                                       StatusChange::Modified | StatusChange::Selection | StatusChange::CaretX | StatusChange::CaretY
                                   }));
     QCOMPARE(mReparseStarts, QList<int>({1,2,3}));
-    QCOMPARE(mReparseCounts, QList<int>({3,7,6}));
+    QCOMPARE(mReparseCounts, QList<int>({1,7,6}));
 
     QCOMPARE(mEdit->codeBlockCount(),4);
     QVERIFY(mEdit->hasCodeBlock(0,2));
@@ -9332,7 +9332,7 @@ void TestQSyneditCpp::test_toggle_comment_select_multiple_lines()
                                       StatusChange::Modified | StatusChange::Selection
                                   }));
     QCOMPARE(mReparseStarts, QList<int>({3,2,1}));
-    QCOMPARE(mReparseCounts, QList<int>({6,7,3}));
+    QCOMPARE(mReparseCounts, QList<int>({6,7,1}));
 
     QCOMPARE(mEdit->codeBlockCount(),3);
     QVERIFY(mEdit->hasCodeBlock(0,8));
@@ -11016,6 +11016,101 @@ void TestQSyneditCpp::test_auto_indent_for_parenthesis()
     mEdit->undo();
     QVERIFY(mEdit->empty());
     QVERIFY(!mEdit->canUndo());
+}
+
+void TestQSyneditCpp::test_auto_indent_for_brace_after_closing_parenthesis()
+{
+    QStringList text({
+        "void test() {",
+        "",
+        "}",
+    });
+    QStringList text1({
+        "void test() {",
+        "\t{",
+        "}",
+    });
+    mEdit->setContent(text);
+    mEdit->setCaretXY({0,1});
+    QTest::keyPress(mEdit.get(),'{');
+    QCOMPARE(mEdit->content(),text1);
+}
+
+void TestQSyneditCpp::test_auto_indent_for_if_else()
+{
+    QStringList text({
+        "int main {",
+        "if () {",
+        "x=10;",
+        "} else {",
+        "y=10",
+        "}",
+        "}"
+    });
+    QStringList text1({
+        "int main {",
+        "\tif () {",
+        "\t\tx=10;",
+        "\t} else {",
+        "\t\ty=10",
+        "\t}",
+        "}"
+    });
+    mEdit->clear();
+    mEdit->setSelText(text.join("\n"));
+    QCOMPARE(mEdit->content(),text1);
+}
+
+void TestQSyneditCpp::test_auto_indent_for_if_else_2()
+{
+    QStringList text({
+        "int main {",
+        "if ()",
+        "x=10;",
+        "else",
+        "y=10;",
+        "z=10;",
+        "}"
+    });
+    QStringList text1({
+        "int main {",
+        "\tif ()",
+        "\t\tx=10;",
+        "\telse",
+        "\t\ty=10;",
+        "\tz=10;",
+        "}"
+    });
+    mEdit->clear();
+    mEdit->setSelText(text.join("\n"));
+    QCOMPARE(mEdit->content(),text1);
+}
+
+void TestQSyneditCpp::test_auto_indent_for_if_else_3()
+{
+    QStringList text({
+        "int main {",
+        "if ()",
+        "if ()",
+        "x=10;",
+        "else",
+        "y=10;",
+        "z=10;"
+        "}"
+    });
+    QStringList text1({
+        "int main {",
+        "\tif ()",
+        "\t\tif ()",
+        "\t\t\tx=10;",
+        "\t\telse",
+        "\t\t\ty=10;",
+        "\tz=10;"
+        "}"
+    });
+    mEdit->clear();
+    mEdit->setSelText(text.join("\n"));
+    QCOMPARE(mEdit->content(),text1);
 }
 
 }

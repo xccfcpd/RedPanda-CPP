@@ -137,6 +137,10 @@ private slots:
     void test_setseltext_and_indent3_line_comment();
 
     void test_auto_indent_for_parenthesis();
+    void test_auto_indent_for_brace_after_closing_parenthesis();
+    void test_auto_indent_for_if_else();
+    void test_auto_indent_for_if_else_2();
+    void test_auto_indent_for_if_else_3();
 };
 
 }
