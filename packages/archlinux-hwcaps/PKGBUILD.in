@@ -9,7 +9,7 @@ license=('GPL3')
 depends=(qt6-base qt6-svg gcc gdb astyle)
 makedepends=(qt6-tools xmake imagemagick librsvg)
 optdepends=(
-    'clang: C/C++ compiler (alternative)'
+    'clang: C/C++ compiler (alternative), also provides the clang-format code formatter'
 )
 conflicts=("${_pkgname,,}")
 provides=("${_pkgname,,}")

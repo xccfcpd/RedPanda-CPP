@@ -159,6 +159,7 @@ target("RedPandaIDE")
         -- reformatter
         "src/reformatter/astyleformatter",
         "src/reformatter/basereformatter",
+        "src/reformatter/clangformatreformatter",
         -- settings dialog
         "src/settingsdialog/settingswidget",
         -- widgets

@@ -16,6 +16,53 @@
  */
 #include "codeformattersettings.h"
 #include "../utils.h"
+#include "../utils/parsearg.h"
+
+// clang-format style/use-tab names, used to build the "-style=..." arguments.
+// They are only needed here, so they are kept file-local.
+static QString clangFormatStyleName(int style)
+{
+    switch(style) {
+    case ClangFormatStyle::cfsNone:
+        return "none";
+    case ClangFormatStyle::cfsFile:
+        return "file";
+    case ClangFormatStyle::cfsLLVM:
+        return "LLVM";
+    case ClangFormatStyle::cfsGoogle:
+        return "Google";
+    case ClangFormatStyle::cfsChromium:
+        return "Chromium";
+    case ClangFormatStyle::cfsMozilla:
+        return "Mozilla";
+    case ClangFormatStyle::cfsWebKit:
+        return "WebKit";
+    case ClangFormatStyle::cfsMicrosoft:
+        return "Microsoft";
+    case ClangFormatStyle::cfsGNU:
+        return "GNU";
+    default:
+        return "LLVM";
+    }
+}
+
+static QString clangFormatUseTabName(int useTab)
+{
+    switch(useTab) {
+    case ClangFormatUseTab::cfuNever:
+        return "Never";
+    case ClangFormatUseTab::cfuForIndentation:
+        return "ForIndentation";
+    case ClangFormatUseTab::cfuForContinuationAndIndentation:
+        return "ForContinuationAndIndentation";
+    case ClangFormatUseTab::cfuAlignWithSpaces:
+        return "AlignWithSpaces";
+    case ClangFormatUseTab::cfuAlways:
+        return "Always";
+    default:
+        return "Never";
+    }
+}
 
 CodeFormatterSettings::CodeFormatterSettings(SettingsPersistor *persistor):
     BaseSettings{persistor,SETTING_CODE_FORMATTER}
@@ -24,6 +71,182 @@ CodeFormatterSettings::CodeFormatterSettings(SettingsPersistor *persistor):
 }
 
 QStringList CodeFormatterSettings::getArguments()
+{
+    if (mFormatterEngine == FormatterEngine::feClangFormat)
+        return getClangFormatArguments();
+    return getAstyleArguments();
+}
+
+int CodeFormatterSettings::formatterEngine() const
+{
+    return mFormatterEngine;
+}
+
+void CodeFormatterSettings::setFormatterEngine(int newFormatterEngine)
+{
+    mFormatterEngine = newFormatterEngine;
+}
+
+QStringList CodeFormatterSettings::getClangFormatArguments()
+{
+    QStringList result;
+
+    QString style;
+    QStringList overrides;
+    if (mClangFormatStyle == ClangFormatStyle::cfsFile) {
+        style = ::clangFormatStyleName(ClangFormatStyle::cfsFile);
+    } else if (mClangFormatOverrideStyle) {
+        overrides.append(QString("BasedOnStyle: %1")
+                         .arg(::clangFormatStyleName(mClangFormatStyle)));
+        overrides.append(QString("IndentWidth: %1").arg(mClangFormatIndentWidth));
+        overrides.append(QString("UseTab: %1").arg(clangFormatUseTabName(mClangFormatUseTab)));
+        overrides.append(QString("TabWidth: %1").arg(mClangFormatTabWidth));
+        if (mClangFormatSetColumnLimit)
+            overrides.append(QString("ColumnLimit: %1").arg(mClangFormatColumnLimit));
+        overrides.append(QString("SortIncludes: %1")
+                         .arg(mClangFormatSortIncludes?"true":"false"));
+        overrides.append(QString("AlignConsecutiveAssignments: %1")
+                         .arg(mClangFormatAlignConsecutiveAssignments?"true":"false"));
+        style = QString("{%1}").arg(overrides.join(", "));
+    } else {
+        style = ::clangFormatStyleName(mClangFormatStyle);
+    }
+    result.append(QString("-style=%1").arg(style));
+
+    if (mClangFormatUseFallbackStyle
+            && mClangFormatStyle == ClangFormatStyle::cfsFile) {
+        result.append(QString("-fallback-style=%1")
+                      .arg(::clangFormatStyleName(mClangFormatFallbackStyle)));
+    }
+
+    if (!mClangFormatExtraArguments.isEmpty()) {
+        result.append(parseArgumentsWithoutVariables(mClangFormatExtraArguments));
+    }
+
+    return result;
+}
+
+int CodeFormatterSettings::clangFormatStyle() const
+{
+    return mClangFormatStyle;
+}
+
+void CodeFormatterSettings::setClangFormatStyle(int newClangFormatStyle)
+{
+    mClangFormatStyle = newClangFormatStyle;
+}
+
+bool CodeFormatterSettings::clangFormatUseFallbackStyle() const
+{
+    return mClangFormatUseFallbackStyle;
+}
+
+void CodeFormatterSettings::setClangFormatUseFallbackStyle(bool newUseFallbackStyle)
+{
+    mClangFormatUseFallbackStyle = newUseFallbackStyle;
+}
+
+int CodeFormatterSettings::clangFormatFallbackStyle() const
+{
+    return mClangFormatFallbackStyle;
+}
+
+void CodeFormatterSettings::setClangFormatFallbackStyle(int newFallbackStyle)
+{
+    mClangFormatFallbackStyle = newFallbackStyle;
+}
+
+bool CodeFormatterSettings::clangFormatOverrideStyle() const
+{
+    return mClangFormatOverrideStyle;
+}
+
+void CodeFormatterSettings::setClangFormatOverrideStyle(bool newOverrideStyle)
+{
+    mClangFormatOverrideStyle = newOverrideStyle;
+}
+
+int CodeFormatterSettings::clangFormatIndentWidth() const
+{
+    return mClangFormatIndentWidth;
+}
+
+void CodeFormatterSettings::setClangFormatIndentWidth(int newIndentWidth)
+{
+    mClangFormatIndentWidth = newIndentWidth;
+}
+
+int CodeFormatterSettings::clangFormatUseTab() const
+{
+    return mClangFormatUseTab;
+}
+
+void CodeFormatterSettings::setClangFormatUseTab(int newUseTab)
+{
+    mClangFormatUseTab = newUseTab;
+}
+
+int CodeFormatterSettings::clangFormatTabWidth() const
+{
+    return mClangFormatTabWidth;
+}
+
+void CodeFormatterSettings::setClangFormatTabWidth(int newTabWidth)
+{
+    mClangFormatTabWidth = newTabWidth;
+}
+
+bool CodeFormatterSettings::clangFormatSetColumnLimit() const
+{
+    return mClangFormatSetColumnLimit;
+}
+
+void CodeFormatterSettings::setClangFormatSetColumnLimit(bool newSetColumnLimit)
+{
+    mClangFormatSetColumnLimit = newSetColumnLimit;
+}
+
+int CodeFormatterSettings::clangFormatColumnLimit() const
+{
+    return mClangFormatColumnLimit;
+}
+
+void CodeFormatterSettings::setClangFormatColumnLimit(int newColumnLimit)
+{
+    mClangFormatColumnLimit = newColumnLimit;
+}
+
+bool CodeFormatterSettings::clangFormatSortIncludes() const
+{
+    return mClangFormatSortIncludes;
+}
+
+void CodeFormatterSettings::setClangFormatSortIncludes(bool newSortIncludes)
+{
+    mClangFormatSortIncludes = newSortIncludes;
+}
+
+bool CodeFormatterSettings::clangFormatAlignConsecutiveAssignments() const
+{
+    return mClangFormatAlignConsecutiveAssignments;
+}
+
+void CodeFormatterSettings::setClangFormatAlignConsecutiveAssignments(bool newAlignConsecutiveAssignments)
+{
+    mClangFormatAlignConsecutiveAssignments = newAlignConsecutiveAssignments;
+}
+
+QString CodeFormatterSettings::clangFormatExtraArguments() const
+{
+    return mClangFormatExtraArguments;
+}
+
+void CodeFormatterSettings::setClangFormatExtraArguments(const QString &newExtraArguments)
+{
+    mClangFormatExtraArguments = newExtraArguments;
+}
+
+QStringList CodeFormatterSettings::getAstyleArguments()
 {
     QStringList result;
     //force use english language
@@ -153,7 +376,7 @@ QStringList CodeFormatterSettings::getArguments()
     if (mSqueezeLines)
         result.append(QString("--squeeze-lines=%1").arg(mSqueezeLinesNumber));
     if (mSqueezeWhitespace)
-        result.append(QString("--squeeze-ws").arg(mSqueezeLinesNumber));
+        result.append("--squeeze-ws");
     switch(mAlignPointerStyle) {
     case FormatterOperatorAlign::foaNone:
         break;
@@ -781,6 +1004,19 @@ void CodeFormatterSettings::setIndentSwitches(bool newIndentSwitches)
 
 void CodeFormatterSettings::doSave()
 {
+    saveValue("formatter_engine",mFormatterEngine);
+    saveValue("clang_format_style",mClangFormatStyle);
+    saveValue("clang_format_use_fallback_style",mClangFormatUseFallbackStyle);
+    saveValue("clang_format_fallback_style",mClangFormatFallbackStyle);
+    saveValue("clang_format_override_style",mClangFormatOverrideStyle);
+    saveValue("clang_format_indent_width",mClangFormatIndentWidth);
+    saveValue("clang_format_use_tab",mClangFormatUseTab);
+    saveValue("clang_format_tab_width",mClangFormatTabWidth);
+    saveValue("clang_format_set_column_limit",mClangFormatSetColumnLimit);
+    saveValue("clang_format_column_limit",mClangFormatColumnLimit);
+    saveValue("clang_format_sort_includes",mClangFormatSortIncludes);
+    saveValue("clang_format_align_consecutive_assignments",mClangFormatAlignConsecutiveAssignments);
+    saveValue("clang_format_extra_arguments",mClangFormatExtraArguments);
     saveValue("brace_style",mBraceStyle);
     saveValue("indent_style",mIndentStyle);
     saveValue("tab_width",mTabWidth);
@@ -843,6 +1079,21 @@ void CodeFormatterSettings::doSave()
 
 void CodeFormatterSettings::doLoad()
 {
+    mFormatterEngine = intValue("formatter_engine", FormatterEngine::feAStyle);
+
+    mClangFormatStyle = intValue("clang_format_style", ClangFormatStyle::cfsFile);
+    mClangFormatUseFallbackStyle = boolValue("clang_format_use_fallback_style", false);
+    mClangFormatFallbackStyle = intValue("clang_format_fallback_style", ClangFormatStyle::cfsLLVM);
+    mClangFormatOverrideStyle = boolValue("clang_format_override_style", false);
+    mClangFormatIndentWidth = intValue("clang_format_indent_width", 4);
+    mClangFormatUseTab = intValue("clang_format_use_tab", ClangFormatUseTab::cfuNever);
+    mClangFormatTabWidth = intValue("clang_format_tab_width", 4);
+    mClangFormatSetColumnLimit = boolValue("clang_format_set_column_limit", false);
+    mClangFormatColumnLimit = intValue("clang_format_column_limit", 0);
+    mClangFormatSortIncludes = boolValue("clang_format_sort_includes", false);
+    mClangFormatAlignConsecutiveAssignments = boolValue("clang_format_align_consecutive_assignments", false);
+    mClangFormatExtraArguments = stringValue("clang_format_extra_arguments", "");
+
     mBraceStyle = intValue("brace_style", FormatterBraceStyle::fbsJava);
     mIndentStyle = intValue("indent_style",FormatterIndentType::fitTab); // 0 isspaces, 1 is tab
     mTabWidth = intValue("tab_width",4);

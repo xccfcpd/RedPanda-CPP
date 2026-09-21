@@ -18,6 +18,9 @@
 #include "formattergeneralwidget.h"
 #include "ui_formattergeneralwidget.h"
 #include "../settings.h"
+#include "../reformatter/clangformatreformatter.h"
+#include "../reformatter/astyleformatter.h"
+#include <QFile>
 
 FormatterGeneralWidget::FormatterGeneralWidget(ColorManager *colorManager, const QString& name, const QString& group, IconsManager *iconsManager, QWidget *parent):
     SettingsWidget(name,group,iconsManager,parent),
@@ -32,8 +35,13 @@ FormatterGeneralWidget::FormatterGeneralWidget(ColorManager *colorManager, const
     ui->editDemo->applySettings();
     ui->editDemo->setReadOnly(true);
     ui->editDemo->setFileType(FileType::CppSource);
+    // Debounce: reformatting the demo spawns a clang-format process, so don't
+    // start one for every intermediate settingsChanged while the user drags a
+    // control - wait until the changes settle.
+    mDemoTimer.setSingleShot(true);
+    connect(&mDemoTimer, &QTimer::timeout, this, &FormatterGeneralWidget::updateDemo);
     connect(this, &SettingsWidget::settingsChanged,
-               this, &FormatterGeneralWidget::updateDemo);
+               this, [this]() { mDemoTimer.start(300); });
 
     connect(ui->chkSqueezeEmptyLines, &QCheckBox::toggled,
             ui->spinSqueezeEmptyLines, &QSpinBox::setEnabled);
@@ -42,6 +50,63 @@ FormatterGeneralWidget::FormatterGeneralWidget(ColorManager *colorManager, const
     ui->cbMinConditionalIndent->addItem(tr("Indent at least one additional indent"),1);
     ui->cbMinConditionalIndent->addItem(tr("Indent at least two additional indents"),2);
     ui->cbMinConditionalIndent->addItem(tr("Indent at least one-half an additional indent."),3);
+
+    ui->cbFormatter->addItem(tr("Artistic Style (astyle)"), FormatterEngine::feAStyle);
+    ui->cbFormatter->addItem(tr("clang-format"), FormatterEngine::feClangFormat);
+    connect(ui->cbFormatter, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &FormatterGeneralWidget::updateFormatterEngine);
+
+    setupClangFormatComboboxes();
+    connect(ui->cbClangFormatStyle, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &FormatterGeneralWidget::on_clangFormatStyleChanged);
+    connect(ui->chkClangFormatUseFallbackStyle, &QCheckBox::toggled,
+            this, &FormatterGeneralWidget::on_chkClangFormatUseFallbackStyle_toggled);
+    connect(ui->chkClangFormatOverrideStyle, &QCheckBox::toggled,
+            this, &FormatterGeneralWidget::on_chkClangFormatOverrideStyle_toggled);
+    connect(ui->chkClangFormatSetColumnLimit, &QCheckBox::toggled,
+            this, &FormatterGeneralWidget::on_chkClangFormatSetColumnLimit_toggled);
+}
+
+void FormatterGeneralWidget::setupClangFormatComboboxes()
+{
+    ui->cbClangFormatStyle->addItem(tr("File (.clang-format)"), ClangFormatStyle::cfsFile);
+    ui->cbClangFormatStyle->addItem("LLVM", ClangFormatStyle::cfsLLVM);
+    ui->cbClangFormatStyle->addItem("Google", ClangFormatStyle::cfsGoogle);
+    ui->cbClangFormatStyle->addItem("Chromium", ClangFormatStyle::cfsChromium);
+    ui->cbClangFormatStyle->addItem("Mozilla", ClangFormatStyle::cfsMozilla);
+    ui->cbClangFormatStyle->addItem("WebKit", ClangFormatStyle::cfsWebKit);
+    ui->cbClangFormatStyle->addItem("Microsoft", ClangFormatStyle::cfsMicrosoft);
+    ui->cbClangFormatStyle->addItem("GNU", ClangFormatStyle::cfsGNU);
+
+    ui->cbClangFormatFallbackStyle->addItem(tr("None (don't format)"), ClangFormatStyle::cfsNone);
+    ui->cbClangFormatFallbackStyle->addItem("LLVM", ClangFormatStyle::cfsLLVM);
+    ui->cbClangFormatFallbackStyle->addItem("Google", ClangFormatStyle::cfsGoogle);
+    ui->cbClangFormatFallbackStyle->addItem("Chromium", ClangFormatStyle::cfsChromium);
+    ui->cbClangFormatFallbackStyle->addItem("Mozilla", ClangFormatStyle::cfsMozilla);
+    ui->cbClangFormatFallbackStyle->addItem("WebKit", ClangFormatStyle::cfsWebKit);
+    ui->cbClangFormatFallbackStyle->addItem("Microsoft", ClangFormatStyle::cfsMicrosoft);
+    ui->cbClangFormatFallbackStyle->addItem("GNU", ClangFormatStyle::cfsGNU);
+
+    ui->cbClangFormatUseTab->addItem(tr("Never"), ClangFormatUseTab::cfuNever);
+    ui->cbClangFormatUseTab->addItem(tr("For indentation"), ClangFormatUseTab::cfuForIndentation);
+    ui->cbClangFormatUseTab->addItem(tr("For continuation and indentation"),
+                                     ClangFormatUseTab::cfuForContinuationAndIndentation);
+    ui->cbClangFormatUseTab->addItem(tr("Align with spaces"), ClangFormatUseTab::cfuAlignWithSpaces);
+    ui->cbClangFormatUseTab->addItem(tr("Always"), ClangFormatUseTab::cfuAlways);
+}
+
+int FormatterGeneralWidget::findClangFormatStyleIndex(QComboBox *comboBox, int value, int fallbackValue) const
+{
+    int index = comboBox->findData(value);
+    if (index<0) {
+        // the value stored in the configuration file is unknown (e.g. it was
+        // edited by hand): don't silently fall back to the first entry, which
+        // for the fallback style combo would mean "don't format at all"
+        index = comboBox->findData(fallbackValue);
+        if (index<0)
+            index = 0;
+    }
+    return index;
 }
 
 FormatterGeneralWidget::~FormatterGeneralWidget()
@@ -155,7 +220,117 @@ void FormatterGeneralWidget::doLoad()
     ui->chkBreakMaxCodeLength->setChecked(format.breakMaxCodeLength());
     ui->spinMaxCodeLength->setValue(format.maxCodeLength());
     ui->chkBreakAfterLogical->setChecked(format.breakAfterLogical());
-    updateDemo();
+
+    int engineIndex = ui->cbFormatter->findData(format.formatterEngine());
+    ui->cbFormatter->setCurrentIndex(engineIndex<0?0:engineIndex);
+
+    ui->cbClangFormatStyle->setCurrentIndex(
+                findClangFormatStyleIndex(ui->cbClangFormatStyle,
+                                          format.clangFormatStyle(),
+                                          ClangFormatStyle::cfsFile));
+    ui->chkClangFormatUseFallbackStyle->setChecked(format.clangFormatUseFallbackStyle());
+    ui->cbClangFormatFallbackStyle->setCurrentIndex(
+                findClangFormatStyleIndex(ui->cbClangFormatFallbackStyle,
+                                          format.clangFormatFallbackStyle(),
+                                          ClangFormatStyle::cfsLLVM));
+    ui->chkClangFormatOverrideStyle->setChecked(format.clangFormatOverrideStyle());
+    ui->spinClangFormatIndentWidth->setValue(format.clangFormatIndentWidth());
+    ui->cbClangFormatUseTab->setCurrentIndex(
+                findClangFormatStyleIndex(ui->cbClangFormatUseTab,
+                                          format.clangFormatUseTab(),
+                                          ClangFormatUseTab::cfuNever));
+    ui->spinClangFormatTabWidth->setValue(format.clangFormatTabWidth());
+    ui->chkClangFormatSetColumnLimit->setChecked(format.clangFormatSetColumnLimit());
+    ui->spinClangFormatColumnLimit->setValue(format.clangFormatColumnLimit());
+    ui->chkClangFormatSortIncludes->setChecked(format.clangFormatSortIncludes());
+    ui->chkClangFormatAlignConsecutiveAssignments->setChecked(
+                format.clangFormatAlignConsecutiveAssignments());
+    ui->editClangFormatExtraOptions->setText(format.clangFormatExtraArguments());
+
+    updateFormatterEngine();
+    // Defer the first demo render to the next event-loop turn instead of calling
+    // updateDemo() synchronously here: it spawns a clang-format process that can
+    // block for a while, and we don't want opening the formatter settings page to
+    // freeze. The single-shot mDemoTimer is already wired to updateDemo().
+    mDemoTimer.start(0);
+}
+
+void FormatterGeneralWidget::updateFormatterEngine()
+{
+    int engine = ui->cbFormatter->currentData().toInt();
+    bool isClangFormat = (engine == FormatterEngine::feClangFormat);
+    ui->stackedFormatter->setCurrentIndex(isClangFormat?1:0);
+
+    bool useConfigFile =
+            isClangFormat
+            && (ui->cbClangFormatStyle->currentData().toInt() == ClangFormatStyle::cfsFile);
+    // Style overrides only apply to a predefined style. The checkbox is only
+    // disabled here (never unchecked), so that the user doesn't lose the
+    // settings while the config file style is selected - getClangFormatArguments()
+    // ignores them in that case anyway.
+    ui->chkClangFormatOverrideStyle->setEnabled(!useConfigFile);
+    on_chkClangFormatOverrideStyle_toggled(ui->chkClangFormatOverrideStyle->isChecked());
+    // the fallback style is only used if no config file is found
+    ui->chkClangFormatUseFallbackStyle->setEnabled(useConfigFile);
+    on_chkClangFormatUseFallbackStyle_toggled(ui->chkClangFormatUseFallbackStyle->isChecked());
+    on_chkClangFormatSetColumnLimit_toggled(ui->chkClangFormatSetColumnLimit->isChecked());
+
+    updateClangFormatStyleDescription();
+}
+
+void FormatterGeneralWidget::updateClangFormatStyleDescription()
+{
+    QString description;
+    switch(ui->cbClangFormatStyle->currentData().toInt()) {
+    case ClangFormatStyle::cfsFile:
+        description = tr("Read the nearest .clang-format config file. If no config file is found, the fallback style is used.");
+        break;
+    case ClangFormatStyle::cfsLLVM:
+        description = tr("A style complying with the LLVM coding standards.");
+        break;
+    case ClangFormatStyle::cfsGoogle:
+        description = tr("A style complying with Google's C++ style guide.");
+        break;
+    case ClangFormatStyle::cfsChromium:
+        description = tr("A style complying with the Chromium style guide.");
+        break;
+    case ClangFormatStyle::cfsMozilla:
+        description = tr("A style complying with the Mozilla style guide.");
+        break;
+    case ClangFormatStyle::cfsWebKit:
+        description = tr("A style complying with the WebKit style guide.");
+        break;
+    case ClangFormatStyle::cfsMicrosoft:
+        description = tr("A style complying with the Microsoft style guide.");
+        break;
+    case ClangFormatStyle::cfsGNU:
+        description = tr("A style complying with the GNU coding standards.");
+        break;
+    }
+    ui->lblClangFormatStyle->setText(description);
+}
+
+void FormatterGeneralWidget::on_clangFormatStyleChanged()
+{
+    updateFormatterEngine();
+}
+
+void FormatterGeneralWidget::on_chkClangFormatOverrideStyle_toggled(bool checked)
+{
+    ui->widgetClangFormatOverrides->setEnabled(
+                checked && ui->chkClangFormatOverrideStyle->isEnabled());
+}
+
+void FormatterGeneralWidget::on_chkClangFormatUseFallbackStyle_toggled(bool checked)
+{
+    ui->cbClangFormatFallbackStyle->setEnabled(
+                checked && ui->chkClangFormatUseFallbackStyle->isEnabled());
+}
+
+void FormatterGeneralWidget::on_chkClangFormatSetColumnLimit_toggled(bool checked)
+{
+    ui->spinClangFormatColumnLimit->setEnabled(
+                checked && ui->widgetClangFormatOverrides->isEnabled());
 }
 
 void FormatterGeneralWidget::doSave()
@@ -330,11 +505,6 @@ void FormatterGeneralWidget::on_chkBreakMaxCodeLength_stateChanged(int)
 
 void FormatterGeneralWidget::updateDemo()
 {
-    const QString &astyle = pSettings->environment().AStylePath();
-    if (!fileExists(astyle)) {
-        ui->editDemo->setContent(Editor::tr("Can't find astyle in \"%1\".").arg(astyle));
-        return;
-    }
     QFile file(":/codes/formatdemo.cpp");
     if (!file.open(QFile::ReadOnly))
         return;
@@ -342,20 +512,70 @@ void FormatterGeneralWidget::updateDemo()
 
     CodeFormatterSettings formatter(nullptr);
     updateCodeFormatter(formatter);
-    auto [newContent, astyleError, processError] =
-        runAndGetOutput(astyle, extractFileDir(astyle), formatter.getArguments(), content, true);
-    QString display;
-    if (!processError.isEmpty())
-        display += processError + '\n';
-    if (!astyleError.isEmpty()) {
-#ifdef Q_OS_WIN
-        display += QString::fromLocal8Bit(astyleError) + '\n';
-#else
-        display += QString::fromUtf8(astyleError) + '\n';
-#endif
+
+    if (formatter.formatterEngine() == FormatterEngine::feClangFormat) {
+        const QString &clangFormat = pSettings->environment().clangFormatPath();
+        if (!fileExists(clangFormat)) {
+            ui->editDemo->setContent(tr("Can't find clang-format in \"%1\".").arg(clangFormat));
+            return;
+        }
+        ClangFormatReformatter reformatter(clangFormat,
+                                           formatter.getClangFormatArguments(),
+                                           QString(),
+                                           pSettings->dirs().projectDir(),
+                                           nullptr);
+        QString errorMessage;
+        bool isOk;
+        QString newContent = reformatter.refomat(QString::fromUtf8(content),
+                                                errorMessage, isOk);
+        QString display;
+        if (!errorMessage.isEmpty())
+            display += errorMessage + '\n';
+        display += newContent;
+        ui->editDemo->setContent(display);
+        return;
     }
+
+    const QString &astyle = pSettings->environment().AStylePath();
+    if (!fileExists(astyle)) {
+        ui->editDemo->setContent(Editor::tr("Can't find astyle in \"%1\".").arg(astyle));
+        return;
+    }
+    // use the same formatter as the editor, so the demo shows exactly what
+    // reformatting the file would produce (including its error handling)
+    AStyleReformatter reformatter(astyle,
+                                  formatter.getAstyleArguments(),
+                                  QString(),
+                                  pSettings->dirs().projectDir(),
+                                  nullptr);
+    QString errorMessage;
+    bool isOk;
+    QString newContent = reformatter.refomat(QString::fromUtf8(content),
+                                             errorMessage, isOk);
+    QString display;
+    if (!errorMessage.isEmpty())
+        display += errorMessage + '\n';
     display += newContent;
     ui->editDemo->setContent(display);
+}
+
+void FormatterGeneralWidget::updateClangFormat(CodeFormatterSettings &format)
+{
+    format.setFormatterEngine(ui->cbFormatter->currentData().toInt());
+
+    format.setClangFormatStyle(ui->cbClangFormatStyle->currentData().toInt());
+    format.setClangFormatUseFallbackStyle(ui->chkClangFormatUseFallbackStyle->isChecked());
+    format.setClangFormatFallbackStyle(ui->cbClangFormatFallbackStyle->currentData().toInt());
+    format.setClangFormatOverrideStyle(ui->chkClangFormatOverrideStyle->isChecked());
+    format.setClangFormatIndentWidth(ui->spinClangFormatIndentWidth->value());
+    format.setClangFormatUseTab(ui->cbClangFormatUseTab->currentData().toInt());
+    format.setClangFormatTabWidth(ui->spinClangFormatTabWidth->value());
+    format.setClangFormatSetColumnLimit(ui->chkClangFormatSetColumnLimit->isChecked());
+    format.setClangFormatColumnLimit(ui->spinClangFormatColumnLimit->value());
+    format.setClangFormatSortIncludes(ui->chkClangFormatSortIncludes->isChecked());
+    format.setClangFormatAlignConsecutiveAssignments(
+                ui->chkClangFormatAlignConsecutiveAssignments->isChecked());
+    format.setClangFormatExtraArguments(ui->editClangFormatExtraOptions->text());
 }
 
 void FormatterGeneralWidget::updateCodeFormatter(CodeFormatterSettings &format)
@@ -440,5 +660,7 @@ void FormatterGeneralWidget::updateCodeFormatter(CodeFormatterSettings &format)
     format.setBreakMaxCodeLength(ui->chkBreakMaxCodeLength->isChecked());
     format.setMaxCodeLength(ui->spinMaxCodeLength->value());
     format.setBreakAfterLogical(ui->chkBreakAfterLogical->isChecked());
+
+    updateClangFormat(format);
 }
 

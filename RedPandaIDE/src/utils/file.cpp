@@ -20,6 +20,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QMap>
+#include <QSet>
 
 FileType getFileType(const QString &filename)
 {
@@ -126,6 +127,26 @@ FileType getFileType(const QString &filename)
         return FileType::Other;
     }
     return FileType::Other;
+}
+
+bool isFormattableCppFileName(const QString &fileName)
+{
+    if (fileName.isEmpty())
+        return false;
+    QFileInfo fileInfo(fileName);
+    QString suffix = fileInfo.suffix().toLower();
+    if (suffix.isEmpty())
+        return false;
+    // Keep this list in sync with the c/c++ extensions recognized by getFileType():
+    // the formatters guess the language from the file name and fall back to c++
+    // for unknown names, so everything else has to be rejected explicitly.
+    static const QSet<QString> cppExtensions {
+        // c/c++ sources
+        "c", "cpp", "cc", "cxx", "c++",
+        // c/c++ headers
+        "h", "hpp", "hh", "hxx", "tcc", "inl"
+    };
+    return cppExtensions.contains(suffix);
 }
 
 static const QMap<QString,FileType> FileTypeMapping{

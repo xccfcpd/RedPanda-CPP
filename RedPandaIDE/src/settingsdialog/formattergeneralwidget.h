@@ -18,6 +18,8 @@
 #define FORMATTERGENERALWIDGET_H
 
 #include <QAbstractListModel>
+#include <QComboBox>
+#include <QTimer>
 #include <QWidget>
 #include "settingswidget.h"
 #include "../utils.h"
@@ -63,13 +65,27 @@ private slots:
 
     void on_chkBreakMaxCodeLength_stateChanged(int arg1);
 
+    void on_clangFormatStyleChanged();
+
+    void on_chkClangFormatOverrideStyle_toggled(bool checked);
+
+    void on_chkClangFormatUseFallbackStyle_toggled(bool checked);
+
+    void on_chkClangFormatSetColumnLimit_toggled(bool checked);
+
     void updateDemo();
 private:
     void updateCodeFormatter(CodeFormatterSettings& format);
+    void updateClangFormat(CodeFormatterSettings& format);
+    void updateFormatterEngine();
+    void updateClangFormatStyleDescription();
+    void setupClangFormatComboboxes();
+    int findClangFormatStyleIndex(QComboBox *comboBox, int value, int fallbackValue) const;
 
 private:
     Ui::FormatterGeneralWidget *ui;
     FormatterStyleModel mStylesModel;
+    QTimer mDemoTimer;
 
     // SettingsWidget interface
 protected:

@@ -27,6 +27,8 @@
 #include "debugger/debugger.h"
 #include "utils/parser.h"
 #include <QApplication>
+#include <QMetaObject>
+#include <QPointer>
 
 EditorManager::EditorManager(QTabWidget* leftPageWidget,
       QTabWidget* rightPageWidget,
@@ -521,12 +523,41 @@ PCppParser EditorManager::createParserForEditor(Editor *editor)
     return nullptr;
 }
 
-std::unique_ptr<BaseReformatter> EditorManager::createReformatterForEditor(Editor *)
+std::unique_ptr<BaseReformatter> EditorManager::createReformatterForEditor(Editor *editor)
 {
-    const QString &astyle = pSettings->environment().AStylePath();
+    // The formatter may run on a worker thread (see Editor::reformat), so marshal
+    // the log call back to the GUI thread; calling a widget method directly from
+    // the worker thread would be unsafe. Capture a QPointer so that, if the main
+    // window is destroyed while a format is still running on the detached thread,
+    // the queued invokeMethod targets a (now null) guarded pointer instead of a
+    // dangling one.
+    QPointer<MainWindow> mainWindowGuard(pMainWindow);
+    LoggerFunc logger = [mainWindowGuard](const QString& msg) {
+        QMetaObject::invokeMethod(mainWindowGuard, [mainWindowGuard, msg]() {
+            if (mainWindowGuard)
+                mainWindowGuard->logToolsOutput(msg);
+        }, Qt::QueuedConnection);
+    };
     QStringList args = pSettings->codeFormatter().getArguments();
+    // used for files that have no absolute path yet (unsaved files, or files
+    // opened with a relative name): it decides where the search for the nearest
+    // ".clang-format" configuration file starts, and it is the working directory
+    // used by both formatters when the file has no usable path
+    QString baseDirectory = pSettings->dirs().projectDir();
+    if (editor && editor->inProject() && pMainWindow->project())
+        baseDirectory = pMainWindow->project()->directory();
+    if (pSettings->codeFormatter().formatterEngine() == FormatterEngine::feClangFormat) {
+        const QString &clangFormat = pSettings->environment().clangFormatPath();
+        return std::make_unique<ClangFormatReformatter>(clangFormat,args,
+                                                        editor?editor->filename():QString(),
+                                                        baseDirectory,
+                                                        logger);
+    }
+    const QString &astyle = pSettings->environment().AStylePath();
     return std::make_unique<AStyleReformatter>(astyle,args,
-                                               std::bind(&MainWindow::logToolsOutput, pMainWindow, std::placeholders::_1));
+                                               editor?editor->filename():QString(),
+                                               baseDirectory,
+                                               logger);
 }
 
 QTabWidget *EditorManager::leftPageWidget() const
