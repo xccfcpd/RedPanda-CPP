@@ -25,6 +25,30 @@
 #include "settings.h"
 #include "systemconsts.h"
 
+namespace {
+
+// Defaults of the built-in "Remove Compiled" tool. They are shared by the code
+// that creates the tool and the code that recognizes it again on load.
+#ifdef Q_OS_WIN
+const char* const REMOVE_COMPILED_PROGRAM = "del";
+const char* const REMOVE_COMPILED_PARAMETERS = "/q /f <EXENAME>";
+#else
+const char* const REMOVE_COMPILED_PROGRAM = "rm";
+const char* const REMOVE_COMPILED_PARAMETERS = "-f <EXENAME>";
+#endif
+const char* const REMOVE_COMPILED_WORKDIR = "<SOURCEPATH>";
+
+// True when "item" is (still) the built-in "Remove Compiled" tool. Its title is
+// persisted translated, so it is recognized by its command instead of its name.
+bool isRemoveCompiledTool(const PToolItem& item)
+{
+    return item->workingDirectory == QLatin1String(REMOVE_COMPILED_WORKDIR)
+            && item->parameters == QLatin1String(REMOVE_COMPILED_PARAMETERS)
+            && item->program == QLatin1String(REMOVE_COMPILED_PROGRAM);
+}
+
+} // namespace
+
 ToolsManager::ToolsManager(QObject *parent) : QObject(parent)
 {
 
@@ -39,17 +63,9 @@ void ToolsManager::load()
         PToolItem item = std::make_shared<ToolItem>();
         item->id = QUuid::createUuid().toString();
         item->title = tr("Remove Compiled");
-#ifdef Q_OS_WIN
-        item->program = "del";
-#else
-        item->program = "rm";
-#endif
-        item->workingDirectory = "<SOURCEPATH>";
-#ifdef Q_OS_WIN
-        item->parameters = "/q /f <EXENAME>";
-#else
-        item->parameters = "-f <EXENAME>";
-#endif
+        item->program = REMOVE_COMPILED_PROGRAM;
+        item->workingDirectory = REMOVE_COMPILED_WORKDIR;
+        item->parameters = REMOVE_COMPILED_PARAMETERS;
         item->inputOrigin = ToolItemInputOrigin::None;
         item->outputTarget = ToolItemOutputTarget::RedirectToToolsOutputPanel;
         item->isUTF8 = false;
@@ -106,6 +122,12 @@ void ToolsManager::load()
         item->outputTarget = static_cast<ToolItemOutputTarget>(object["outputTarget"].toInt(0));
         item->inputOrigin= static_cast<ToolItemInputOrigin>(object["inputOrigin"].toInt(0));
         item->isUTF8 = object["isUTF8"].toBool(true);
+        // The title above was persisted in whatever language was active when the
+        // file was written, so switching the language never updated it. The
+        // built-in tool is recognized by its command and gets a fresh title in
+        // the current language; user tools keep their own title.
+        if (isRemoveCompiledTool(item))
+            item->title = tr("Remove Compiled");
         mTools.append(item);
     }
 }
