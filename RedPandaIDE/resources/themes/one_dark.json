@@ -4,7 +4,7 @@
     "useQtFusionStyle": true,
     "isDark": true,
     "default scheme": "One Dark",
-    "default iconset": "contrast",
+    "default iconset": "newlook",
     "palette": {
         "PaletteWindow": "#282c34",
         "PaletteWindowDisabled": "#21252B",
