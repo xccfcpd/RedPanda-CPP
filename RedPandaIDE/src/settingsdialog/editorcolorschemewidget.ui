@@ -50,6 +50,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="btnSchemeMenu">
+        <property name="visible">
+        <bool>false</bool>
+        </property>
         <property name="text">
          <string>...</string>
         </property>
