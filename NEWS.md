@@ -19,6 +19,7 @@ Red Panda C++ Version 3.5
   - fix: Can't get clang's version.
   - change: Show completion popup only if it's not empty.
   - change: Reformat code don't clear breakpoints and bookmarks.
+  - enhancement: Support clang-format as an alternative code formatter.
   - enhancement: Correctly expand multi-line function-like macros.
   - fix: Can't parse embedding "using namespace".
   - fix: Auto indention for embeding parenthesis not correct.

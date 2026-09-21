@@ -165,7 +165,7 @@ public:
 
     void loadFile(QString filename = "", bool parse = true);
     void saveFile(QString filename);
-    bool save(bool force=false, bool doRreparse=true);
+    bool save(bool force=false, bool doReparse=true);
     bool saveAs(const QString& name="", bool doCheckSyntax = true);
     void rename(const QString& newName);
     void setFilename(const QString& newName);
@@ -203,7 +203,7 @@ public:
     QString getPreviousWordAtPositionForSuggestion(const QSynedit::CharPos& p,
                                                    QSynedit::TokenType &tokenType);
     QString getPreviousWordAtPositionForCompleteFunctionDefinition(const QSynedit::CharPos& p) const;
-    void reformat(bool doReparse=true);
+    void reformat(bool doReparse=true, bool notify=true, bool asynchronous=true);
     void replaceContent(const QString &newContent, bool doReparse=true);
     void checkSyntaxInBack();
     void gotoDeclaration(const QSynedit::CharPos& pos);
@@ -439,8 +439,37 @@ private:
 
     int previousIdChars(const QSynedit::CharPos &pos);
 
+    // After the content has been reformatted or replaced, line numbers can't be
+    // used to locate the caret/breakpoints/bookmarks any more: formatters merge
+    // and split lines. These helpers find those lines back by their text.
+    // Line numbers are 0-based here, like everywhere else in the editor.
+    // A line is described both by its own text and by the text of its neighbours:
+    // the context tells repeated lines (many "return 0;") and very short lines
+    // (a lone "}") apart.
+    struct ReformatAnchor {
+        QString line;      // non-whitespace text of the line itself
+        QString context;   // non-whitespace text of the previous, this and next line
+    };
+    QString lineNonWhitespace(int line) const;
+    ReformatAnchor lineAnchor(int line) const;
+    QMap<int,int> remapLinesByAnchor(const QMap<int,ReformatAnchor>& anchors) const;
+    // replaceContent() that merges the caller's anchors (breakpoints/bookmarks)
+    // into the same single remap pass as the caret and the first displayed line,
+    // and hands the resulting old line -> new line map back to the caller.
+    QMap<int,int> replaceContentAndRemap(const QString& newContent, bool doReparse,
+                                         const QMap<int,ReformatAnchor>& extraAnchors);
+    // Applies the result of an asynchronous reformat on the GUI thread (see
+    // reformat()): replaces the content and moves the breakpoints/bookmarks to
+    // the lines that now hold the same code.
+    void finishReformat(const QString& newContent, const QString& errorMessage, bool isOk,
+                        const QString& sourceText,
+                        const QSet<int>& breakpointsBackup, const QSet<int>& bookmarksBackup,
+                        const QMap<int,ReformatAnchor>& anchors, bool doReparse, bool notify);
+
 private:
     bool mInited;
+    // set while an asynchronous reformat is running, to ignore re-entrant calls
+    bool mIsReformatting = false;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEditorEncoding; // the encoding type set by the user

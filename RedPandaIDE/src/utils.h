@@ -47,8 +47,10 @@ struct ProcessOutput
 ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir, const QStringList& arguments,
                            const QByteArray& inputContent = QByteArray(),
                            bool separateStderr = false,
-                           bool inheritEnvironment = false,
-                           const QProcessEnvironment& env = QProcessEnvironment() );
+                           bool inheritEnvironment = true,
+                           const QProcessEnvironment& env = QProcessEnvironment(),
+                           int timeoutMs = 30000,
+                           int* exitCode = nullptr );
 
 void openFileFolderInExplorer(const QString& path);
 

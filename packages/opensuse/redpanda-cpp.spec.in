@@ -11,6 +11,9 @@ BuildRequires: qt6-base-devel qt6-svg-devel qt6-tools-devel qt6-linguist-devel c
 Requires: gcc gcc-c++ astyle
 Requires: glibc-devel-static
 Requires: libQt6Core6 libQt6Gui6 libQt6Svg6
+# clang-format is an optional alternative code formatter (may be provided by
+# a differently named package on other distributions)
+Recommends: clang-tools
 
 %description
 A lightweight but powerful C/C++ IDE

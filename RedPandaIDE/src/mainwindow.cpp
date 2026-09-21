@@ -770,7 +770,7 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionFind_Previous->setEnabled(true);
 
         //code
-        ui->actionReformat_Code->setEnabled(isCFile(e->filename()) || isHFile(e->filename()));
+        ui->actionReformat_Code->setEnabled(isFormattableCppFile(e->fileType()));
         ui->actionReparse_Code->setEnabled(e->inProject() || isCFile(e->filename()) || isHFile(e->filename()));
 
         ui->actionClose->setEnabled(true);

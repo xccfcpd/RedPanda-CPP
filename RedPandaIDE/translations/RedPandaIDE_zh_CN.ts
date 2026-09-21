@@ -4249,6 +4249,169 @@ p, li { white-space: pre-wrap; }
         <source>Indent at least one-half an additional indent.</source>
         <translation>至少额外缩进一个半缩进量</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>格式化工具</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>文件 (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>无 (不做格式化)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>样式选项</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>找不到 .clang-format 配置文件时使用的备用样式：</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>覆盖预定义样式的下列选项</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>缩进宽度：</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>制表符使用方式：</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>制表符宽度：</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>列宽限制：</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>无限制</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>对 #include 指令排序</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>对齐连续的赋值语句</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>附加命令行参数：</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>从不</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>仅用于缩进</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>用于续行和缩进</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>对齐时使用空格</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>总是</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>读取距离源文件最近的 .clang-format 配置文件。如果找不到配置文件，则使用备用样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>符合 LLVM 编码规范的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>符合 Google C++ 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>符合 Chromium 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>符合 Mozilla 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>符合 WebKit 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>符合 Microsoft 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>符合 GNU 编码规范的样式。</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程序&quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>注意：重新排版可能改动整个文件，例如把制表符缩进转换为空格。可以在项目中放置 .clang-format 文件以精确控制排版结果。</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程序&quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>使用clang-format重新排版代码...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format没有产生任何输出。</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format无法格式化&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的内容无法转换为UTF-8编码。</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format以退出码%1结束。</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作目录: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -4262,6 +4425,10 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="+40"/>
         <source>Path to astyle</source>
         <translation>astyle程序</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>clang-format程序</translation>
     </message>
     <message>
         <location line="+7"/>

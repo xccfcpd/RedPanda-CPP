@@ -39,6 +39,7 @@
 #define PACKIHX_PROGRAM   "packihx.exe"
 #define MAKEBIN_PROGRAM   "makebin.exe"
 #define ASTYLE_PROGRAM     "astyle.exe"
+#define CLANG_FORMAT_PROGRAM     "clang-format.exe"
 # if MAKE_INTERFACE == MAKE_INTERFACE_mingw32
 #  define MAKE_PROGRAM    "mingw32-make.exe"
 #  define CLEAN_PROGRAM   "del /q /f"
@@ -71,6 +72,7 @@
 #define PACKIHX_PROGRAM   "packihx"
 #define MAKEBIN_PROGRAM   "makebin"
 #define ASTYLE_PROGRAM     "astyle"
+#define CLANG_FORMAT_PROGRAM     "clang-format"
 #endif
 
 #define DEV_PROJECT_EXT "dev"

@@ -24,7 +24,9 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
                            const QByteArray &inputContent,
                            bool separateStderr,
                            bool inheritEnvironment,
-                           const QProcessEnvironment& env)
+                           const QProcessEnvironment& env,
+                           int timeoutMs,
+                           int* exitCode)
 {
     QProcess process;
     QByteArray standardOutput;
@@ -64,8 +66,21 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
         process.write(inputContent);
     }
     process.closeWriteChannel();
-    process.waitForFinished();
-    if (errorOccurred) {
+    // don't hang forever if the process doesn't finish on its own
+    bool timedout = !process.waitForFinished(timeoutMs);
+    if (timedout) {
+        process.kill();
+        process.waitForFinished();
+    }
+    // drain what's left, in case the signals above didn't deliver everything
+    standardOutput.append(process.readAllStandardOutput());
+    if (separateStderr)
+        standardError.append(process.readAllStandardError());
+    if (exitCode != nullptr)
+        *exitCode = process.exitStatus() == QProcess::NormalExit ? process.exitCode() : -1;
+    if (timedout) {
+        errorMessage += QString("Timeout: the process doesn't finish in %1 ms!").arg(timeoutMs);
+    } else if (errorOccurred) {
         switch(process.error()) {
         case QProcess::FailedToStart:
             errorMessage += "Failed to start process!";

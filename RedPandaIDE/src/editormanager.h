@@ -24,6 +24,7 @@
 #include "utils.h"
 #include "editor.h"
 #include "reformatter/astyleformatter.h"
+#include "reformatter/clangformatreformatter.h"
 
 class MainWindow;
 class Project;
