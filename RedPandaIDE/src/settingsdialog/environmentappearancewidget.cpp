@@ -30,6 +30,8 @@ EnvironmentAppearanceWidget::EnvironmentAppearanceWidget(const QString& name, co
     ui(new Ui::EnvironmentAppearanceWidget)
 {
     ui->setupUi(this);
+    ui->btnCustomize->setVisible(false);   // ← 新增这一行  
+    //说明：构造函数中强制隐藏 btnCustomize，确保程序启动时按钮不可见
 }
 
 EnvironmentAppearanceWidget::~EnvironmentAppearanceWidget()
@@ -122,7 +124,8 @@ void EnvironmentAppearanceWidget::on_cbTheme_currentIndexChanged(int /* index */
 {
     ThemeManager themeManager;
     PAppTheme appTheme = themeManager.theme(ui->cbTheme->currentData().toString());
-    ui->btnCustomize->setVisible(appTheme->category() == AppTheme::ThemeCategory::BuiltIn);
+    //ui->btnCustomize->setVisible(appTheme->category() == AppTheme::ThemeCategory::BuiltIn); // ← 注释掉这一行
+    //说明：注释掉 on_cbTheme_currentIndexChanged 中动态显示按钮的那一行，防止切换主题时按钮重新出现。
     ui->btnOpenCustomThemeFolder->setVisible(appTheme->category() == AppTheme::ThemeCategory::Custom);
     ui->btnRemoveCustomTheme->setVisible(appTheme->category() == AppTheme::ThemeCategory::Custom);
     ui->btnReload->setVisible(appTheme->category() == AppTheme::ThemeCategory::Custom
