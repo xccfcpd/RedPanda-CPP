@@ -21,7 +21,9 @@ makedepends=(
     "${MINGW_PACKAGE_PREFIX}-ninja"
     "${MINGW_PACKAGE_PREFIX}-cc"
 )
-optdepends=( )
+optdepends=(
+    "${MINGW_PACKAGE_PREFIX}-clang-tools-extra: clang-format code formatter"
+)
 
 case "$MSYSTEM" in
     CLANG*)

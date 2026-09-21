@@ -78,6 +78,17 @@ constexpr bool isC_CPP_ASMSourceFile(FileType fileType) {
     return isC_CPPSourceFile(fileType) || isASMSourceFile(fileType);
 }
 
+// Files that the code formatters (astyle / clang-format) are allowed to handle.
+// It is intentionally narrower than "isCFile() || isHFile()": those also accept
+// files without any extension (e.g. "Makefile"), and the formatters treat
+// unknown input as c++ source, so reformatting them would silently destroy them.
+constexpr bool isFormattableCppFile(FileType fileType) {
+    return isC_CPPSourceFile(fileType) || isC_CPPHeaderFile(fileType);
+}
+
+// Same as isFormattableCppFile(), but works on a file name instead of a FileType.
+bool isFormattableCppFileName(const QString& fileName);
+
 
 int getNewFileNumber();
 

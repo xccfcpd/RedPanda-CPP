@@ -26,6 +26,7 @@ protected:
     void updateIcons(const QSize &size) override;
 private slots:
     void on_btnChooseAstyle_clicked();
+    void on_btnChooseClangFormat_clicked();
 };
 
 #endif // FORMATTERPATHWIDGET_H

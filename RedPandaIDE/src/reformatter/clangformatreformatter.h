@@ -14,22 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef ASTYLE_REFORMATTER_H
-#define ASTYLE_REFORMATTER_H
+#ifndef CLANG_FORMAT_REFORMATTER_H
+#define CLANG_FORMAT_REFORMATTER_H
 #include "basereformatter.h"
 #include "../utils/types.h"
 
-class AStyleReformatter : public BaseReformatter {
+class ClangFormatReformatter : public BaseReformatter {
     Q_OBJECT
 public:
-    // fileName/baseDirectory are only used to pick a sensible working directory
-    // (mirroring ClangFormatReformatter); astyle itself is run as a filter.
-    AStyleReformatter(const QString& astylePath, const QStringList& args,
-                      const QString& fileName, const QString& baseDirectory,
-                      LoggerFunc newLoggerFunc, QObject* parent = nullptr);
+    // baseDirectory is used as the working directory, and as the reference
+    // directory for the file name, when the edited file has no (absolute) name
+    // yet. It decides where the search for the nearest ".clang-format" starts.
+    ClangFormatReformatter(const QString& clangFormatPath,
+                           const QStringList& args,
+                           const QString& fileName,
+                           const QString& baseDirectory,
+                           LoggerFunc newLoggerFunc,
+                           QObject* parent = nullptr);
     QString refomat(const QString& content, QString &errorMessage, bool &isOk) override;
 private:
-    QString mAstylePath;
+    QString mClangFormatPath;
     QStringList mArgs;
     QString mFileName;
     QString mBaseDirectory;

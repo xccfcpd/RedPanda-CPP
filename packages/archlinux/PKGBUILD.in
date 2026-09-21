@@ -13,7 +13,7 @@ makedepends=(
     noto-fonts noto-fonts-cjk noto-fonts-emoji
 )
 optdepends=(
-    'clang: C/C++ compiler (alternative)'
+    'clang: C/C++ compiler (alternative), also provides the clang-format code formatter'
 )
 source=(
     "$_pkgname.tar.gz"

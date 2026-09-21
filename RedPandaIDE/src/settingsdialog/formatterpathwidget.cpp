@@ -21,16 +21,20 @@ FormatterPathWidget::~FormatterPathWidget()
 void FormatterPathWidget::doLoad()
 {
     ui->txtAstyle->setText(pSettings->environment().AStylePath());
+    ui->txtClangFormat->setText(pSettings->environment().clangFormatPath());
 }
 
 void FormatterPathWidget::doSave()
 {
     pSettings->environment().setAStylePath(ui->txtAstyle->text());
+    pSettings->environment().setClangFormatPath(ui->txtClangFormat->text());
+    pSettings->environment().save();
 }
 
 void FormatterPathWidget::updateIcons(const QSize &/*size*/)
 {
     iconsManager()->setIcon(ui->btnChooseAstyle, IconsManager::ACTION_FILE_OPEN_FOLDER);
+    iconsManager()->setIcon(ui->btnChooseClangFormat, IconsManager::ACTION_FILE_OPEN_FOLDER);
 }
 
 void FormatterPathWidget::on_btnChooseAstyle_clicked()
@@ -45,3 +49,14 @@ void FormatterPathWidget::on_btnChooseAstyle_clicked()
     }
 }
 
+void FormatterPathWidget::on_btnChooseClangFormat_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Path to clang-format"),
+                QString(),
+                tr("All files (%1)").arg(ALL_FILE_WILDCARD));
+    if (!fileName.isEmpty() ) {
+        ui->txtClangFormat->setText(fileName);
+    }
+}

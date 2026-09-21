@@ -37,6 +37,25 @@ EnvironmentSettings::EnvironmentSettings(SettingsPersistor *persistor, DirSettin
     Q_ASSERT(dirSettings!=nullptr);
 }
 
+static QString findProgramInPath(const QString& program, const QString& appLibexecDir)
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString path = env.value("PATH");
+    QStringList pathList = path.split(PATH_SEPARATOR);
+    pathList = QStringList{
+        appLibexecDir,
+    } + pathList;
+
+    foreach (const QString& folder, pathList) {
+        QDir dir{folder};
+        QFileInfo fileInfo{dir.absoluteFilePath(program)};
+        if (fileInfo.exists()) {
+            return fileInfo.absoluteFilePath();
+        }
+    }
+    return QString();
+}
+
 void EnvironmentSettings::doLoad()
 {
     //Appearance
@@ -83,25 +102,23 @@ void EnvironmentSettings::doLoad()
             /* compatibily for old configuration */
         || ( mAStylePath == getFilePath(mDirSettings->appLibexecDir(), "astyle"))
             ) {
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        QString path = env.value("PATH");
-        QStringList pathList = path.split(PATH_SEPARATOR);
-        pathList = QStringList{
-            mDirSettings->appLibexecDir(),
-        } + pathList;
-
-        foreach (const QString& folder, pathList) {
-            QDir dir{folder};
-            QFileInfo fileInfo{dir.absoluteFilePath(ASTYLE_PROGRAM)};
-            if (fileInfo.exists()) {
-                mAStylePath = fileInfo.absoluteFilePath();
-                break;
-            }
-        }
+        mAStylePath = findProgramInPath(ASTYLE_PROGRAM, mDirSettings->appLibexecDir());
     } else {
         mAStylePath = replacePrefix(mAStylePath, "%*APP_LIBEXEC_DIR*%", mDirSettings->appLibexecDir());
         // replace app dir for backward compatibility
         mAStylePath = replacePrefix(mAStylePath, "%*APP_DIR*%", mDirSettings->appDir());
+    }
+
+    mClangFormatPath = stringValue("clang_format_path","");
+    if (mClangFormatPath.isEmpty()
+            /* compatibily for old configuration */
+        || ( mClangFormatPath == getFilePath(mDirSettings->appLibexecDir(), "clang-format"))
+            ) {
+        mClangFormatPath = findProgramInPath(CLANG_FORMAT_PROGRAM, mDirSettings->appLibexecDir());
+    } else {
+        mClangFormatPath = replacePrefix(mClangFormatPath, "%*APP_LIBEXEC_DIR*%", mDirSettings->appLibexecDir());
+        // replace app dir for backward compatibility
+        mClangFormatPath = replacePrefix(mClangFormatPath, "%*APP_DIR*%", mDirSettings->appDir());
     }
 
     mHideNonSupportFilesInFileView=boolValue("hide_non_support_files_file_view",true);
@@ -179,6 +196,19 @@ QString EnvironmentSettings::AStylePath() const
 void EnvironmentSettings::setAStylePath(const QString &aStylePath)
 {
     mAStylePath = aStylePath;
+}
+
+QString EnvironmentSettings::clangFormatPath() const
+{
+    QString path = mClangFormatPath;
+    if (path.isEmpty())
+        path = getFilePath(mDirSettings->appLibexecDir(),CLANG_FORMAT_PROGRAM);
+    return path;
+}
+
+void EnvironmentSettings::setClangFormatPath(const QString &clangFormatPath)
+{
+    mClangFormatPath = clangFormatPath;
 }
 
 QString EnvironmentSettings::terminalArgumentsPattern() const
@@ -372,6 +402,7 @@ void EnvironmentSettings::doSave()
 {
     QString terminalPath = replacePrefix(mTerminalPath, mDirSettings->appLibexecDir(), "%*APP_LIBEXEC_DIR*%");
     QString astylePath = replacePrefix(mAStylePath, mDirSettings->appLibexecDir(), "%*APP_LIBEXEC_DIR*%");
+    QString clangFormatPath = replacePrefix(mClangFormatPath, mDirSettings->appLibexecDir(), "%*APP_LIBEXEC_DIR*%");
 
     //Appearance
     saveValue("theme", mTheme);
@@ -393,6 +424,7 @@ void EnvironmentSettings::doSave()
     saveValue("use_custom_terminal",mUseCustomTerminal);
 #endif
     saveValue("astyle_path",astylePath);
+    saveValue("clang_format_path",clangFormatPath);
 
     saveValue("hide_non_support_files_file_view",mHideNonSupportFilesInFileView);
     saveValue("open_files_in_single_instance",mOpenFilesInSingleInstance);

@@ -15,6 +15,54 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
+    <widget class="QWidget" name="widgetEngine" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayoutEngine">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelFormatterEngine">
+        <property name="text">
+         <string>Formatter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="cbFormatter"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacerEngine">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="stackedFormatter">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="pageAStyle">
+      <layout class="QVBoxLayout" name="verticalLayoutAStyle">
+   <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
@@ -971,6 +1019,247 @@
         <widget class="QCheckBox" name="chkBreakAfterLogical">
          <property name="text">
           <string>Place the logical conditional to the last on the previous line, when break lines</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageClangFormat">
+      <layout class="QVBoxLayout" name="verticalLayoutClangFormat">
+       <item>
+        <widget class="QWidget" name="widgetClangFormatStyle" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayoutClangFormatStyle">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="labelClangFormatStyle">
+            <property name="text">
+             <string>Predefined format style</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cbClangFormatStyle"/>
+          </item>
+          <item>
+           <spacer name="horizontalSpacerClangFormatStyle">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblClangFormatStyle">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Note for the predefined format style&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="grpClangFormatStyleOptions">
+         <property name="title">
+          <string>Style options</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutClangFormatOptions">
+          <item>
+           <widget class="QCheckBox" name="chkClangFormatUseFallbackStyle">
+            <property name="text">
+             <string>Use the fallback style if no .clang-format config file is found:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cbClangFormatFallbackStyle"/>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkClangFormatOverrideStyle">
+            <property name="text">
+             <string>Override the following options of the predefined style</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widgetClangFormatOverrides" native="true">
+            <layout class="QGridLayout" name="gridLayoutClangFormatOverrides">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="labelClangFormatIndentWidth">
+               <property name="text">
+                <string>Indent width:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinClangFormatIndentWidth">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>16</number>
+               </property>
+               <property name="value">
+                <number>4</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelClangFormatUseTab">
+               <property name="text">
+                <string>Use tab:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="cbClangFormatUseTab"/>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelClangFormatTabWidth">
+               <property name="text">
+                <string>Tab width:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="spinClangFormatTabWidth">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>16</number>
+               </property>
+               <property name="value">
+                <number>4</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="chkClangFormatSetColumnLimit">
+               <property name="text">
+                <string>Column limit:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QSpinBox" name="spinClangFormatColumnLimit">
+               <property name="specialValueText">
+                <string>no limit</string>
+               </property>
+               <property name="maximum">
+                <number>1000</number>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0" colspan="2">
+              <widget class="QCheckBox" name="chkClangFormatSortIncludes">
+               <property name="text">
+                <string>Sort #include directives</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0" colspan="2">
+              <widget class="QCheckBox" name="chkClangFormatAlignConsecutiveAssignments">
+               <property name="text">
+                <string>Align consecutive assignments</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <spacer name="verticalSpacerClangFormat">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widgetClangFormatExtra" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayoutClangFormatExtra">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="labelClangFormatExtra">
+            <property name="text">
+             <string>Additional command line options:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="editClangFormatExtraOptions"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblClangFormatNotice">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="text">
+          <string>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

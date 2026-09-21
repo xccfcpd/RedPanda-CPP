@@ -32,6 +32,23 @@
     <widget class="QLineEdit" name="txtAstyle"/>
    </item>
    <item row="1" column="0">
+    <widget class="QLabel" name="labelClangFormat">
+     <property name="text">
+      <string>Path to clang-format</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="txtClangFormat"/>
+   </item>
+   <item row="1" column="2">
+    <widget class="QToolButton" name="btnChooseClangFormat">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
