@@ -71,6 +71,7 @@ void updateComboHistory(QStringList &historyList, const QString &newKey);
 
 QStringList getExecutableSearchPaths();
 bool programExists(const QString &program);
+QString findProgramInPath(const QString &program);
 
 QString findBundledOrSystemTool(const QString &subDir, const QString &name);
 

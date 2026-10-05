@@ -25,6 +25,7 @@ public:
     explicit CompileSettings(SettingsPersistor *persistor);
     const QString &NASMPath() const;
     void setNASMPath(const QString &newNASMPath);
+    void detectNasmInPath();
     bool NASMLinkCStandardLib() const;
     void setNASMLinkCStandardLib(bool newLinkCStandardLib);
 

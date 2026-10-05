@@ -231,6 +231,27 @@ bool programExists(const QString &program)
     return false;
 }
 
+QString findProgramInPath(const QString &program)
+{
+    if (program.isEmpty()) {
+        return QString();
+    }
+    if (program.contains('/') || program.contains(QDir::separator())) {
+        return QFileInfo(program).isExecutable() ? program : QString();
+    }
+    QStringList searchPaths = getExecutableSearchPaths();
+    for (const QString &path : searchPaths) {
+        if (path.isEmpty()) {
+            continue;
+        }
+        QString filePath = path + QDir::separator() + program;
+        if (QFileInfo(filePath).isExecutable()) {
+            return filePath;
+        }
+    }
+    return QString();
+}
+
 QString findBundledOrSystemTool(const QString &subDir, const QString &program)
 {
     QString bundledPath = getFilePath(
