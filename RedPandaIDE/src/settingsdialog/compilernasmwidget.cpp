@@ -23,7 +23,14 @@ CompilerNASMWidget::~CompilerNASMWidget()
 
 void CompilerNASMWidget::doLoad()
 {
-    ui->txtNASMPath->setText(pSettings->compile().NASMPath());
+    QString nasmPath = pSettings->compile().NASMPath();
+    if (nasmPath.isEmpty() || !QFileInfo(nasmPath).exists()) {
+        //try to auto detect nasm if the setting is empty or invalid
+        QString detected = findProgramInPath(NASM_PROGRAM);
+        if (!detected.isEmpty())
+            nasmPath = detected;
+    }
+    ui->txtNASMPath->setText(nasmPath);
     ui->chkLinkStdlib->setChecked(pSettings->compile().NASMLinkCStandardLib());
     on_btnTestNASM_clicked();
 }

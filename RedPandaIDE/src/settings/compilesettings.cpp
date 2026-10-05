@@ -15,6 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "compilesettings.h"
+#include "../systemconsts.h"
+#include "../utils.h"
+
+#include <QFileInfo>
 
 CompileSettings::CompileSettings(SettingsPersistor *persistor):
     BaseSettings(persistor, SETTING_COMPILE)
@@ -30,6 +34,19 @@ const QString &CompileSettings::NASMPath() const
 void CompileSettings::setNASMPath(const QString &newNASMPath)
 {
     mNASMPath = newNASMPath;
+}
+
+void CompileSettings::detectNasmInPath()
+{
+    //keep the user's setting if it points to an existing file
+    if (!mNASMPath.isEmpty() && QFileInfo(mNASMPath).exists()) {
+        return;
+    }
+    QString detected = findProgramInPath(NASM_PROGRAM);
+    if (!detected.isEmpty()) {
+        mNASMPath = detected;
+        save();
+    }
 }
 
 bool CompileSettings::GASLinkCStandardLib() const

@@ -363,6 +363,8 @@ int main(int argc, char *argv[])
             pSettings->compilerSets().saveSets();
         }
         pSettings->load();
+        //auto detect nasm in path
+        pSettings->compile().detectNasmInPath();
         if (firstRun) {
             //set theme
             // ChooseThemeDialog themeDialog;
