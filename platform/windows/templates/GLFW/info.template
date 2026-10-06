@@ -1,13 +1,21 @@
 [Template]
 ver=2
 Name=GLFW
+Name[zh_CN]=GLFW
+Name[zh_TW]=GLFW
 Description=A simple GLFW program
 Description[zh_CN]=一个简单的GLFW程序
-Name[ru_RU]=GLFW
+Description[zh_TW]=一個簡單的GLFW程式
 Description[ru_RU]=Простая GLFW-программа
+Description[pt_BR]=Um programa GLFW simples
+Name[ru_RU]=GLFW
+Name[pt_BR]=GLFW
 Icon=GLFW.ico
 Category=3D
 Category[zh_CN]=3D
+Category[zh_TW]=3D
+Category[ru_RU]=3D
+Category[pt_BR]=3D
 
 [Unit0]
 CppName=main.cpp

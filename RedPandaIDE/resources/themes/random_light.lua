@@ -114,6 +114,7 @@ local nameMap = {
    pt_BR = "Clara aleatória",
    zh_CN = "随机浅色",
    zh_TW = "隨機淺色",
+   ru_RU = "Случайная светлая",
 }
 
 function main()

@@ -2,13 +2,20 @@
 ver=2
 Name=raylib 3D
 Name[zh_CN]=raylib 3D
+Name[zh_TW]=raylib 3D
+Name[ru_RU]=raylib 3D
+Name[pt_BR]=raylib 3D
 Icon=raylib.ico
 Description=A simple 3D program using raylib ( https://raylib.com )
 Description[zh_CN]=简单的raylib 3D程序 ( https://raylib.com )
-Name[ru_RU]=raylib 3D
+Description[zh_TW]=簡單的raylib 3D程式 ( https://raylib.com )
 Description[ru_RU]=Простая 3D-програма, использующая raylib ( https://raylib.com )
+Description[pt_BR]=Um programa 3D simples usando raylib ( https://raylib.com )
 Category=3D
 Category[zh_CN]=3D
+Category[zh_TW]=3D
+Category[ru_RU]=3D
+Category[pt_BR]=3D
 
 [Unit0]
 CName=main.c

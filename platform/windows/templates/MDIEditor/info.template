@@ -2,12 +2,20 @@
 ver=2
 Name=MDI Editor
 Name[zh_CN]=MDI编辑器
+Name[zh_TW]=MDI編輯器
+Name[ru_RU]=MDI-Редактор
+Name[pt_BR]=Editor MDI
 Icon=Windows.ico
 Description=A Win32 MDI file editor
 Description[zh_CN]=一个Win32多文档界面(MDI)文件编辑器
-Name[ru_RU]=MDI-Редактор
+Description[zh_TW]=一個Win32多重文件介面(MDI)檔案編輯器
 Description[ru_RU]=Файловый MDI-редактор для Win32
+Description[pt_BR]=Um editor de arquivos MDI Win32
 Category=Win32
+Category[zh_CN]=Windows程序
+Category[zh_TW]=Windows程式
+Category[ru_RU]=Win32
+Category[pt_BR]=Win32
 
 [Unit0]
 CName=main.c

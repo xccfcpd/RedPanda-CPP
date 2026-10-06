@@ -1,12 +1,20 @@
 [Template]
 Ver = 3
 Name = Triangle(NASM)
-Category = Assembly
-Description = Display a triangle using NASM
 Name[zh_CN] = 三角形(NASM)
+Name[zh_TW] = 三角形(NASM)
+Name[ru_RU] = Треугольник (NASM)
+Name[pt_BR] = Triângulo (NASM)
+Category = Assembly
 Category[zh_CN] = 汇编
-Description[zh_CN] = 显示一个三角形（使用NASM编写）
+Category[zh_TW] = 組合語言
 Category[ru_RU] = Ассемблер
+Category[pt_BR] = Assembly
+Description = Display a triangle using NASM
+Description[zh_CN] = 显示一个三角形（使用NASM编写）
+Description[zh_TW] = 顯示一個三角形（使用NASM編寫）
+Description[ru_RU] = Вывод треугольника с использованием NASM
+Description[pt_BR] = Exibe um triângulo usando NASM
 Icon = app.ico
 
 

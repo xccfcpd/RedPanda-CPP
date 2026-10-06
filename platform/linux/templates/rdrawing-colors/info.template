@@ -2,14 +2,20 @@
 ver=2
 Name=Colors
 Name[zh_CN]=色彩常量
+Name[zh_TW]=色彩常數
+Name[ru_RU]=Цвета
+Name[pt_BR]=Cores
 Icon=rdrawing_colors.ico
 Description=Demo for raylib & rdrawing color constants, and raygui scroll panel
 Description[zh_CN]=演示raylib/rdrawing色彩常量和raygui滚动面板使用的示例程序
+Description[zh_TW]=示範raylib/rdrawing色彩常數和raygui捲動面板使用的範例程式
+Description[ru_RU]=Демонстрация констант цвета с использованием raylib & rdrawing, а также панели прокрутки raygui
+Description[pt_BR]=Demonstração das constantes de cor do raylib & rdrawing e do painel de rolagem do raygui
 Category=Multimedia
 Category[zh_CN]=多媒体
-Name[ru_RU]=Цвета
-Description[ru_RU]=Демонстрация констант цвета с использованием raylib & rdrawing, а также панели прокрутки raygui
+Category[zh_TW]=多媒體
 Category[ru_RU]=Мультимедиа
+Category[pt_BR]=Multimídia
 
 [Unit0]
 CName=main.c

@@ -1,13 +1,21 @@
 [Template]
 ver=2
 Name=OpenGL
+Name[zh_CN]=OpenGL
+Name[zh_TW]=OpenGL
+Name[ru_RU]=OpenGL
+Name[pt_BR]=OpenGL
 Icon=Pizza.ico
 Description=A basic OpenGL program
 Description[zh_CN]=一个基本的OpenGL程序
-Name[ru_RU]=OpenGL
+Description[zh_TW]=一個基本的OpenGL程式
 Description[ru_RU]=Простая OpenGL-программа
+Description[pt_BR]=Um programa OpenGL básico
 Category=3D
 Category[zh_CN]=3D
+Category[zh_TW]=3D
+Category[ru_RU]=3D
+Category[pt_BR]=3D
 
 [Unit0]
 CName=main.c

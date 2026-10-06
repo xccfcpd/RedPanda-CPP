@@ -2,12 +2,20 @@
 ver=2
 Name=File Editor
 Name[zh_CN]=文件编辑器
+Name[zh_TW]=檔案編輯器
 Name[ru_RU]=Редактор файлов
-Description[ru_RU]=Простой редактор файлов для Win32
+Name[pt_BR]=Editor de arquivos
 Icon=Editor.ico
 Description=A simple Win32 file editor
 Description[zh_CN]=一个简单的Win32文件编辑器
+Description[zh_TW]=一個簡單的Win32檔案編輯器
+Description[ru_RU]=Простой редактор файлов для Win32
+Description[pt_BR]=Um editor de arquivos Win32 simples
 Category=Win32
+Category[zh_CN]=Windows程序
+Category[zh_TW]=Windows程式
+Category[ru_RU]=Win32
+Category[pt_BR]=Win32
 
 [Unit0]
 CName=main.c

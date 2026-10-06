@@ -2,13 +2,20 @@
 ver=2
 Name=MCS51
 Name[zh_CN]=MCS51
+Name[zh_TW]=MCS51
+Name[ru_RU]=MCS51
+Name[pt_BR]=MCS51
 Icon=microcontroller.ico
 Description=A simple MCS51 program
 Description[zh_CN]=MCS51单片机程序
+Description[zh_TW]=MCS51單晶片程式
+Description[ru_RU]=Простая MCS51-программа
+Description[pt_BR]=Um programa MCS51 simples
 Category=SDCC
 Category[zh_CN]=SDCC
-Name[ru_RU]=MCS51
-Description[ru_RU]=Простая MCS51-программа
+Category[zh_TW]=SDCC
+Category[ru_RU]=SDCC
+Category[pt_BR]=SDCC
 
 [Unit0]
 CName=main.c

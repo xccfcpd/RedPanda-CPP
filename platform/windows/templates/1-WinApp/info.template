@@ -2,14 +2,20 @@
 ver=2
 Name=Windows Application
 Name[zh_CN]=Windows程序
+Name[zh_TW]=Windows程式
 Name[ru_RU]=Приложение Windows
+Name[pt_BR]=Aplicativo Windows
 Icon=Windows.ico
 Description=A standard Windows application
 Description[zh_CN]=基于Windows API开发的图形界面应用程序
+Description[zh_TW]=使用Windows API開發的圖形介面應用程式
 Description[ru_RU]=Стандартное приложение Windows
+Description[pt_BR]=Um aplicativo padrão do Windows
 Category=Basic
 Category[zh_CN]=基础
+Category[zh_TW]=基礎
 Category[ru_RU]=Основные
+Category[pt_BR]=Básico
 
 [Unit0]
 CName=main.c

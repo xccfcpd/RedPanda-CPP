@@ -2,14 +2,20 @@
 ver=2
 Name=Graphics.h
 Name[zh_CN]=xege
+Name[zh_TW]=xege
+Name[ru_RU]=Graphics.h
+Name[pt_BR]=Graphics.h
 Icon=xege.ico
 Description=A simple program use Easy Graphics Engine
 Description[zh_CN]=使用EGE库的简单绘图程序
-Name[ru_RU]=Graphics.h
+Description[zh_TW]=使用EGE函式庫的簡單繪圖程式
 Description[ru_RU]=Простая программа, использующая Easy Graphics Engine (XEGE)
+Description[pt_BR]=Um programa simples usando Easy Graphics Engine
 Category=Multimedia
 Category[zh_CN]=多媒体
+Category[zh_TW]=多媒體
 Category[ru_RU]=Мультимедиа
+Category[pt_BR]=Multimídia
 
 [Unit0]
 CppName=main.cpp

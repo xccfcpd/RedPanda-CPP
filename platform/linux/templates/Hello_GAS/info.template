@@ -1,14 +1,20 @@
 [Template]
 Ver = 3
 Name = Hello GAS
-Category = Assembly
-Description = A simple GNU as program
 Name[zh_CN] = GAS你好
-Category[zh_CN] = 汇编
-Description[zh_CN] = 简单的GNU汇编程序示例
+Name[zh_TW] = GAS你好
 Name[ru_RU] = Привет, GAS
-Description[ru_RU] = Простая программа на Ассемблере GNU
+Name[pt_BR] = Olá GAS
+Category = Assembly
+Category[zh_CN] = 汇编
+Category[zh_TW] = 組合語言
 Category[ru_RU] = Ассемблер
+Category[pt_BR] = Assembly
+Description = A simple GNU as program
+Description[zh_CN] = 简单的GNU汇编程序示例
+Description[zh_TW] = 簡單的GNU彙編程式範例
+Description[ru_RU] = Простая программа на Ассемблере GNU
+Description[pt_BR] = Um programa simples em assembly GNU
 Icon = app.ico
 
 

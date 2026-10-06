@@ -2,12 +2,19 @@
 Ver = 3
 Name = Sweepminer
 Name[zh_CN] = 扫雷
+Name[zh_TW] = 掃雷
+Name[ru_RU]=Минёр
+Name[pt_BR] = Campo Minado
 Category = Game
 Category[zh_CN] = 游戏
+Category[zh_TW] = 遊戲
+Category[ru_RU]=Игры
+Category[pt_BR] = Jogos
 Description = Classic sweepminer game by raylib
 Description[zh_CN] = 使用raylib编写的经典扫雷游戏
-Name[ru_RU]=Минёр
+Description[zh_TW] = 使用raylib編寫的經典掃雷遊戲
 Description[ru_RU]=Классическая игра Минёр с использованием raylib
+Description[pt_BR] = Jogo clássico de campo minado feito com raylib
 Icon = app.ico
 
 

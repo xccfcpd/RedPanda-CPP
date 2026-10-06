@@ -1,14 +1,21 @@
 [Template]
 ver=2
 Name=Sqlite3
+Name[zh_CN]=Sqlite3
+Name[zh_TW]=Sqlite3
+Name[ru_RU]=Sqlite3
+Name[pt_BR]=Sqlite3
 Icon=sqlite.ico
 Description=A Sqlite3 API Example
 Description[zh_CN]=Sqlite3 示例程序
-Name[ru_RU]=Sqlite3
+Description[zh_TW]=Sqlite3 範例程式
 Description[ru_RU]=Пример работы с Sqlite3 API
+Description[pt_BR]=Um exemplo da API Sqlite3
 Category=Database
 Category[zh_CN]=数据库
+Category[zh_TW]=資料庫
 Category[ru_RU]=Базы данных
+Category[pt_BR]=Banco de dados
 
 [Unit0]
 CName=main.c

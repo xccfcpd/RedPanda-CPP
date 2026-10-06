@@ -6,22 +6,22 @@
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="+35"/>
         <source>Can&apos;t find astyle in &quot;%1&quot;.</source>
-        <translation type="unfinished">找不到astyle程式&quot;%1&quot;.</translation>
+        <translation>找不到astyle程式&quot;%1&quot;.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Reformatting content using astyle...</source>
-        <translation type="unfinished">astyle 重新排版程式碼.</translation>
+        <translation>astyle 重新排版程式碼.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>- Astyle: %1</source>
-        <translation type="unfinished">- Astyle: %1</translation>
+        <translation>- Astyle: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>- Command: %1</source>
-        <translation type="unfinished">- 命令: %1</translation>
+        <translation>- 命令: %1</translation>
     </message>
 </context>
 <context>
@@ -442,22 +442,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-37"/>
         <source>Memory Usage:</source>
-        <translation type="unfinished"></translation>
+        <translation>記憶體用量：</translation>
     </message>
     <message>
         <location line="-89"/>
         <source>Settings</source>
-        <translation type="unfinished">編譯/連結選項</translation>
+        <translation>編譯/連結選項</translation>
     </message>
     <message>
         <location line="+96"/>
         <source>Each file use its own parser</source>
-        <translation type="unfinished"></translation>
+        <translation>每個檔案使用各自的解析器</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>All files share one parser</source>
-        <translation type="unfinished"></translation>
+        <translation>所有檔案共用一個解析器</translation>
     </message>
     <message>
         <location line="+61"/>
@@ -1949,7 +1949,7 @@ p, li { white-space: pre-wrap; }
         <location line="-69"/>
         <location line="+120"/>
         <source>Save Error</source>
-        <translation type="unfinished">儲存失敗</translation>
+        <translation>儲存失敗</translation>
     </message>
     <message>
         <location line="+1539"/>
@@ -1970,17 +1970,17 @@ p, li { white-space: pre-wrap; }
         <location line="+53"/>
         <location line="+1"/>
         <source>Printing...</source>
-        <translation type="unfinished"></translation>
+        <translation>列印中……</translation>
     </message>
     <message>
         <location line="-1"/>
         <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Printing Page %1 / %2</source>
-        <translation type="unfinished"></translation>
+        <translation>正在列印第 %1 / %2 頁</translation>
     </message>
     <message>
         <location line="+757"/>
@@ -1992,7 +1992,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1184"/>
         <source>Reformat Error</source>
-        <translation type="unfinished"></translation>
+        <translation>重新排版失敗</translation>
     </message>
     <message>
         <source>Symbol &apos;%1&apos; not found!</source>
@@ -2181,7 +2181,7 @@ p, li { white-space: pre-wrap; }
         <location line="+29"/>
         <location line="+104"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>背景</translation>
     </message>
     <message>
         <location line="-81"/>
@@ -2193,7 +2193,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-54"/>
         <source>Foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>前景</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -3037,7 +3037,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+11"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>重新整理</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3247,7 +3247,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Included files only parse once</source>
-        <translation type="unfinished"></translation>
+        <translation>被包含的檔案只解析一次</translation>
     </message>
     <message>
         <source>Max undo memory for each editor:</source>
@@ -3805,33 +3805,33 @@ p, li { white-space: pre-wrap; }
         <location line="+9"/>
         <location line="+8"/>
         <source>Invalid Name</source>
-        <translation type="unfinished"></translation>
+        <translation>名稱無效</translation>
     </message>
     <message>
         <location line="-33"/>
         <source>File or folder name cannot have leading or trailing spaces.</source>
-        <translation type="unfinished"></translation>
+        <translation>檔案或資料夾名稱不能有開頭或結尾的空格。</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>File or folder name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>檔案或資料夾名稱不能為空。</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>File or folder name cannot end with a dot.</source>
-        <translation type="unfinished"></translation>
+        <translation>檔案或資料夾名稱不能以點號結尾。</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>File or folder name cannot contain any of the following characters:
 \ / : * ? &quot; &lt; &gt; |</source>
-        <translation type="unfinished"></translation>
+        <translation>檔案或資料夾名稱不能包含下列任何字元：\ / : * ? &quot; &lt; &gt; |</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>File or folder name cannot contain &apos;/&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>檔案或資料夾名稱不能包含 &apos;/&apos;。</translation>
     </message>
 </context>
 <context>
@@ -5950,7 +5950,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+5"/>
         <source>Reparse Code</source>
-        <translation type="unfinished"></translation>
+        <translation>重新解析程式碼</translation>
     </message>
     <message>
         <source>AT&amp;&amp;T ASM</source>
@@ -7048,12 +7048,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+172"/>
         <source>Create File</source>
-        <translation type="unfinished"></translation>
+        <translation>建立檔案</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Failed to create file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>建立檔案 %1 失敗</translation>
     </message>
     <message>
         <location line="+5458"/>
@@ -10020,7 +10020,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+20"/>
         <source>No return statement in non-void function (return-type)</source>
-        <translation type="unfinished"></translation>
+        <translation>非 void 函式缺少 return 陳述式 (return-type)</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -10148,7 +10148,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>Uninitialized variable visited (uninitialized)</source>
-        <translation type="unfinished"></translation>
+        <translation>使用了未初始化的變數 (uninitialized)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -10252,22 +10252,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+320"/>
         <source>Searching for compilers...</source>
-        <translation type="unfinished">正在搜尋編譯器……</translation>
+        <translation>正在搜尋編譯器……</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Abort</source>
-        <translation type="unfinished">中止</translation>
+        <translation>中止</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Searching...</source>
-        <translation type="unfinished">正在尋找.</translation>
+        <translation>正在尋找.</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Searching %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>正在搜尋 %1/%2</translation>
     </message>
     <message>
         <location line="+96"/>
@@ -10726,7 +10726,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/debugger/dapprotocol.cpp" line="+31"/>
         <source>Failed to parse json content: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>解析 JSON 內容失敗：%1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -10735,7 +10735,7 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <location line="+7"/>
         <source>The request message don&apos;t have &apos;%1&apos; field!</source>
-        <translation type="unfinished"></translation>
+        <translation>請求訊息中沒有 &apos;%1&apos; 欄位！</translation>
     </message>
 </context>
 <context>
@@ -11689,17 +11689,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-117"/>
         <source>Calculating files for searching...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在計算要搜尋的檔案……</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>Calculating files for searching (%1)...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在計算要搜尋的檔案 (%1)……</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching %1/%2...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在搜尋 %1/%2……</translation>
     </message>
     <message>
         <location line="+254"/>
@@ -11743,32 +11743,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="+400"/>
         <source>Current File:</source>
-        <translation type="unfinished">當前檔案:</translation>
+        <translation>當前檔案:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Files In Project:</source>
-        <translation type="unfinished">專案中的檔案:</translation>
+        <translation>專案中的檔案:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open Files:</source>
-        <translation type="unfinished">開啟的檔案:</translation>
+        <translation>開啟的檔案:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation type="unfinished">&quot;%1&quot;在資料夾&quot;%2&quot;中</translation>
+        <translation>&quot;%1&quot;在資料夾&quot;%2&quot;中</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation type="unfinished">在當前檔案尋找符號&quot;%1&quot;</translation>
+        <translation>在當前檔案尋找符號&quot;%1&quot;</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation type="unfinished">在專案中尋找符號&quot;%1&quot;</translation>
+        <translation>在專案中尋找符號&quot;%1&quot;</translation>
     </message>
 </context>
 <context>

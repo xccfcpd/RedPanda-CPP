@@ -1,6 +1,9 @@
 {
     "name":"Blue Sky",
     "name_zh_CN": "蓝天",
+    "name_zh_TW": "藍天",
+    "name_ru_RU": "Голубое небо",
+    "name_pt_BR": "Céu azul",
     "version": "1.0",
     "author": "Alan-CRL"
 }

@@ -1,6 +1,9 @@
 {
     "name":"New Look",
     "name_zh_CN": "新外观",
+    "name_zh_TW": "新外觀",
+    "name_ru_RU": "Новый вид",
+    "name_pt_BR": "Nova aparência",
     "version": "1.0",
     "author": "Roy Qu (royqh1979@gmail.com)"
 }

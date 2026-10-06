@@ -1,14 +1,20 @@
 [Template]
 Ver = 3
 Name = GAS & C
-Category = Assembly
-Description = C and GAS mixing programming demo
 Name[zh_CN] = GAS与C
-Category[zh_CN] = 汇编
-Description[zh_CN] = C和GAS汇编混合编程示例
+Name[zh_TW] = GAS與C
 Name[ru_RU] = GAS & C
-Description[ru_RU] = Пример смешивания Си и Ассемблера GNU в одной программе
+Name[pt_BR] = GAS & C
+Category = Assembly
+Category[zh_CN] = 汇编
+Category[zh_TW] = 組合語言
 Category[ru_RU] = Ассемблер
+Category[pt_BR] = Assembly
+Description = C and GAS mixing programming demo
+Description[zh_CN] = C和GAS汇编混合编程示例
+Description[zh_TW] = C和GAS彙編混合程式設計範例
+Description[ru_RU] = Пример смешивания Си и Ассемблера GNU в одной программе
+Description[pt_BR] = Demonstração de programação mista em C e GAS
 Icon = app.ico
 
 

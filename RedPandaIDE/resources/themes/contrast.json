@@ -3,6 +3,7 @@
     "name_pt_BR": "Contraste",
     "name_zh_CN": "高对比度",
     "name_zh_TW": "高對比度",
+    "name_ru_RU": "Контрастная",
     "useQtFusionStyle": true,
     "isDark": true,
     "default scheme": "Twilight",

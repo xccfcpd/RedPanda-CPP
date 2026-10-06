@@ -2,13 +2,20 @@
 ver=2
 Name=raylib 3D Shader
 Name[zh_CN]=raylib 3D 着色器
+Name[zh_TW]=raylib 3D 著色器
+Name[ru_RU]=raylib 3D-шейдер
+Name[pt_BR]=Shader 3D raylib
 Icon=raylib.ico
 Description=A 3D Shader program using raylib ( https://raylib.com )
 Description[zh_CN]=带着色器的raylib 3D程序 ( https://raylib.com )
-Name[ru_RU]=raylib 3D-шейдер
+Description[zh_TW]=帶著色器的raylib 3D程式 ( https://raylib.com )
 Description[ru_RU]=Программа 3D-шейдер с использованием raylib ( https://raylib.com )
+Description[pt_BR]=Um programa de shader 3D usando raylib ( https://raylib.com )
 Category=3D
 Category[zh_CN]=3D
+Category[zh_TW]=3D
+Category[ru_RU]=3D
+Category[pt_BR]=3D
 
 [Unit0]
 CPPName=main.c
