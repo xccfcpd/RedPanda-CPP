@@ -116,7 +116,7 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
         case FileType::CppSource:
             fileTemplate = pMainWindow->codeSnippetManager()->newCppFileTemplate();
             break;
-        case FileType::ATTASM:
+        case FileType::GAS:
             fileTemplate = pMainWindow->codeSnippetManager()->newGASFileTemplate();
             break;
         default:
