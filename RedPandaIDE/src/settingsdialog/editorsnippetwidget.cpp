@@ -88,7 +88,7 @@ EditorSnippetWidget::EditorSnippetWidget(ColorManager *colorManager,const QStrin
     ui->editCode->setFileType(FileType::CppSource);
     ui->editCppFileTemplate->setFileType(FileType::CppSource);
     ui->editCFileTemplate->setFileType(FileType::CSource);
-    ui->editGASFileTemplate->setFileType(FileType::ATTASM);
+    ui->editGASFileTemplate->setFileType(FileType::GAS);
     //ui->editGASFileTemplate->setSyntaxer(syntaxerManager.getSyntaxer(QSynedit::ProgrammingLanguage::ATTAssembly));
 }
 
