@@ -1,373 +1,739 @@
 Red Panda C++ Version 3.5
   - fix: Stacktrace table shows extra rows.
+  - 修复：调用栈表格会多显示若干行。
   - fix: The first line of disassembled code is lost in the cpu dialog.
+  - 修复：CPU 窗口中反汇编代码的第一行会丢失。
   - enhancement: Skip all std:: (C++ standard libraries) functions when debugging.
+  - 增强：调试时跳过所有 std::（C++ 标准库）函数。
   - enhancement: Correctly syntax color lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
+  - 增强：正确为以 '\' 结尾的行着色。（https://en.cppreference.com/w/c/language/translation_phases.html）
   - enhancement: Correctly parse lines ending with '\'. (https://en.cppreference.com/w/c/language/translation_phases.html)
+  - 增强：正确解析以 '\' 结尾的行。（https://en.cppreference.com/w/c/language/translation_phases.html）
   - redo/undo restore caret and select positions.
+  - 重做/撤销现在会恢复光标位置与选区。
   - fix: keep indents while commenting blocks.
+  - 修复：批量注释代码块时保留原有缩进。
   - fix: Qsynedit now accept multi-QChar key press input.
+  - 修复：Qsynedit 现在可以处理由多个 QChar 组成的按键输入。
   - fix: Crash when parsing lambda expression that has incomplete statements.
+  - 修复：解析语句不完整的 lambda 表达式时崩溃。
   - fix: Chances to deadlock while parser is working and trying to close/switch editors.
+  - 修复：解析进行中关闭或切换编辑器时可能死锁。
   - fix: Can't goto definition / declaration in an unsaved new file.
+  - 修复：在未保存的新文件中无法跳转到定义/声明。
   - fix: Actions in Run menu not correctly enabled/disabled when filetype changed.
+  - 修复：文件类型改变后，「运行」菜单项未能正确启用/禁用。
   - fix: Can't process relative file path passed by command line.
+  - 修复：无法处理命令行传入的相对路径。
   - fix: Can't correctly complete folder name ending with "\\" in #include preprocessors.
+  - 修复：#include 中无法正确补全以 "\\" 结尾的文件夹名。
   - change: Option "Auto clear symbol table when editor's hidden"  default to false.
+  - 调整：选项「编辑器隐藏时自动清空符号表」默认改为关闭。
   - fix: Block comments are not correctly replaced with space char.
+  - 修复：块注释未被正确替换为空格字符。
   - change: Remove "parse system headers" and "parse local headers" options.
+  - 调整：移除「解析系统头文件」与「解析本地头文件」两个选项。
   - fix: Can't get clang's version.
+  - 修复：无法获取 clang 的版本。
   - change: Show completion popup only if it's not empty.
+  - 调整：仅在补全列表非空时才弹出提示框。
   - change: Reformat code don't clear breakpoints and bookmarks.
+  - 调整：格式化代码不再清除断点与书签。
   - enhancement: Support clang-format as an alternative code formatter.
+  - 增强：支持将 clang-format 作为备选的代码格式化工具。
   - enhancement: Correctly expand multi-line function-like macros.
+  - 增强：正确展开跨多行的类函数宏。
   - fix: Can't parse embedding "using namespace".
+  - 修复：无法解析嵌套的 "using namespace"。
   - fix: Auto indention for embeding parenthesis not correct.
+  - 修复：嵌套括号的自动缩进不正确。
   - enhancement: Correctly parse array of pointers.
+  - 增强：正确解析指针数组。
   - enhancement: New option "Uninitialized variable visited." in Compiler Set -> Compile/Link options -> Error.
+  - 增强：编译器设置 → 编译/链接选项 → 错误 中新增「访问未初始化变量」选项。
   - enhancement: Notify user if file creation failed. (by C14147@github.com)
+  - 增强：文件创建失败时提示用户。（by C14147@github.com）
   - fix: Parser crash in debug mode, when char literal is not correctly closed.
+  - 修复：字符字面量未正确闭合时，调试版解析器崩溃。
   - enhancement: Greatly optimized "Copy as HTML" / "Export to HTML" processes.
+  - 增强：大幅优化「复制为 HTML」/「导出为 HTML」的处理速度。
   - fix: Font style not correct in exported RTF.
+  - 修复：导出的 RTF 中字体样式不正确。
   - fix: Printed text doesn't have color.
+  - 修复：打印出来的文本没有颜色。
   - enhancement: Release Compiler set add "-DNDEBUG" parameter when compiling by default.
+  - 增强：Release 编译器集编译时默认添加 "-DNDEBUG" 参数。
   - enhancement: Show progress when finding in files / finding compiler sets / find occurences in project.
+  - 增强：在文件中查找、查找编译器集、在项目中查找引用时显示进度。
   - fix: Can't correctly parse "std::views" in <ranges>
+  - 修复：无法正确解析 <ranges> 中的 "std::views"。
   - fix: Induced type of auto var is not correct.
+  - 修复：auto 变量的类型推导不正确。
   - enhancement: Parsing structured binding of struct instance.
+  - 增强：支持解析结构体实例的结构化绑定。
   - fix: Can't parse non-const structured binding.\
+  - 修复：无法解析非 const 的结构化绑定。
   - enhancement: Filtering project files to be searched by name in "search in files" dialog.
+  - 增强：「在文件中查找」对话框可按名称过滤待搜索的项目文件。
   - enhancement: Detect if mingw32-make.exe is utf8 manifestoed, and auto generate utf8 encoded makefile for it.
+  - 增强：检测 mingw32-make.exe 是否带有 UTF-8 清单，并为其自动生成 UTF-8 编码的 makefile。
   - fix: Goto block start / end doesn't work correctly.
+  - 修复：跳转到代码块开头/结尾不能正确工作。
   - fix: Matching braces doesn't correctly work if there are '{'/'}' in comments.
+  - 修复：注释中出现 '{' 或 '}' 时括号匹配失效。
   - fix: Scroll by CTRL+arrow work too slow.
+  - 修复：用 CTRL+方向键滚动过于缓慢。
   - change: Remove option "Clear symbol table when editor is hidden".
+  - 调整：移除「编辑器隐藏时清空符号表」选项。
   - change: Redesin first time startup dialog.
+  - 调整：重新设计首次启动对话框。
   - fix: Option "Search subfolders" doesn't work in the search-in-files dialog.
+  - 修复：「在文件中查找」对话框的「搜索子文件夹」选项无效。
   - enhancement: Option to control if auto skipping included files already parsed.
+  - 增强：新增选项，用于控制是否自动跳过已解析过的包含文件。
   - enhancement: "Reparse Code" in "Code" menu.
+  - 增强：「代码」菜单中新增「重新解析代码」。
   - change: Switch mouse cursor to arrow if it is over selection.\
+  - 调整：鼠标位于选区上方时，光标切换为箭头。
   - fix: Double clicking watch value  can't modify it. (github #753)
+  - 修复：双击监视值无法修改它。（github #753）
   - fix: Modify watch doesn't work.
+  - 修复：修改监视表达式无效。
   - fix: Overrided parent methods is still shown in class browser. ( github #755 )
+  - 修复：被重写的父类方法仍会显示在符号浏览器中。（github #755）
   - fix: Class inheritance is not correctly handled. ( github #755 )
+  - 修复：类继承关系处理不正确。（github #755）
+  - fix: The title of the built-in "Remove Compiled" tool is not re-localized after changing the language.
+  - 修复：切换界面语言后，内置「Remove Compiled」工具的名称未重新本地化。
+  - enhancement: Auto-detect the nasm executable in the system paths.
+  - 增强：自动在系统路径中探测 nasm 可执行文件。
+  - enhancement: Complete zh_TW / ru_RU / pt_BR translations for the UI, iconsets, themes and project templates.
+  - 增强：补全界面、图标集、主题与项目模板的繁体中文/俄语/巴西葡萄牙语翻译。
+  - fix: New GNU assembly source files don't use the GAS new file template.
+  - 修复：新建 GNU 汇编源文件时没有使用 GAS 的新建文件模板。
+  - fix: Group boxes are wrongly stretched in the formatter options page.
+  - 修复：格式化选项页中的分组框被错误拉伸。
 
 Red Panda C++ Version 3.4
   - enhancement: Auto hide option "Auto clear parsed symbols when editor hidden" if "editors share one parser" is unchecked.
+  - 增强：当「编辑器共享同一个解析器」未勾选时，自动隐藏「编辑器隐藏时自动清空已解析符号」选项。
   - fix: Syntax color doesn't work in the code snippet option page.
+  - 修复：代码片段选项页中的语法着色无效。
   - fix: GAS template page dosen't has syntax color. (by xccfcpd@github.com)
+  - 修复：GAS 模板页没有语法着色。（by xccfcpd@github.com）
   - fix: Autoindent not correct for else clause.
+  - 修复：else 子句的自动缩进不正确。
   - enhancement: "Paste indentation" in edit menu.
+  - 增强：「编辑」菜单中新增「粘贴缩进」。
   - fix: In project panel's Custom View mode, file may be wrongly displayed as folder after add new unit.
+  - 修复：在项目面板的「自定义视图」模式下，新增单元后文件可能被错误显示成文件夹。
   - fix: crash when parsing deferenced vector iterators. (#622 by KEDIT2007@github.com)
+  - 修复：解析解引用的 vector 迭代器时崩溃。（#622 by KEDIT2007@github.com）
   - fix: Can't correctly parse function-like macro defines not sperated with spaces.
+  - 修复：无法正确解析参数之间没有空格分隔的类函数宏定义。
   - fix: Can't correctly parse some operator overloading such as ++ and --.
+  - 修复：无法正确解析 ++、-- 等运算符重载。
   - enhancement: Support NASM.
+  - 增强：支持 NASM。
   - enhancement: Option Page for GNU Assembler(gas).
+  - 增强：新增 GNU 汇编器（gas）选项页。
   - enhancement: Save problem set to last file.
+  - 增强：题库保存在上次使用的文件中。
   - enhancement: Show filename in problem set's title.
+  - 增强：在题库标题中显示文件名。
   - enhancement: Show modified sign in problem set's title. 
+  - 增强：在题库标题中显示「已修改」标记。
   - fix: When hovering on #include header names, tips doesn't show.
+  - 修复：鼠标悬停在 #include 的头文件名上时不显示提示。
   - fix: Class name is wrongly syntaxed colored in its definition when it has a constructor.
+  - 修复：类含有构造函数时，其定义处的类名着色错误。
   - fix: Mouse tip of class displays its constructor info in its definition.
+  - 修复：在类定义处悬停时，提示框显示的是构造函数的信息。
   - fix: Goto defintion/declaration will jump to constructor instead of the class in the class definition.
+  - 修复：在类定义处跳转到定义/声明时会跳到构造函数，而不是类本身。
   - fix: Delete a customed bundled color scheme and save, will get wrong save error message.
+  - 修复：删除自定义的内置配色方案并保存时，会弹出错误的保存失败提示。
   - fix: Wrong error message when delete a customed bundled syntax color scheme.
+  - 修复：删除自定义的内置语法配色方案时，错误提示内容不正确。
   - fix: Infinite loop when generating new problem set name.
+  - 修复：生成新题库名称时出现死循环。
   - enhancement: Completion suggestion for goto labels;
+  - 增强：为 goto 标签提供补全建议。
   - fix: Wrong suggestion for complex words.
+  - 修复：对由多个单词组成的标识符给出的补全建议错误。
   - fix: Close an editor which is parsing may crash.
+  - 修复：关闭正在解析的编辑器时可能崩溃。
   - enhancement: Support parsing consteval if. 
+  - 增强：支持解析 consteval if。
   - enhancement: Support decltype in typedef.
+  - 增强：支持 typedef 中的 decltype。
   - change: Show symbols defined in current file no matter it starts with underscore or not.
+  - 调整：当前文件中定义的符号一律显示，无论是否以下划线开头。
   - fix: Cpp Syntaxer is wrongly used to parse todo infos for everyfile.
+  - 修复：解析每个文件的 TODO 信息时误用了 C++ 语法分析器。
   - fix: Wrongly indent when press tab in the middle of the line.
+  - 修复：在行中间按 Tab 时缩进错误。
   - Change: warn user when reload file with unsaved modifications.
+  - 调整：重新加载含未保存修改的文件时提示用户。
   - fix: Status of Toggle Block Comment not correctly updated.
+  - 修复：「切换块注释」的状态未正确更新。
   - fix: Leading spaces is wrongly removed when paste contents in the middle of lines.
+  - 修复：在行中间粘贴内容时，行首空格被错误删除。
   - change: Press Home/End to jump to Line begin/end when completion popup is shown.
+  - 调整：补全提示框显示时，按 Home/End 跳转到行首/行尾。
   - fix: Double click a file in windows explore won't bring the app to front.
+  - 修复：在 Windows 资源管理器中双击文件不会把本程序带到前台。
   - enhancement: rename undefined local symbols.
+  - 增强：支持重命名未定义的局部符号。
   - enhancement: Add new compile option (-fno-ms-extentions) and enabled by default.
+  - 增强：新增编译选项 -fno-ms-extensions 并默认启用。
   - fix: Background color not correct handled in CPU dialog. (by CyanoHao)
+  - 修复：CPU 窗口的背景色处理不正确。（by CyanoHao）
   - fix: check color validity before apply it to suggestion list popup.
+  - 修复：将颜色应用到补全列表弹窗之前先校验其有效性。
   - fix: crashing when parsing statements like "[] {}".
+  - 修复：解析 "[] {}" 这类语句时崩溃。
   - fix: spaces prevent '\' at the end of cpp style comments  to ignore newline.
+  - 修复：C++ 风格注释末尾的 '\' 之前若有空格，就无法忽略换行。
   - fix: '\' at the end of cpp style comments are not handled by the parser.
+  - 修复：解析器未处理 C++ 风格注释末尾的 '\'。
   - enhancement: add winsock.h to auto link default settings.
+  - 增强：把 winsock.h 加入自动链接的默认设置。
   - enhancement: beautify description of function pointers.
+  - 增强：美化函数指针的提示描述。
   - enhancement: New compiler errors options.
+  - 增强：新增若干与编译器错误相关的选项。
   - enhancement: Add "Reload" button for environment->appearance->theme.
+  - 增强：在 环境 → 外观 → 主题 中新增「重新加载」按钮。
   
 Red Panda C++ Version 3.3
   - enhancement: Auto indent contents in parenthesis.
+  - 增强：自动缩进括号内的内容。
   - fix: Use "/" instead of "\" in the path of compile target. 
+  - 修复：编译目标的路径中使用 "/" 而不是 "\"。
   - fix: Qt 6 version crashed when debug.
+  - 修复：Qt 6 版本调试时崩溃。
   - enhancement: Auto scale the main ui & choose theme dialog at the first run.
+  - 增强：首次运行时自动缩放主界面与主题选择对话框。
   - fix: crash on statements like "x::a x;"
+  - 修复：解析 "x::a x;" 这类语句时崩溃。
   - enhancement: support literal operators.
+  - 增强：支持字面量运算符。
   - enhancement: Auto detect windows OEM code page in options / compiler / compiler set auto convert encoding option combobox.
+  - 增强：在 选项 / 编译器 / 编译器集 的「自动转换编码」下拉框中自动检测 Windows OEM 代码页。
   - enhancement: Show oem codpages in compiler setting's encoding combobox.
+  - 增强：在编译器设置的编码下拉框中显示 OEM 代码页。
   - enhancement: niXman version MinGW GCC 14.2 compatibility.
+  - 增强：兼容 niXman 版 MinGW GCC 14.2。
   - fix: Can't show definitions in iconv.h in the completion list.
+  - 修复：补全列表中无法显示 iconv.h 里的定义。
   - fix: Color scheme's "Indent Guide Line" item is not used by the editor.
+  - 修复：配色方案中的「缩进参考线」项未被编辑器使用。
   - fix: "Indent Guide Line" item doesn't show in the option / editor / color scheme page.
+  - 修复：「缩进参考线」项没有出现在 选项 / 编辑器 / 配色方案 页面中。
   - fix: Remove not used option "indent guide line" in the option / editor / general page. 
+  - 修复：移除 选项 / 编辑器 / 常规 页面中已不再使用的「缩进参考线」选项。
   - enhancement: New option in "Environment" / "Appearance". To prevent mouse wheel change combobox's current selection.
+  - 增强：「环境」/「外观」中新增选项：阻止鼠标滚轮改变下拉框的当前选择。
   - enhancement: Add "Rainbow indents"/"Rainbow indent guides" options in the option / editor / color scheme page.
+  - 增强：在 选项 / 编辑器 / 配色方案 页面中新增「彩虹缩进」/「彩虹缩进参考线」选项。
   - enhancement: Manually select file type.
+  - 增强：支持手动选择文件类型。
   - enhancement: When ctrl+click to open a C/C++ header file not suffixed with .h/.hh/.hpp etc., auto set its type to C/C++ header.
+  - 增强：Ctrl+点击打开不带 .h/.hh/.hpp 等后缀的 C/C++ 头文件时，自动将其类型设为 C/C++ 头文件。
   - enhancement: Add the option "Clear symbols in hidden source files" in option / environment / performance. (Turned on by default)
+  - 增强：在 选项 / 环境 / 性能 中新增「清空隐藏源文件中的符号」选项（默认开启）。
   - enhancement: Treat .tcc file as C/C++ header file.
+  - 增强：将 .tcc 文件视作 C/C++ 头文件。
   - enhancement: Save encoding / filetype /context file infos of last openned files.
+  - 增强：保存上次打开文件的编码/文件类型/相关文件信息。
   - fix: Class browser is empty when ctrl+click to open a file.
+  - 修复：Ctrl+点击打开文件后，符号浏览器为空。
   - fix: Only press space key can exit consolepauser in linux. (by CyanoHao)
+  - 修复：Linux 下只能按空格键才能退出 consolepauser。（by CyanoHao）
   - fix: command line parameter escaping for consolepauser in windows. (by CyanoHao)
+  - 修复：Windows 下 consolepauser 的命令行参数转义问题。（by CyanoHao）
   - enhancement: Localization for consolepauser.
+  - 增强：consolepauser 支持本地化。
   - fix: Debugger not responding when debugging with gdb > 14.
+  - 修复：使用 gdb 14 以上版本调试时调试器无响应。
   - enhancement: Run programs in WSL.
+  - 增强：支持在 WSL 中运行程序。
   - enhancement: Generate GIMPLE.
+  - 增强：支持生成 GIMPLE。
   - enhancement: Russian Translation (by melkorbsd@github)
+  - 增强：新增俄语翻译。（by melkorbsd@github）
   - fix: Can't select/delete files in the project panel.
+  - 修复：项目面板中无法选择/删除文件。
   - fix: Erroneous PageDown/PageUp when "Can scroll to the last line of teh top edge of the editor" is disabled
+  - 修复：关闭「可以滚动到编辑器上边缘的最后一行」时，PageDown/PageUp 行为异常。
   - fix: fix: Selecting too long causes the search dialog too wide for the screen to display (by VEXLife@github)
+  - 修复：选中内容过长会把查找对话框撑得超出屏幕显示范围。（by VEXLife@github）
   - enhancement: Generate Preprocessed file.
+  - 增强：支持生成预处理文件。
   - enhancement: Save readonly state for files openned in last session.
+  - 增强：保存上次会话中打开文件的只读状态。
   - fix: Redo/Undo actions are not correctly enabled in some cases.
+  - 修复：某些情况下重做/撤销菜单项未能正确启用。
   - fix: Can't paste content after switching off ReadOnly mode.
+  - 修复：关闭只读模式后无法粘贴内容。
   - fix: Find next doesn't work.
+  - 修复：「查找下一个」无效。
   - fix: Don't show actions non-shortcut-table in options/environment/shortcut page.
+  - 修复：不再在 选项/环境/快捷键 页面中显示无法配置快捷键的动作。
   - fix: make "Open File in the containing folder" shortcut-able.
+  - 修复：让「在所在文件夹中打开文件」可以配置快捷键。
   - fix: auto indent calculation dosen't correct if there are multiple parenthesis in one line.
+  - 修复：同一行存在多个括号时，自动缩进计算不正确。
   - fix: Auto indent calculation for multi-line string is not correct
+  - 修复：多行字符串的自动缩进计算不正确。
   - fix: Crash when parsing "a::x" and a is not correcly defined.
+  - 修复：解析 "a::x" 且 a 未正确定义时崩溃。
   - Change: Auto check "Start from the cursor" after search "start from entire scope"
+  - 调整：以「整个范围」开始查找之后，自动勾选「从光标处开始」。
   
 Red Panda C++ Version 3.2
 
   - change: The way to calcuate astyle path.
+  - 调整：改变 astyle 路径的定位方式。
   - fix: Scroll bar arrow size not correct in the dark themes.
+  - 修复：深色主题下滚动条箭头尺寸不正确。
   - fix: Don't auto scroll to the caret after undo/redo.
+  - 修复：撤销/重做之后不再自动滚动到光标处。
   - fix: "bits/stdc++" is not openned in readonly mode.
+  - 修复："bits/stdc++" 没有以只读模式打开。
   - fix: astyle path error when reformat.
+  - 修复：格式化代码时 astyle 路径错误。
   - fix: Slow when paste/replace bulk contents.
+  - 修复：粘贴/替换大量内容时速度缓慢。
   - fix: Crash in windows 7. (by CyanoHao)
+  - 修复：在 Windows 7 上崩溃。（by CyanoHao）
   - fix: While Control is pressed, can't start Drag&Drop by mouse.
+  - 修复：按住 Control 时无法用鼠标发起拖放。
   - enhancement: Auto detect gdb ACP (by CyanoHao)
+  - 增强：自动检测 gdb 的 ACP 编码。（by CyanoHao）
   - fix:  When debugging project, the executing source file is not auto switched to. （#476）
+  - 修复：调试项目时，没有自动切换到正在执行的源文件。（#476）
   - enhancement: Support Raw string literal with LR/UR/uR/u8R prefix.
+  - 增强：支持带 LR/UR/uR/u8R 前缀的原始字符串字面量。
   - change: Copy/Export as html using less restrictive header.
+  - 调整：复制/导出为 HTML 时使用限制更少的文件头。
   - enhancement: Better gcc info detection (by CyanoHao)
+  - 增强：改进 gcc 信息的探测。（by CyanoHao）
   - enhancement: Copy/Export as html with line numbers.
+  - 增强：复制/导出为 HTML 时带上行号。
   - enhancement: Ctrl+Drag/Drop to copy contents.
+  - 增强：Ctrl+拖放可复制内容。
   - enhancement: Don't display big input data file for problem cases. 
+  - 增强：不再显示体积过大的问题用例输入文件。
   - fix: Can't switch to RedPanda-Cpp  by clicking on the application title bar when the options dialog is open.
+  - 修复：选项对话框打开时，点击程序标题栏无法切换到 RedPanda-Cpp。
   - fix: Drag&Drop folder to IDE should be prohibited.
+  - 修复：禁止把文件夹拖放进 IDE。
   - fix: After dragging IDE to another screen that don't have the same DPI with the previous one, icon size are not correct.
+  - 修复：把 IDE 拖到与之前 DPI 不同的另一个屏幕后，图标尺寸不正确。
   - enhancement: Add copy compiler set tools button in the options dialog / compiler set panel.
+  - 增强：在 选项对话框 / 编译器集面板 中新增「复制编译器集」按钮。
   - fix: Functions in separate editing files all displayed in the function prototype list.
+  - 修复：不同编辑文件中的函数全都显示在函数原型列表中。
   - enhancement: When debugging and the current stop position is not in source files, auto focus to the stack trace panel.
+  - 增强：调试时若当前停止位置不在源文件中，自动聚焦到调用栈面板。
   - enhancement: Adjust margin of the Search/Replace Dialog.
+  - 增强：调整「查找/替换」对话框的边距。
   - enhancement: When Search/Replace invoked, auto focus the find inputbox. 
+  - 增强：打开「查找/替换」时自动聚焦到查找输入框。
   - fix: Problem case limit settings not correctly loaded.
+  - 修复：问题用例的限制设置未能正确加载。
   - fix: Edit and switch editor out quickly may leave function tip wrongly appeared.
+  - 修复：快速编辑并切换到其他编辑器后，函数提示可能残留。
   - fix: The function parameters' order in the generated doxygen doclet is wrong.
+  - 修复：生成的 doxygen 注释块中函数参数顺序错误。
   - enhancement: If current compiler set's compiler / debugger / make path is wrong, show a warning message box.
+  - 增强：当前编译器集的编译器/调试器/make 路径有误时，弹出警告提示框。
   - enhancement: Display a cross before compiler set that has errors in compiler / debugger / make path.
+  - 增强：对编译器/调试器/make 路径有误的编译器集，在前面显示叉号标记。
   - enhancement: Display a warning message if no compiler set is found at the first time RedPanda C++ runs.
+  - 增强：RedPanda C++ 首次运行且找不到任何编译器集时，显示警告信息。
   - fix: Can't find the single word if the caret is inside it.
+  - 修复：光标位于单词内部时无法查找该单词。
   - fix: Search Dialog always returns to center each time starting a search.
+  - 修复：每次开始查找时，查找对话框都会回到屏幕中央。
 
 Red Panda C++ Version 3.1
 
   - fix: Can't correctly select in column mode.
+  - 修复：列模式下无法正确选择。
   - fix: Can't correctly parse template parameters that contains "->", like "std::queue<std::function<auto()->void>>";
+  - 修复：无法正确解析含 "->" 的模板参数，例如 "std::queue<std::function<auto()->void>>"。
   - fix: Shouldn't warn "xxx.s is modifed" when "Generate assembly" is rerun.
+  - 修复：重新执行「生成汇编」时，不应再提示 "xxx.s is modified"。
   - fix: Shouldn't warn "Makefile is modifed" when "View Makefile" is rerun.
+  - 修复：再次执行「查看 Makefile」时，不应提示 "Makefile is modified"。
   - fix: In compiler options page, Can't save default stack size to 0MB.
+  - 修复：编译器选项页中无法把默认堆栈大小保存为 0MB。
   - enhancement: Support national flag emojis.
+  - 增强：支持国旗 emoji。
   - fix: Visibility for the interrupt action is not correctly updated.
+  - 修复：「中断」动作的可见性未正确更新。
   - enhancement: Handle problems info from competitive-companion in background thread.
+  - 增强：在后台线程中处理来自 competitive-companion 的题目信息。
   - enhancement: Handle time/memory limits in problems info from competitive-companion in background thread.
+  - 增强：在后台线程中处理来自 competitive-companion 题目信息里的时间/内存限制。
   - enhancement: When problems info from competitive-companion received, show tips in the status bar.  
+  - 增强：收到 competitive-companion 的题目信息时，在状态栏显示提示。
   - fix: Layout for function tips.
+  - 修复：函数提示的布局不正确。
   - enhancement: More elements in the demo of editor color theme optiont page.
+  - 增强：编辑器配色主题选项页的示例中展示更多元素。
   - fix: Mingw32-make doesn't work correctly if there are bash in the path.
+  - 修复：路径中存在 bash 时，mingw32-make 无法正常工作。
   - fix: All color scheme names are incorrectly displayed as bold, if the current one is a customed one.
+  - 修复：当前配色方案为自定义方案时，所有配色方案名称都被错误显示为粗体。
   - fix: Variables defined by using alias can't show completion info.
+  - 修复：使用 using 别名定义的变量无法显示补全信息。
   - enhancement: Support operator() overload.
+  - 增强：支持 operator() 重载。
   - change: rename all "ansi" encoding to "system default".
+  - 调整：把所有 "ansi" 编码更名为 "system default"。
 
 Red Panda C++ Version 3.0
 
   - enhancement: New chinese translation for invalid filename messagebox. (by XY0797@github.com)
+  - 增强：为「文件名无效」提示框新增中文翻译。（by XY0797@github.com）
   - enhancement: Limit the minimum font size in options dialog to 5. (by XY0797@github.com)
+  - 增强：选项对话框中的最小字号下限设为 5。（by XY0797@github.com）
   - enhancement: After a new file is created in filesystem panel, auto select and rename it. (by XY0797@github.com)
+  - 增强：在文件系统面板中新建文件后，自动选中并进入重命名状态。（by XY0797@github.com）
   - enhancement: Select file basename when rename in the filesystem panel. (by XY0797@github.com)
+  - 增强：在文件系统面板中重命名时，只选中文件名主干。（by XY0797@github.com）
   - change: Don't use "Microsoft Yahei" as the default non-ascii font in non-chinese environment.
+  - 调整：非中文环境下不再使用「微软雅黑」作为默认的非 ASCII 字体。
   - enhancement: Support unicode characters > 0xFFFF
+  - 增强：支持码位大于 0xFFFF 的 Unicode 字符。
   - enhancement: Support unicode ZWJ and ZWNJ.
+  - 增强：支持 Unicode 的 ZWJ 与 ZWNJ。
   - enhancement: Support unicode combining characters.
+  - 增强：支持 Unicode 组合字符。
   - enhancement: Don't force fixed-width when using non fixed-width fonts.
+  - 增强：使用非等宽字体时不再强制等宽渲染。
   - change: Replace non-ascii font with fallback font.
+  - 调整：非 ASCII 字体改用回退字体。
   - enhancement: Display ascii control chars.
+  - 增强：显示 ASCII 控制字符。
   - fix: Parser: invalidating file may lost class inheritance infos.
+  - 修复：解析器：使文件失效时可能丢失类继承信息。
   - fix: Function argument infos are not correctly parsed.
+  - 修复：函数参数信息解析不正确。
   - enhancement: Migrate external calls from command string to argv array to improve safety and security.
+  - 增强：把外部调用由命令字符串迁移为 argv 数组，以提升安全性。
   - enhancement: Support POSIX shell-like escaping in user inputs for compiler arguments.
+  - 增强：编译器参数支持在用户输入中使用类 POSIX shell 的转义。
   - fix: (Hopefully) properly escape filenames and arguments in makefile generation.
+  - 修复：（希望已）正确转义 makefile 生成过程中的文件名与参数。
   - enhancement: Beautify display for spaces and linebreaks.
+  - 增强：美化空格与换行的显示。
   - fix: Insert line after comments may auto add an extra '*'.
+  - 修复：在注释之后插入行时可能自动多出一个 '*'。
   - fix: Can't show function tips for std::ios::sync_with_stdio.
+  - 修复：无法为 std::ios::sync_with_stdio 显示函数提示。
   - fix: Wrong indent for the line after the pasted context.
+  - 修复：粘贴内容之后的那一行缩进错误。
   - Enhancement: When '{' is inputted and there are contents selected, auto add line breaks and indents.
+  - 增强：输入 '{' 且当前有选中内容时，自动添加换行与缩进。
   - fix: Selected lines doesn't draw line break glyphs.
+  - 修复：选中的行不绘制换行符。
   - fix: issue #215 (Caret may be drawn in the gutter.)
+  - 修复：issue #215（光标可能被绘制到行号栏中）。
   - change: Force use utf8 as the exec encoding for fmtlib in the auto link options page.
+  - 调整：自动链接选项页中强制使用 UTF-8 作为 fmtlib 的执行编码。
   - fix: After spaces in comments and strings, symbol completion for '{' and '(' are wrong.
+  - 修复：注释和字符串中出现空格后，'{' 与 '(' 的符号补全错误。
   - fix: Issue #230 Crash when input " in the txt files.
+  - 修复：issue #230：在 txt 文件中输入 " 时崩溃。
   - enhancement: Unique look&feel for the underline shown while ctrl+mouse over #include line.
+  - 增强：Ctrl+悬停在 #include 行时显示的下划线具有独立外观。
   - enhancement: Better look&feel for the wave underline shown for syntax errors.
+  - 增强：语法错误波浪下划线的外观更佳。
   - fix: "float" in #include "float.h" is wrong syntax colored.
+  - 修复：#include "float.h" 中的 "float" 着色错误。
   - enhancement: Unify syntax color for #include header name
+  - 增强：统一 #include 头文件名的着色。
   - enhancement: Issue #229 Press Enter/Return in the tree view in files panel will open the file.
+  - 增强：issue #229：在文件面板的树视图中按回车即可打开文件。
   - enhancement: Internal optimization for loading/editing files.
+  - 增强：优化文件加载/编辑的内部实现。
   - enhancement: Show space glyphs in C/C++ char literals.
+  - 增强：在 C/C++ 字符字面量中显示空格符号。
   - enhancement: Optimization for string/raw string/char literal status check while completing symbols in c/c++ files.
+  - 增强：优化 C/C++ 文件符号补全时对字符串/原始字符串/字符字面量状态的判断。
   - enhancement: Windows installer Hi-DPI support.
+  - 增强：Windows 安装程序支持 Hi-DPI。
   - fix: Delete/Insert in column editing mode.
+  - 修复：列编辑模式下的删除/插入。
   - enhancement: Issue #196 Support C++ using alias in  syntax highlighting/code completion/function tips.
+  - 增强：issue #196：在语法高亮、代码补全与函数提示中支持 C++ using 别名。
   - enhancement: Support annonymous class
+  - 增强：支持匿名类。
   - fix: Using alias for global symbols are not correctly handled.
+  - 修复：全局符号的 using 别名处理不正确。
   - enhancement: Support "enum struct" Scoped enumerations.
+  - 增强：支持 "enum struct" 作用域枚举。
   - fix: Function tips contains functions that not in the scope.
+  - 修复：函数提示中包含了不在当前作用域内的函数。
   - fix: Hint for bold text (<b></b>) are not correctly handled in the function tips.
+  - 修复：函数提示中未正确处理粗体文本 (<b></b>) 的提示。
   - enhancement: Improve lldb-mi compatibility.
+  - 增强：改进对 lldb-mi 的兼容性。
   - fix: Failed to evaluate expressions while debugging, if the expression has spaces in it.
+  - 修复：调试时若表达式中含空格，则无法求值。
   - fix: When debugging, can't watch expressions that has spaces in it.
+  - 修复：调试时无法监视含空格的表达式。
   - enhancement: Font list in the options / editor / font panel( by CyanoHao  ). 
+  - 增强：在 选项 / 编辑器 / 字体 面板中提供字体列表。（by CyanoHao）
   - enhancement: Text are vertically center aligned in lines( by CyanoHao  ).
+  - 增强：文本在行内垂直居中。（by CyanoHao）
   - fix: In the debugger console, Auto-wrapped lines  can't be correctly selected.
+  - 修复：调试器控制台中无法正确选中自动换行的行。
   - enhancement: Auto choose a better font for theme choosing dialog in the first run.
+  - 增强：首次运行时为「主题选择」对话框自动选用更合适的字体。
   - fix: Debugger console's background not correctly cleared before redrawn.
+  - 修复：调试器控制台重绘前背景未正确清除。
   - enhancement: Make output in the debug console cleaner.
+  - 增强：让调试控制台的输出更整洁。
   - enhancement: Execute the last debug command in the debug console if ENTER pressed.
+  - 增强：在调试控制台按回车时执行上一条调试命令。
   - change: When debugging, don't auto set focus to the editor.
+  - 调整：调试时不再自动把焦点设到编辑器。
   - enhancement: Folding button scales with editor font.
+  - 增强：折叠按钮随编辑器字体缩放。
   - fix: Shouldn't show header completion popup in #include line comments.
+  - 修复：#include 行的注释中不应弹出头文件补全框。
   - change: Invert scroll direction in horizontal, like in vertical.
+  - 调整：水平滚动方向与垂直方向一样取反。
   - fix: Caret unseen when move to a long line end by press END.
+  - 修复：按 END 移动到长行行尾时光标不可见。
   - fix: No icons for inherited class private members.
+  - 修复：继承而来的类私有成员没有图标。
   - fix: Ctrl+Return insert linebreak shouldn't scroll unnecessarilly.
+  - 修复：Ctrl+回车插入换行时不应发生不必要的滚动。
   - enhancement: Move caret to line begin would scroll to the begin if possible.
+  - 增强：把光标移到行首时，若条件允许则滚动到行首。
   - fix: Filename in tables in the debug panel are not correctly eroded.
+  - 修复：调试面板表格中的文件名渲染不正确。
   - enhancement: Tooltip info for the stacktrace table in the debug panel.
+  - 增强：为调试面板的调用栈表格添加悬停提示。
   - fix: '*=' is treadted as '*' when parsing. 
+  - 修复：解析时 '*=' 被当作 '*' 处理。
   - fix: Can't correctly retrieve function parameters type.
+  - 修复：无法正确获取函数参数类型。
   - fix: Auto type induction for expression contains '[]' are not correct.
+  - 修复：含 '[]' 的表达式类型推导不正确。
   - fix: Option 'Pause after run in console' for tools doesn't work.
+  - 修复：自定义工具的「在控制台运行后暂停」选项无效。
   - fix: Filename that contains '&' doesn't correctly displayed in the editor tab.
+  - 修复：含 '&' 的文件名在编辑器标签页中显示不正确。
   - enhancement: Type induction for "auto &&" vars.
+  - 增强：支持 "auto &&" 变量的类型推导。
   - enhancement: Syntax highlighting for c++ attributes.
+  - 增强：为 C++ 属性（attributes）提供语法高亮。
   - enhancement: Show "std::function" in the completion list.
+  - 增强：在补全列表中显示 "std::function"。
   - enhancement: Improvement in italic font support.
+  - 增强：改进对斜体字体的支持。
   - fix: History not correctly loaded with up/down arrow key in the debug console.
+  - 修复：调试控制台中使用上下方向键时，历史记录加载不正确。
   - enhancement: Improve lambda expression support.
+  - 增强：改进对 lambda 表达式的支持。
   - enhancement: Show type completion hint after "constexpr"/"extern"/"static"/"consteval"/"constinit"/"const"/"volatile"/"inline" etc.
+  - 增强：在 "constexpr"/"extern"/"static"/"consteval"/"constinit"/"const"/"volatile"/"inline" 等关键字之后显示类型补全提示。
   - enhancement: Restore line position after file is modified outside and reloaded.
+  - 增强：文件被外部修改并重新加载后，恢复行位置。
   - fix: Caret on '('/',' in string/comment shouldn't invoke function info tips.
+  - 修复：光标位于字符串/注释中的 '(' 或 ',' 上时，不应弹出函数信息提示。
   - fix: Function name not correctly found if it and the '(' is not in one line;
+  - 修复：函数名与 '(' 不在同一行时，无法正确识别函数名。
   - fix: Register names in the cpu info are not in correct order.
+  - 修复：CPU 信息中的寄存器名称顺序不正确。
   - enhancement: Auto type induction for new / temp class object.
+  - 增强：支持 new 表达式与临时类对象的类型推导。
   - enhancement: Vertically scroll by pixel.
+  - 增强：支持按像素垂直滚动。
   - enhancement: Display (gdb) prompt in debug console after it's cleared.
+  - 增强：调试控制台清空后显示 (gdb) 提示符。
   - fix: Output of "disas" is not shown in debug console.
+  - 修复："disas" 的输出不显示在调试控制台。
   - fix: Display not correctly updated after select all in debug console.
+  - 修复：在调试控制台中全选后显示未正确刷新。
   - change: Set focus to "find next" button when find/replace dialog is openned.
+  - 调整：打开查找/替换对话框时，把焦点设到「查找下一个」按钮。
   - change: Don't set focus to "close" button after searched in the find/replace dialog
+  - 调整：在查找/替换对话框中查找完成后，不再把焦点设到「关闭」按钮。
   - change: Set focus to "find" button when "find in files..." dialog is openned.
+  - 调整：打开「在文件中查找…」对话框时，把焦点设到「查找」按钮。
   - enhancement: Correct tab orders for all setting pages/dialogs.
+  - 增强：修正所有设置页面/对话框的 Tab 顺序。
   - enhancement: Shortcut key for buttons in find/replace and "find in files" dialogs.  
+  - 增强：为「查找/替换」与「在文件中查找」对话框中的按钮添加快捷键。
   - enhancement: Auto define macro "_DEBUG" for "Debug" compiler set(like visual studio).
+  - 增强：为 Debug 编译器集自动定义宏 "_DEBUG"（类似 Visual Studio）。
   - enhancement: Suggest macro names after "#ifdef"/"#ifndef"/"#undef".
+  - 增强：在 "#ifdef"/"#ifndef"/"#undef" 之后提供宏名补全建议。
   - enhancement: If contents from stderr are logged into "Tools Output" panel, add problem case name info to the log. 
+  - 增强：把 stderr 的内容记录到「工具输出」面板时，在日志中加入问题用例名称信息。
   - fix: In split screen mode, editor on the right can't be correctly found by commands.
+  - 修复：分屏模式下，命令无法正确找到右侧的编辑器。
   - fix: Remove duplicated macro defines make it's lost in the parse result.
+  - 修复：移除重复的宏定义会导致它在解析结果中丢失。
   - fix: An undefined macro is still missing the the parse result after #undef is removed.
+  - 修复：删除 #undef 之后，被取消定义的宏仍会从解析结果中丢失。
   - fix: If a class method is overloaded, only one of them is inherited by it's children.
+  - 修复：类方法被重载时，子类只继承到其中一个重载。
   - enhancement: Adjust function tip pos to prevent it from run outside the right window edge.
+  - 增强：调整函数提示的位置，避免其超出窗口右边缘。
   - enhancement: Open ".def" (Module definition file) file in editor when double click it in the project view.
+  - 增强：在项目视图中双击 ".def"（模块定义文件）时，用编辑器打开它。
   - enhancement: When a dll project has .def file, use it when generating the dll file.  
+  - 增强：dll 项目存在 .def 文件时，在生成 dll 时使用它。
   - fix: "project name".exe.manifest is auto removed when build the project.
+  - 修复：构建项目时，"项目名".exe.manifest 会被自动删除。
   - fix: "0x3.12p+1" is treadted as a plus expression when reformatting code. ( by 绣球135@qq ）
+  - 修复：格式化代码时，"0x3.12p+1" 被当作加法表达式处理。（by 绣球135@qq）
   - change: Don't turn on the code format option "indent class" by default.
+  - 调整：代码格式化选项「缩进类」默认不再开启。
   - enhancement: Add compiler set by choose the executable.
+  - 增强：支持通过选择可执行文件来添加编译器集。
   - fix: Compile info for project doesn't have name of the project executable.
+  - 修复：项目的编译信息中缺少项目可执行文件名。
   - enhancement: Highlight words in the string/comments.
+  - 增强：高亮字符串/注释中出现的单词。
   - fix: If there are only 1 line in the editor, shift+down can't select it.
+  - 修复：编辑器中只有 1 行时，shift+下无法选中它。
   - enhancement: By default, use monospaced font to display register values in the CPU Info dialog.
+  - 增强：CPU 信息对话框中，寄存器值默认使用等宽字体显示。
   - fix: Negative values in register like AH/AL are wrongs displayed as 32/64-bit number.
+  - 修复：AH/AL 等寄存器中的负值被错误地按 32/64 位数值显示。
   - Change: Change background color for highlighted buttons in the default theme.
+  - 调整：修改默认主题中高亮按钮的背景色。
   - enhancement: Make colors in code suggestion popup consistent with the editor.
+  - 增强：让代码补全弹窗的配色与编辑器一致。
   - enhancement: Make colors in header suggestion popup consistent with the editor.
+  - 增强：让头文件补全弹窗的配色与编辑器一致。
   - fix: C++ source after ';' are treated as comments in cpu info window.
+  - 修复：CPU 信息窗口中，';' 之后的 C++ 代码被当作注释。
   - enhancement: Support "extern template" in code parser.
+  - 增强：代码解析器支持 "extern template"。
   - enhancement: Set shortcuts for tools menu item.
+  - 增强：支持为「工具」菜单项设置快捷键。
   - enhancement: Enhancement for custom tools.
+  - 增强：改进自定义工具功能。
   - fix: Can't correctly undo/redo "Delete current line".
+  - 修复：无法正确撤销/重做「删除当前行」。
   - fix: Breakpoint condition expression that contains spaces doesn't work.
+  - 修复：含空格的断点条件表达式无效。
   - enhancement: Double click on breakpoint table's condition cell to modify it.
+  - 增强：双击断点表格的条件单元格即可修改。
   - fix: Don't show function prototype tip for function name that contains namespace alias.
+  - 修复：函数名中包含命名空间别名时，不再显示函数原型提示。
   - fix: Can't save changes in project options -> compiler set , after base compiler set was changed.
+  - 修复：更改基础编译器集之后，项目选项 → 编译器集 中的修改无法保存。
   - fix: Project options -> file doesn't work.
+  - 修复：项目选项 → 文件 无效。
   - fix: Don't show function prototype tip for function name that contains more than one namespace;
+  - 修复：函数名中包含多个命名空间时，不再显示函数原型提示。
   - fix: Compiler set options "Check for stack smashing attacks (-fstack-protector)" was not correctly applied when compiling.
+  - 修复：编译器集选项「检查栈溢出攻击 (-fstack-protector)」在编译时未正确生效。
   - fix: can't jump to definition/declaration for symbols in using alias statement like "using ::printf".
+  - 修复：无法为 "using ::printf" 这类 using 别名语句中的符号跳转到定义/声明。
   - fix: Don't show completion suggestion for members of variable which type name has namespace alias;
+  - 修复：变量类型名含命名空间别名时，不再为其成员提供补全建议。
   - fix: Theme manager not correctly inited in options dialog / environment / appearance.  
+  - 修复：选项对话框 / 环境 / 外观 中，主题管理器未正确初始化。
   - enhancement: Size of icons in the completion popup changes with the editor font size.
+  - 增强：补全弹窗中的图标尺寸随编辑器字号变化。
   - change: Completion popup size settings are based on editor's char width/line height.
+  - 调整：补全弹窗的尺寸设置改为基于编辑器的字符宽度/行高。
   - change: Remove "limit for copy" and "limit for undo" options.
+  - 调整：移除「复制上限」与「撤销上限」选项。
   - fix: Can't find the correct type if current symbol is member of a class that has constructors.
+  - 修复：当前符号所属的类含有构造函数时，无法找到正确类型。
   - fix: Alias a namespace to itself will create infinite loop.
+  - 修复：把命名空间别名指向自身会造成死循环。
   - fix: Can't find symbols indirectly included by other files.
+  - 修复：无法找到由其他文件间接包含的符号。
   - enhancement: Function tip's width changes with editor width.
+  - 增强：函数提示的宽度随编辑器宽度变化。
   - fix: '<' / '>' not shown in function tips.
+  - 修复：函数提示中不显示 '<' / '>'。
   - enhancement: In debug console, Ctrl+C/Ctrl+X/Ctrl+V conflicts with application action.
+  - 增强：解决调试控制台中 Ctrl+C/Ctrl+X/Ctrl+V 与程序快捷键冲突的问题。
   - enhancement: Auto hide Edit/Selection/Code/Refactor menu if no file openning.
+  - 增强：没有打开文件时，自动隐藏 编辑/选择/代码/重构 菜单。
   - enhancement: Auto hide Project menu if no project openning.
+  - 增强：没有打开项目时，自动隐藏「项目」菜单。
   - fix: Toggle breakpoint by shortcut may use wrong line.
+  - 修复：通过快捷键切换断点可能作用到错误的行。
   - fix: Size of the icons in problem and problem set panel are not correct.
+  - 修复：问题面板与题库面板中的图标尺寸不正确。
   - fix: Shouldn't consider preceeding '&'/'*' when popping completion suggest list for variable members.
+  - 修复：为变量成员弹出补全列表时，不应把前面的 '&'/'*' 计入。
   - fix: Positions of current matching parenthesis not correctly updated.
+  - 修复：当前匹配括号的位置未正确更新。
   - fix: Can't show correct completion info for vars declared with template parameters ending with ">>".
+  - 修复：对以 ">>" 结尾的模板参数声明的变量，无法显示正确的补全信息。
   - enhancement: Auto type induction for "std::make_shared"/"std::make_unique".
+  - 增强：支持 "std::make_shared"/"std::make_unique" 的类型推导。
   - enhancement: sdcc project compiler: compile source file in subfolders.
+  - 增强：sdcc 项目编译器：支持编译子文件夹中的源文件。
   - fix: project options -> compiler set -> static link & auto convert charset options not correctly loaded.
+  - 修复：项目选项 → 编译器集 → 静态链接与自动转换字符集选项加载不正确。
   - change: Don't generate project resource files for sdcc project.
+  - 调整：sdcc 项目不再生成项目资源文件。
   - fix: Name of the macro for project private resource header is not correct.
+  - 修复：项目私有资源头文件所用的宏名不正确。
   - fix: In sdcc project, sdcc keywords are not in completion suggest list.
+  - 修复：sdcc 项目中，sdcc 关键字未出现在补全建议列表中。
   - fix: In sdcc project, parser are not correctly inited as sdcc parser.
+  - 修复：sdcc 项目中，解析器未正确初始化为 sdcc 解析器。
   - fix: Temp object + member function call is wrongly parsed as constructor.
+  - 修复：临时对象 + 成员函数调用被错误解析为构造函数。
   - enhancement: Improve how to manage themes in Options → general → appearance.
+  - 增强：改进 选项 → 通用 → 外观 中的主题管理方式。
   - change: Use official astyle program.
+  - 调整：改用官方 astyle 程序。
   - enhancement: New code format option: "Remove superfluous empty lines exceeding"
+  - 增强：新增代码格式化选项「删除多余的连续空行（超过指定数量时）」。
   - enhancement: New code format option: "Remove superfluous spaces"
+  - 增强：新增代码格式化选项「删除多余空格」。
   - change: Remove code format option: "Delete continuous empty lines"
+  - 调整：移除代码格式化选项「删除连续空行」。
   - fix: Current editor wouldn't get parsed, when it's switched from another editor being parsed.
+  - 修复：从正在解析的编辑器切换到当前编辑器时，当前编辑器不会被解析。
   - enhancement: Support macro in #include preprocessing statements.
+  - 增强：支持 #include 预处理语句中的宏。
   - fix: In options -> code format -> Program, Choose astyle path button doesn't work.
+  - 修复：选项 → 代码格式化 → 程序 中，「选择 astyle 路径」按钮无效。
   - fix: project not correctly reparsed after rename unit.
+  - 修复：重命名单元后，项目未正确重新解析。
   - enhancement: support C++ 17 structured binding in stl map containers foreach loop.
+  - 增强：支持 STL map 容器 foreach 循环中的 C++17 结构化绑定。
   - fix: Crash when has source line like "std::cout << (3+4*4>5*(4+3)-1 && (4-3>5)) <<std::endl;".
+  - 修复：源码中出现 "std::cout << (3+4*4>5*(4+3)-1 && (4-3>5)) <<std::endl;" 这类行时崩溃。
   - fix: The memory usage displayed after program execution is wrong.
+  - 修复：程序执行后显示的内存占用不正确。
   - enhancement: New compiler option "stack size" in the link subpage.
+  - 增强：链接子页中新增编译器选项「栈大小」。
   - change: Set "Ctrl+G" as the shortcut for "Goto line..."
+  - 调整：把 Ctrl+G 设为「跳转到行…」的快捷键。
   - change: Set "Ctrl+B" as the shortcut for "Toggle Bookmark"
+  - 调整：把 Ctrl+B 设为「切换书签」的快捷键。
   - fix: Fail to evaluate expressions if macro can't be expanded.
+  - 修复：宏无法展开时，表达式求值失败。
   - enhancement: New menu item "Code completion" in "Code" menu.
+  - 增强：「代码」菜单中新增「代码补全」菜单项。
   - fix: Can't compile / run assembly files in gcc 13/14 .
+  - 修复：在 gcc 13/14 下无法编译/运行汇编文件。
   - enhancement: Show full filepath in the tooltip of editor tab.
+  - 增强：在编辑器标签页的悬停提示中显示完整文件路径。
     
 Red Panda C++ Version 2.26
 
