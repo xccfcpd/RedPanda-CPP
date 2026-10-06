@@ -6,22 +6,22 @@
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="35"/>
         <source>Can&apos;t find astyle in &quot;%1&quot;.</source>
-        <translation type="unfinished">Не могу найти astyle в &quot;%1&quot;.</translation>
+        <translation>Не могу найти astyle в &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="41"/>
         <source>Reformatting content using astyle...</source>
-        <translation type="unfinished">Переформатирование содержимого с помощью astyle...</translation>
+        <translation>Переформатирование содержимого с помощью astyle...</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="43"/>
         <source>- Astyle: %1</source>
-        <translation type="unfinished">- Astyle: %1</translation>
+        <translation>- Astyle: %1</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="44"/>
         <source>- Command: %1</source>
-        <translation type="unfinished">- Команда: %1</translation>
+        <translation>- Команда: %1</translation>
     </message>
 </context>
 <context>
@@ -81,22 +81,22 @@
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="36"/>
         <source>, μarch level v4</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v4</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="38"/>
         <source>, μarch level v3</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v3</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="40"/>
         <source>, μarch level v2</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v2</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="42"/>
         <source>, baseline</source>
-        <translation type="unfinished"></translation>
+        <translation>, базовая</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="82"/>
@@ -279,22 +279,22 @@
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="103"/>
         <source>Memory Usage:</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование памяти:</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="14"/>
         <source>Settings</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="110"/>
         <source>Each file use its own parser</source>
-        <translation type="unfinished"></translation>
+        <translation>Каждый файл использует свой парсер</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="117"/>
         <source>All files share one parser</source>
-        <translation type="unfinished"></translation>
+        <translation>Все файлы используют общий парсер</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="178"/>
@@ -1395,7 +1395,7 @@
         <location filename="../src/editor.cpp" line="298"/>
         <location filename="../src/editor.cpp" line="418"/>
         <source>Save Error</source>
-        <translation type="unfinished">Ошибка сохранения</translation>
+        <translation>Ошибка сохранения</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="331"/>
@@ -1436,17 +1436,17 @@
         <location filename="../src/editor.cpp" line="3130"/>
         <location filename="../src/editor.cpp" line="3131"/>
         <source>Printing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать...</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3130"/>
         <source>Cancel</source>
-        <translation type="unfinished">Отмена</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3140"/>
         <source>Printing Page %1 / %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать страницы %1 / %2</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3897"/>
@@ -1458,7 +1458,7 @@
     <message>
         <location filename="../src/editor.cpp" line="5150"/>
         <source>Reformat Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка переформатирования</translation>
     </message>
     <message>
         <source>astyle not found</source>
@@ -1616,7 +1616,7 @@
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="106"/>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="210"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>Фон</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="129"/>
@@ -1627,7 +1627,7 @@
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="146"/>
         <source>Foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>Передний план</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="169"/>
@@ -2398,7 +2398,7 @@
     <message>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="152"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="155"/>
@@ -2577,7 +2577,7 @@
     <message>
         <location filename="../src/settingsdialog/environmentperformancewidget.ui" line="43"/>
         <source>Included files only parse once</source>
-        <translation type="unfinished"></translation>
+        <translation>Включённые файлы разбираются один раз</translation>
     </message>
 </context>
 <context>
@@ -3053,33 +3053,33 @@
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="116"/>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="124"/>
         <source>Invalid Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Недопустимое имя</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="91"/>
         <source>File or folder name cannot have leading or trailing spaces.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может начинаться или заканчиваться пробелами.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="99"/>
         <source>File or folder name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может быть пустым.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="108"/>
         <source>File or folder name cannot end with a dot.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может заканчиваться точкой.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="117"/>
         <source>File or folder name cannot contain any of the following characters:
 \ / : * ? &quot; &lt; &gt; |</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может содержать любой из следующих символов: \ / : * ? &quot; &lt; &gt; |</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="125"/>
         <source>File or folder name cannot contain &apos;/&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может содержать &apos;/&apos;.</translation>
     </message>
 </context>
 <context>
@@ -4398,7 +4398,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="792"/>
         <source>NPS</source>
-        <translation></translation>
+        <translation>NPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="804"/>
@@ -4409,7 +4409,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="807"/>
         <source>AP</source>
-        <translation></translation>
+        <translation>AP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="819"/>
@@ -4420,12 +4420,12 @@
     <message>
         <location filename="../src/mainwindow.ui" line="822"/>
         <source>RP</source>
-        <translation></translation>
+        <translation>RP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="834"/>
         <source>SP</source>
-        <translation></translation>
+        <translation>SP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="841"/>
@@ -4437,7 +4437,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="844"/>
         <source>SPA</source>
-        <translation></translation>
+        <translation>SPA</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="856"/>
@@ -4461,17 +4461,17 @@
     <message>
         <location filename="../src/mainwindow.ui" line="859"/>
         <source>LP</source>
-        <translation></translation>
+        <translation>LP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="871"/>
         <source>IFPS</source>
-        <translation></translation>
+        <translation>IFPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="883"/>
         <source>EFPS</source>
-        <translation></translation>
+        <translation>EFPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="942"/>
@@ -5753,7 +5753,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3376"/>
         <source>Reparse Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Переразобрать код</translation>
     </message>
     <message>
         <source>AT&amp;&amp;T ASM</source>
@@ -5786,7 +5786,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3340"/>
         <source>Ctrl+Shift+F12</source>
-        <translation></translation>
+        <translation>Ctrl+Shift+F12</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="3345"/>
@@ -5801,7 +5801,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3358"/>
         <source>NASM</source>
-        <translation></translation>
+        <translation>NASM</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="155"/>
@@ -6448,12 +6448,12 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Create File</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Failed to create file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать файл %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="4793"/>
@@ -7092,7 +7092,7 @@
     <message>
         <location filename="../src/compiler/nasmfilecompiler.cpp" line="67"/>
         <source>The NASM &apos;%1&apos; doesn&apos;t exists!</source>
-        <translation></translation>
+        <translation>NASM &apos;%1&apos; не существует!</translation>
     </message>
     <message>
         <source>Please check the &quot;program&quot; page of compiler settings.</source>
@@ -8767,7 +8767,7 @@
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="225"/>
         <source>No return statement in non-void function (return-type)</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет оператора return в не-void функции (return-type)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="226"/>
@@ -8777,7 +8777,7 @@
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="227"/>
         <source>Uninitialized variable visited (uninitialized)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование неинициализированной переменной (uninitialized)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="228"/>
@@ -8985,22 +8985,22 @@
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1885"/>
         <source>Searching for compilers...</source>
-        <translation type="unfinished">Поиск компиляторов...</translation>
+        <translation>Поиск компиляторов...</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1886"/>
         <source>Abort</source>
-        <translation type="unfinished"></translation>
+        <translation>Прервать</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1893"/>
         <source>Searching...</source>
-        <translation type="unfinished">Поиск...</translation>
+        <translation>Поиск...</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1915"/>
         <source>Searching %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск %1/%2</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="2011"/>
@@ -9161,7 +9161,7 @@
     <message>
         <location filename="../src/debugger/dapprotocol.cpp" line="31"/>
         <source>Failed to parse json content: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось разобрать содержимое JSON: %1</translation>
     </message>
     <message>
         <location filename="../src/debugger/dapprotocol.cpp" line="39"/>
@@ -9170,7 +9170,7 @@
         <location filename="../src/debugger/dapprotocol.cpp" line="60"/>
         <location filename="../src/debugger/dapprotocol.cpp" line="67"/>
         <source>The request message don&apos;t have &apos;%1&apos; field!</source>
-        <translation type="unfinished"></translation>
+        <translation>В сообщении запроса нет поля &apos;%1&apos;!</translation>
     </message>
 </context>
 <context>
@@ -9873,17 +9873,17 @@
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="188"/>
         <source>Calculating files for searching...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсчёт файлов для поиска...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="220"/>
         <source>Calculating files for searching (%1)...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсчёт файлов для поиска (%1)...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="229"/>
         <source>Searching %1/%2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск %1/%2...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="483"/>
@@ -9923,32 +9923,32 @@
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="400"/>
         <source>Current File:</source>
-        <translation type="unfinished">Текущий файл:</translation>
+        <translation>Текущий файл:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="402"/>
         <source>Files In Project:</source>
-        <translation type="unfinished">Файлы в проекте:</translation>
+        <translation>Файлы в проекте:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="404"/>
         <source>Open Files:</source>
-        <translation type="unfinished">Открытые файлы:</translation>
+        <translation>Открытые файлы:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="406"/>
         <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation type="unfinished">&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
+        <translation>&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="410"/>
         <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation type="unfinished">Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
+        <translation>Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="413"/>
         <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation type="unfinished">Поиск употреблений в проекте: &apos;%1&apos;</translation>
+        <translation>Поиск употреблений в проекте: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
@@ -10076,7 +10076,7 @@
         <location filename="../src/mainwindow.cpp" line="10163"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="180"/>
         <source>NASM</source>
-        <translation></translation>
+        <translation>NASM</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="10169"/>

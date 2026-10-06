@@ -2,14 +2,20 @@
 ver=2
 Name=Turtle Graphics
 Name[zh_CN]=海龟作图
+Name[zh_TW]=海龜繪圖
+Name[ru_RU]=Черепашка
+Name[pt_BR]=Gráficos de Tartaruga
 Icon=CL_Turtle.ico
 Description=A simple program using Turtle Graphics
 Description[zh_CN]=简单的海龟作图程序 (https://github.com/royqh1979/raylib-drawing)
+Description[zh_TW]=簡單的海龜繪圖程式 (https://github.com/royqh1979/raylib-drawing)
+Description[ru_RU]=Простая программа, использующая Turtle Graphics
+Description[pt_BR]=Um programa simples usando Turtle Graphics (https://github.com/royqh1979/raylib-drawing)
 Category=Multimedia
 Category[zh_CN]=多媒体
-Name[ru_RU]=Черепашка
-Description[ru_RU]=Простая программа, использующая Turtle Graphics
+Category[zh_TW]=多媒體
 Category[ru_RU]=Мультимедиа
+Category[pt_BR]=Multimídia
 
 [Unit0]
 CName=main.c

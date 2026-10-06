@@ -2,14 +2,20 @@
 ver=2
 Name=Input Loop
 Name[zh_CN]=输入循环
+Name[zh_TW]=輸入迴圈
+Name[ru_RU]=Цикл ввода
+Name[pt_BR]=Loop de entrada
 Icon=ConsoleToo.ico
 Description=A console with an input loop
 Description[zh_CN]=一个带输入循环的控制台程序
-Name[ru_RU]=Цикл ввода
+Description[zh_TW]=一個帶輸入迴圈的主控台程式
 Description[ru_RU]=Консольное приложение, использующее цикл ввода
+Description[pt_BR]=Um console com um loop de entrada
 Category=Console
 Category[zh_CN]=控制台
+Category[zh_TW]=主控台
 Category[ru_RU]=Консольные
+Category[pt_BR]=Console
 
 [Unit0]
 CName=main.c

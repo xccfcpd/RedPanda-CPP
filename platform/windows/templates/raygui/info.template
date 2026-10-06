@@ -2,14 +2,20 @@
 ver=2
 Name=raygui
 Name[zh_CN]=raygui
+Name[zh_TW]=raygui
+Name[ru_RU]=raygui
+Name[pt_BR]=raygui
 Icon=raygui.ico
 Description=raygui demo
 Description[zh_CN]=Raygui演示
-Name[ru_RU]=raygui
+Description[zh_TW]=Raygui 示範
 Description[ru_RU]=Демонстрация возможностей raygui
+Description[pt_BR]=Demonstração do raygui
 Category=Multimedia
 Category[zh_CN]=多媒体
+Category[zh_TW]=多媒體
 Category[ru_RU]=Мультимедиа
+Category[pt_BR]=Multimídia
 
 [Unit0]
 CName=main.c

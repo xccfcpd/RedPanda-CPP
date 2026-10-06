@@ -1,6 +1,9 @@
 {
     "name": "One Dark",
     "name_zh_CN": "One Dark",
+    "name_zh_TW": "One Dark",
+    "name_ru_RU": "One Dark",
+    "name_pt_BR": "One Dark",
     "useQtFusionStyle": true,
     "isDark": true,
     "default scheme": "One Dark",

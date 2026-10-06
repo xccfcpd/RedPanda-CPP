@@ -2,15 +2,21 @@
 ver=2
 Name=DLL
 Name[zh_CN]=动态链接库
+Name[zh_TW]=動態連結庫
 Name[ru_RU]=DLL
+Name[pt_BR]=DLL
 Icon=DLL.ico
 IconInfo=<a href="https://www.flaticon.com/free-icons/dll" title="dll icons">Dll icons created by Freepik - Flaticon</a>
 Description=A Dynamic Link Library (DLL)
 Description[zh_CN]=动态链接库(DLL)
+Description[zh_TW]=動態連結庫 (DLL)
 Description[ru_RU]=Динамически подключаемая библиотека (DLL)
+Description[pt_BR]=Uma biblioteca de vínculo dinâmico (DLL)
 Category=Basic
 Category[zh_CN]=基础
+Category[zh_TW]=基礎
 Category[ru_RU]=Основные
+Category[pt_BR]=Básico
 
 [Unit0]
 CName=dllmain.c

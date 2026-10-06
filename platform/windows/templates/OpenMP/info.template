@@ -1,14 +1,21 @@
 [Template]
 ver=2
 Name=OpenMP
+Name[zh_CN]=OpenMP
+Name[zh_TW]=OpenMP
+Name[ru_RU]=OpenMP
+Name[pt_BR]=OpenMP
 Icon=File Management.ico
 Description=A OpenMP multithreading example
 Description[zh_CN]=一个OpenMP多线程示例
-Name[ru_RU]=OpenMP
+Description[zh_TW]=一個OpenMP多執行緒範例
 Description[ru_RU]=Многопоточный пример работы с OpenMP
+Description[pt_BR]=Um exemplo de multithreading com OpenMP
 Category=Console
 Category[zh_CN]=控制台
+Category[zh_TW]=主控台
 Category[ru_RU]=Консольные
+Category[pt_BR]=Console
 
 [Unit0]
 CName=main.c

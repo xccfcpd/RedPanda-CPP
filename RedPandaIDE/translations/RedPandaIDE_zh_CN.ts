@@ -534,7 +534,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-18"/>
         <source>Can&apos;t open code snippet file &apos;%1&apos; for write.</source>
-        <translation></translation>
+        <translation>无法以写入方式打开代码片段文件 &apos;%1&apos;。</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -630,7 +630,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+2"/>
         <source> - Command: %1 &gt; %2</source>
-        <translation></translation>
+        <translation> - 命令: %1 &gt; %2</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -936,7 +936,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1343,7 +1343,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>make</source>
-        <translation></translation>
+        <translation>make</translation>
     </message>
     <message>
         <location line="-17"/>
@@ -2317,7 +2317,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>TextLabel</source>
@@ -4981,7 +4981,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/widgets/infomessagebox.ui" line="+14"/>
         <source>Message</source>
-        <translation></translation>
+        <translation>消息</translation>
     </message>
     <message>
         <location line="+47"/>
@@ -5860,7 +5860,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+54"/>
         <source>Ctrl+K, Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+K, Ctrl+S</translation>
     </message>
     <message>
         <location line="+119"/>
@@ -7915,7 +7915,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+26"/>
         <source>Save new project as</source>
-        <translation></translation>
+        <translation>项目另存为</translation>
     </message>
     <message>
         <location line="+534"/>
@@ -8823,7 +8823,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -9413,7 +9413,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>UTF-8</source>
-        <translation></translation>
+        <translation>UTF-8</translation>
     </message>
 </context>
 <context>
@@ -10545,7 +10545,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+4"/>
         <source>Can&apos;t parse json file &apos;%1&apos; is not a color scheme config file!</source>
-        <translation></translation>
+        <translation>无法解析 json 文件 &apos;%1&apos;，它不是配色方案配置文件！</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -12343,7 +12343,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+12"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+10"/>

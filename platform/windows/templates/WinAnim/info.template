@@ -2,12 +2,20 @@
 ver=2
 Name=Animation Example
 Name[zh_CN]=动画示例
+Name[zh_TW]=動畫範例
+Name[ru_RU]=Пример анимации
+Name[pt_BR]=Exemplo de animação
 Icon=Windows.ico
 Description=A Win32 painting example
 Description[zh_CN]=一个Win32绘图示例
-Name[ru_RU]=Пример анимации
+Description[zh_TW]=一個Win32繪圖範例
 Description[ru_RU]=Пример рисования в Win32
+Description[pt_BR]=Um exemplo de desenho Win32
 Category=Win32
+Category[zh_CN]=Windows程序
+Category[zh_TW]=Windows程式
+Category[ru_RU]=Win32
+Category[pt_BR]=Win32
 
 [Unit0]
 CName=main.c
