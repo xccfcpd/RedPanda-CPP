@@ -9,6 +9,14 @@
         <translation>Не могу найти astyle в &quot;%1&quot;.</translation>
     </message>
     <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle не может отформатировать &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>Содержимое &quot;%1&quot; не может быть преобразовано в UTF-8.</translation>
+    </message>
+    <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="41"/>
         <source>Reformatting content using astyle...</source>
         <translation>Переформатирование содержимого с помощью astyle...</translation>
@@ -19,9 +27,21 @@
         <translation>- Astyle: %1</translation>
     </message>
     <message>
+        <source>- Working dir: %1</source>
+        <translation>- Рабочий каталог: %1</translation>
+    </message>
+    <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="44"/>
         <source>- Command: %1</source>
         <translation>- Команда: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle завершается с кодом %1.</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle не создает никакого вывода.</translation>
     </message>
 </context>
 <context>
@@ -1459,6 +1479,26 @@
         <location filename="../src/editor.cpp" line="5150"/>
         <source>Reformat Error</source>
         <translation>Ошибка переформатирования</translation>
+    </message>
+    <message>
+        <source>The formatter crashed: %1</source>
+        <translation>Форматировщик аварийно завершился: %1</translation>
+    </message>
+    <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>Форматировщик аварийно завершился с неизвестной ошибкой.</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>Не удалось запустить форматировщик: %1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>Переформатировать</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>Документ был изменён во время форматирования; результат не применён.</translation>
     </message>
     <message>
         <source>astyle not found</source>
@@ -3483,6 +3523,169 @@
         <source>Indent at least one-half an additional indent.</source>
         <translation>Зделать по крайней мере половину дополнительного отступа.</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>Форматировщик</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>Файл (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>Нет (не форматировать)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>Параметры стиля</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>Использовать резервный стиль, если файл конфигурации .clang-format не найден:</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>Переопределить следующие параметры предопределенного стиля</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>Ширина отступа:</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>Использовать табуляцию:</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>Ширина табуляции:</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>Ограничение длины строки:</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>без ограничения</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>Сортировать директивы #include</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>Выравнивать последовательные присваивания</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>Дополнительные параметры командной строки:</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>Никогда</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>Только для отступов</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>Для продолжения строк и отступов</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>Выравнивать пробелами</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>Всегда</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>Читать ближайший файл конфигурации .clang-format. Если файл конфигурации не найден, используется резервный стиль.</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>Стиль, соответствующий стандартам кодирования LLVM.</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю C++ от Google.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Chromium.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Mozilla.</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю WebKit.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Microsoft.</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>Стиль, соответствующий стандартам кодирования GNU.</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Не могу найти clang-format в &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>Примечание: переформатирование может изменить весь файл, например, преобразовать отступы табуляцией в пробелы. Поместите файл .clang-format в проект, чтобы точно контролировать результат.</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Не могу найти clang-format в &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>Переформатирование содержимого с помощью clang-format...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- Команда: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format не создает никакого вывода.</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format не может отформатировать &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>Содержимое &quot;%1&quot; не может быть преобразовано в UTF-8.</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format завершается с кодом %1.</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- Рабочий каталог: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -3496,6 +3699,10 @@
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="40"/>
         <source>Path to astyle</source>
         <translation>Путь к astyle</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>Путь к clang-format</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/formatterpathwidget.ui" line="27"/>

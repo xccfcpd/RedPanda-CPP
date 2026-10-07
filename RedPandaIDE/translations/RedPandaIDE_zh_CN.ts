@@ -9,6 +9,14 @@
         <translation>找不到astyle程序&quot;%1&quot;.</translation>
     </message>
     <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle无法格式化&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的内容无法转换为UTF-8编码。</translation>
+    </message>
+    <message>
         <location line="+6"/>
         <source>Reformatting content using astyle...</source>
         <translation>使用astyle重新排版代码...</translation>
@@ -19,9 +27,21 @@
         <translation>- Astyle: %1</translation>
     </message>
     <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作目录: %1</translation>
+    </message>
+    <message>
         <location line="+1"/>
         <source>- Command: %1</source>
         <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle以退出码%1结束。</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle没有产生任何输出。</translation>
     </message>
 </context>
 <context>
@@ -1993,6 +2013,26 @@ p, li { white-space: pre-wrap; }
         <location line="+1184"/>
         <source>Reformat Error</source>
         <translation>代码重新排版失败</translation>
+    </message>
+    <message>
+        <source>The formatter crashed: %1</source>
+        <translation>排版工具崩溃：%1</translation>
+    </message>
+    <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>排版工具因未知错误而崩溃。</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>无法启动排版工具：%1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>重新排版</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>排版过程中文档已被修改，排版结果未应用。</translation>
     </message>
     <message>
         <source>Symbol &apos;%1&apos; not found!</source>
