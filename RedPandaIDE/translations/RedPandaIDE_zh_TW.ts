@@ -554,7 +554,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-18"/>
         <source>Can&apos;t open code snippet file &apos;%1&apos; for write.</source>
-        <translation>Can&apos;t open code snippet file &apos;%1&apos; for write.</translation>
+        <translation>無法寫入程式碼範本檔案&apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -951,7 +951,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+3"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1150,7 +1150,7 @@ p, li { white-space: pre-wrap; }
         <location line="+10"/>
         <location line="+26"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="-258"/>
@@ -2357,7 +2357,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>TextLabel</source>
@@ -3320,7 +3320,7 @@ p, li { white-space: pre-wrap; }
         <location line="+10"/>
         <location line="+24"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="-10"/>
@@ -4473,7 +4473,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="+2"/>
@@ -7955,7 +7955,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+26"/>
         <source>Save new project as</source>
-        <translation>Save new project as</translation>
+        <translation>另存新專案為</translation>
     </message>
     <message>
         <location line="+534"/>
@@ -8576,7 +8576,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -8685,7 +8685,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-14"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>Project%1</source>
@@ -10198,7 +10198,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>x86 多庫編譯 (-mx)</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -10262,7 +10262,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>Don&apos;t memcpy initialized xram from code</source>
-        <translation>Don&apos;t memcpy initialized xram from code</translation>
+        <translation>不從程式碼區複製已初始化的 xram</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -10585,7 +10585,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+4"/>
         <source>Can&apos;t parse json file &apos;%1&apos; is not a color scheme config file!</source>
-        <translation>Can&apos;t parse json file &apos;%1&apos; is not a color scheme config file!</translation>
+        <translation>無法解析 json 檔案：&apos;%1&apos; 不是配色方案設定檔！</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -11769,7 +11769,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>...</source>
-        <translation>.</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location line="+26"/>
