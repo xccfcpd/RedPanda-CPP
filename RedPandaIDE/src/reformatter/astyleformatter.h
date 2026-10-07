@@ -27,7 +27,7 @@ public:
     AStyleReformatter(const QString& astylePath, const QStringList& args,
                       const QString& fileName, const QString& baseDirectory,
                       LoggerFunc newLoggerFunc, QObject* parent = nullptr);
-    QString refomat(const QString& content, QString &errorMessage, bool &isOk) override;
+    QString reformat(const QString& content, QString &errorMessage, bool &isOk) override;
 private:
     QString mAstylePath;
     QStringList mArgs;

@@ -5189,7 +5189,7 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
         QString errorMessage;
         bool isOk = false;
         try {
-            newContent = formatter->refomat(sourceText, errorMessage, isOk);
+            newContent = formatter->reformat(sourceText, errorMessage, isOk);
         } catch (const std::exception &e) {
             isOk = false;
             errorMessage = tr("The formatter crashed: %1").arg(QString::fromLocal8Bit(e.what()));
@@ -5218,7 +5218,7 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
             // and leave mIsReformatting stuck at true forever. Catch it and report
             // the failure back to the GUI thread like any other error.
             try {
-                newContent = formatter->refomat(sourceText, errorMessage, isOk);
+                newContent = formatter->reformat(sourceText, errorMessage, isOk);
             } catch (const std::exception &e) {
                 isOk = false;
                 errorMessage = tr("The formatter crashed: %1").arg(QString::fromLocal8Bit(e.what()));

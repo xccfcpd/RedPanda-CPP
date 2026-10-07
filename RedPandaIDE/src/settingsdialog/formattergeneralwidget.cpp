@@ -526,7 +526,7 @@ void FormatterGeneralWidget::updateDemo()
                                            nullptr);
         QString errorMessage;
         bool isOk;
-        QString newContent = reformatter.refomat(QString::fromUtf8(content),
+        QString newContent = reformatter.reformat(QString::fromUtf8(content),
                                                 errorMessage, isOk);
         QString display;
         if (!errorMessage.isEmpty())
@@ -550,7 +550,7 @@ void FormatterGeneralWidget::updateDemo()
                                   nullptr);
     QString errorMessage;
     bool isOk;
-    QString newContent = reformatter.refomat(QString::fromUtf8(content),
+    QString newContent = reformatter.reformat(QString::fromUtf8(content),
                                              errorMessage, isOk);
     QString display;
     if (!errorMessage.isEmpty())

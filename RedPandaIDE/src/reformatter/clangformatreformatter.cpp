@@ -41,7 +41,7 @@ ClangFormatReformatter::ClangFormatReformatter(const QString& clangFormatPath,
 
 }
 
-QString ClangFormatReformatter::refomat(const QString &content, QString &errorMessage, bool &isOk)
+QString ClangFormatReformatter::reformat(const QString &content, QString &errorMessage, bool &isOk)
 {
     isOk = false;
     if (!fileExists(mClangFormatPath)) {

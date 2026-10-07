@@ -31,7 +31,7 @@ public:
                            const QString& baseDirectory,
                            LoggerFunc newLoggerFunc,
                            QObject* parent = nullptr);
-    QString refomat(const QString& content, QString &errorMessage, bool &isOk) override;
+    QString reformat(const QString& content, QString &errorMessage, bool &isOk) override;
 private:
     QString mClangFormatPath;
     QStringList mArgs;
