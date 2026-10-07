@@ -9,9 +9,17 @@
         <translation>找不到astyle程式&quot;%1&quot;.</translation>
     </message>
     <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle無法排版&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的內容無法轉換為UTF-8編碼。</translation>
+    </message>
+    <message>
         <location line="+6"/>
         <source>Reformatting content using astyle...</source>
-        <translation>astyle 重新排版程式碼.</translation>
+        <translation>使用astyle重新排版程式碼...</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -19,9 +27,21 @@
         <translation>- Astyle: %1</translation>
     </message>
     <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作資料夾: %1</translation>
+    </message>
+    <message>
         <location line="+1"/>
         <source>- Command: %1</source>
         <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle以結束代碼%1結束。</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle沒有產生任何輸出。</translation>
     </message>
 </context>
 <context>
@@ -1993,6 +2013,26 @@ p, li { white-space: pre-wrap; }
         <location line="+1184"/>
         <source>Reformat Error</source>
         <translation>重新排版失敗</translation>
+    </message>
+    <message>
+        <source>The formatter crashed: %1</source>
+        <translation>排版工具崩潰：%1</translation>
+    </message>
+    <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>排版工具因未知錯誤而崩潰。</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>無法啟動排版工具：%1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>重新排版</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>排版過程中檔案已被修改，排版結果未套用。</translation>
     </message>
     <message>
         <source>Symbol &apos;%1&apos; not found!</source>
@@ -4249,6 +4289,169 @@ p, li { white-space: pre-wrap; }
         <source>Indent at least one-half an additional indent.</source>
         <translation>至少額外縮進一個半縮進量</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>排版工具</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>檔案 (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>無 (不進行排版)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>樣式選項</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>找不到 .clang-format 設定檔時使用的備用樣式：</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>覆寫預定義樣式的下列選項</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>縮進寬度：</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>定位字元使用方式：</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>定位字元寬度：</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>行長限制：</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>無限制</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>排序 #include 指示詞</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>對齊連續的賦值陳述式</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>附加命令列參數：</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>從不</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>僅用於縮進</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>用於續行與縮進</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>使用空格對齊</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>總是</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>讀取距離原始檔最近的 .clang-format 設定檔。如果找不到設定檔，則使用備用樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>符合 LLVM 編碼規範的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>符合 Google C++ 風格指南的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>符合 Chromium 風格指南的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>符合 Mozilla 風格指南的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>符合 WebKit 風格指南的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>符合 Microsoft 風格指南的樣式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>符合 GNU 編碼規範的樣式。</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程式&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>注意：重新排版可能改動整個檔案，例如將定位字元縮進轉換為空格。可以在專案中放置 .clang-format 檔案以精確控制排版結果。</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程式&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>使用clang-format重新排版程式碼...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format沒有產生任何輸出。</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format無法排版&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的內容無法轉換為UTF-8編碼。</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format以結束代碼%1結束。</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作資料夾: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -4262,6 +4465,10 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="+40"/>
         <source>Path to astyle</source>
         <translation>astyle程式</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>clang-format程式</translation>
     </message>
     <message>
         <location line="+7"/>

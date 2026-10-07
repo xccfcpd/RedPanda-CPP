@@ -9,6 +9,14 @@
         <translation>Impossível encontrar astyle em &quot;%1&quot;</translation>
     </message>
     <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle não pode formatar &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>O conteúdo de &quot;%1&quot; não pode ser convertido para utf-8.</translation>
+    </message>
+    <message>
         <location line="+6"/>
         <source>Reformatting content using astyle...</source>
         <translation>Reformatação do conteúdo usando astyle...</translation>
@@ -19,9 +27,21 @@
         <translation>- Astyle: %1</translation>
     </message>
     <message>
+        <source>- Working dir: %1</source>
+        <translation>- Pasta de trabalho: %1</translation>
+    </message>
+    <message>
         <location line="+1"/>
         <source>- Command: %1</source>
         <translation>- Comando: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle termina com o código %1.</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle não gera nenhuma saída.</translation>
     </message>
 </context>
 <context>
@@ -1636,6 +1656,26 @@
         <location line="+2010"/>
         <source>Reformat Error</source>
         <translation>Erro de reformatação</translation>
+    </message>
+    <message>
+        <source>The formatter crashed: %1</source>
+        <translation>O formatador falhou: %1</translation>
+    </message>
+    <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>O formatador falhou com um erro desconhecido.</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>Falha ao iniciar o formatador: %1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>Reformatar</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>O documento foi modificado durante a formatação; o resultado não foi aplicado.</translation>
     </message>
 </context>
 <context>
@@ -3713,6 +3753,169 @@
         <source>Indent at least one-half an additional indent.</source>
         <translation>Indentar pelo menos meia indentação adicional.</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>Formatador</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>Arquivo (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>Nenhum (não formatar)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>Opções de estilo</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>Usar o estilo alternativo se nenhum arquivo de configuração .clang-format for encontrado:</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>Substituir as seguintes opções do estilo predefinido</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>Largura da indentação:</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>Usar tabulação:</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>Largura da tabulação:</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>Limite de colunas:</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>sem limite</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>Ordenar diretivas #include</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>Alinhar atribuições consecutivas</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>Opções adicionais de linha de comando:</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>Nunca</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>Somente para indentação</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>Para continuação e indentação</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>Alinhar com espaços</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>Sempre</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>Ler o arquivo de configuração .clang-format mais próximo. Se nenhum arquivo de configuração for encontrado, o estilo alternativo é usado.</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>Um estilo que segue os padrões de codificação do LLVM.</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>Um estilo que segue o guia de estilo C++ do Google.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>Um estilo que segue o guia de estilo do Chromium.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>Um estilo que segue o guia de estilo do Mozilla.</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>Um estilo que segue o guia de estilo do WebKit.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>Um estilo que segue o guia de estilo da Microsoft.</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>Um estilo que segue os padrões de codificação do GNU.</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Impossível encontrar clang-format em &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>Nota: a reformatação pode alterar o arquivo inteiro, por exemplo, converte a indentação com tabulações em espaços. Coloque um arquivo .clang-format no projeto para controlar o resultado com precisão.</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Impossível encontrar clang-format em &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>Reformatação do conteúdo usando clang-format...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- Comando: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format não gera nenhuma saída.</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format não pode formatar &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>O conteúdo de &quot;%1&quot; não pode ser convertido para utf-8.</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format termina com o código %1.</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- Pasta de trabalho: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -3726,6 +3929,10 @@
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="+40"/>
         <source>Path to astyle</source>
         <translation>Caminho para astyle</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>Caminho para clang-format</translation>
     </message>
     <message>
         <location line="+7"/>
