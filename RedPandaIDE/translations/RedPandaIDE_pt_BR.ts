@@ -72,7 +72,7 @@
     <message>
         <location line="+26"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Página inicial: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -125,7 +125,7 @@
     <message>
         <location line="+10"/>
         <source>Website: &lt;a href=&quot;%1&quot;&gt;%1&lt;/a&gt;</source>
-        <translation>Website: &lt;a href=&quot;%1&quot;&gt;%1&lt;/a&gt;</translation>
+        <translation>Site: &lt;a href=&quot;%1&quot;&gt;%1&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.ui" line="-64"/>
@@ -6958,7 +6958,7 @@
     <message>
         <location line="+1"/>
         <source>Commit message shouldn&apos;t be empty!</source>
-        <translation>Commit message shouldn&apos;t be empty!</translation>
+        <translation>A mensagem de commit não pode estar vazia!</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -6968,7 +6968,7 @@
     <message>
         <location line="+1"/>
         <source>Git needs user info to commit.</source>
-        <translation>Git needs user info to commit.</translation>
+        <translation>O Git precisa das informações do usuário para fazer o commit.</translation>
     </message>
     <message>
         <location line="+268"/>
@@ -8128,7 +8128,7 @@
     <message>
         <location line="+2"/>
         <source>If something has gone wrong, we kept a backup-file: &apos;%1&apos;...</source>
-        <translation>Se algo errado ocorrer, ver arquivo de backup: </translation>
+        <translation>Se algo deu errado, guardamos um arquivo de backup: &apos;%1&apos;...</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -9870,7 +9870,7 @@
     <message>
         <location line="+1"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>Compilação multilib x86 (-mx)</translation>
     </message>
     <message>
         <location line="+5"/>

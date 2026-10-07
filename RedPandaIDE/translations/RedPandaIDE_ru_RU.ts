@@ -8890,7 +8890,7 @@
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="193"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>Мультибиблиотечная сборка x86 (-mx)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="195"/>
@@ -9618,7 +9618,7 @@
     <message>
         <location filename="../src/debugger/debuggermodels.cpp" line="1028"/>
         <source>Floating-point tag word</source>
-        <translation>Floating-point tag word</translation>
+        <translation>Слово тегов чисел с плавающей точкой</translation>
     </message>
     <message>
         <location filename="../src/debugger/debuggermodels.cpp" line="1029"/>

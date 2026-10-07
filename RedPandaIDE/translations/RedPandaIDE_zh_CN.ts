@@ -10198,7 +10198,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>x86 多库编译 (-mx)</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -10262,7 +10262,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>Don&apos;t memcpy initialized xram from code</source>
-        <translation>Don&apos;t memcpy initialized xram from code</translation>
+        <translation>不从代码区复制已初始化的 xram</translation>
     </message>
     <message>
         <location line="+1"/>
