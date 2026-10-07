@@ -1,0 +1,41 @@
+name: Translations
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    name: Translation files sanity
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # No Qt needed: the .ts files and the template manifests are checked directly.
+      - name: Check translation files
+        run: python3 tools/translations-check.py
+
+  lupdate:
+    name: lupdate consistency
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # the check compares the working tree against HEAD
+          fetch-depth: 0
+
+      - name: Setup Qt
+        uses: ConorMacBride/install-package@v1
+        with:
+          apt: libqt5svg5-dev qtbase5-dev qtbase5-dev-tools qttools5-dev qttools5-dev-tools
+
+      - name: Configure
+        run: |
+          mkdir -p build && cd build
+          cmake .. -G "Unix Makefiles"
+
+      - name: Extract translatable strings
+        run: |
+          cd build
+          make update_translations
+
+      - name: Check that no string was added to the sources without being extracted
+        run: python3 tools/translations-check.py --mode lupdate-drift
