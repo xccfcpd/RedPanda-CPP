@@ -22,7 +22,7 @@ class BaseReformatter : public QObject {
     Q_OBJECT
 public:
     BaseReformatter(QObject* parent = nullptr);
-    virtual QString refomat(const QString& content, QString &errorMessage, bool &isOk) = 0;
+    virtual QString reformat(const QString& content, QString &errorMessage, bool &isOk) = 0;
 };
 
 #endif

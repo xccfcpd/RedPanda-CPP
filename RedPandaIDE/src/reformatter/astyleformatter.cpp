@@ -38,7 +38,7 @@ AStyleReformatter::AStyleReformatter(const QString& astylePath, const QStringLis
 
 }
 
-QString AStyleReformatter::refomat(const QString &content, QString &errorMessage, bool &isOk)
+QString AStyleReformatter::reformat(const QString &content, QString &errorMessage, bool &isOk)
 {
     isOk = false;
     if (!fileExists(mAstylePath)) {
