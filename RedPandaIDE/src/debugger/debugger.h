@@ -95,7 +95,8 @@ public:
     void clearForProject();
 
     //breakpoints
-    void addBreakpoint(int line, const QString& filename, bool forProject);
+    void addBreakpoint(int line, const QString& filename, bool forProject,
+                       const QString& fingerprint = QString());
     void deleteBreakpoints(const QString& filename, bool forProject);
     void deleteBreakpoints(bool forProject);
     void deleteInvalidProjectBreakpoints(const QSet<QString> unitFiles);
@@ -104,6 +105,13 @@ public:
     PBreakpoint breakpointAt(int line, const QString &filename, int *index, bool forProject);
     void setBreakPointCondition(int index, const QString& condition, bool forProject);
     void sendAllBreakpointsToDebugger();
+    // Puts the breakpoints of the files that are not open in an editor back on the
+    // code they were set on, reading those files from the disk. The breakpoints of
+    // the open files are re-anchored by the editors themselves (from the content
+    // they have, which may differ from the disk). Called before the breakpoints
+    // are sent to the debugger, so that it never gets a line that doesn't hold the
+    // breakpoint's code any more.
+    void reanchorBreakpointsFromDisk();
 
     void saveForNonproject(const QString &filename);
     void saveForProject(const QString &filename, const QString &projectFolder);

@@ -88,6 +88,19 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
 #endif
     e->setCodeSnippetsManager(pMainWindow->codeSnippetManager());
     e->setFileSystemWatcher(pMainWindow->fileSystemWatcher());
+    // The whole content of an editor can be replaced at once (a file reloaded
+    // from the disk, a reformat, the output of a tool): its breakpoints are then
+    // re-anchored on the code they were set on and its bookmarks follow their
+    // code, instead of being dropped by the incremental line bookkeeping of the
+    // models (see Editor::isReplacingContent()).
+    e->setContentReplacedFunc([this, e](const QString& filename, bool inProject,
+                                        const QStringList& content,
+                                        const QMap<int,int>& markerLineMap) {
+        pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject);
+        pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, inProject);
+        e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+        e->resetBookmarks(pMainWindow->bookmarkModel());
+    });
     e->applySettings();
     e->setEditorEncoding(encoding);
     e->setFilename(filename);
@@ -276,9 +289,9 @@ void EditorManager::updateEditorTabCaption(Editor* e)
     parentWidget->setTabToolTip(index, e->filename());
 }
 
-void EditorManager::onBreakpointAdded(const Editor *e, int line)
+void EditorManager::onBreakpointAdded(const Editor *e, int line, const QString& fingerprint)
 {
-    pMainWindow->debugger()->addBreakpoint(line,e->filename(),e->inProject());
+    pMainWindow->debugger()->addBreakpoint(line,e->filename(),e->inProject(),fingerprint);
 }
 
 void EditorManager::onBreakpointRemoved(const Editor *e, int line)
@@ -367,6 +380,12 @@ void EditorManager::onEditorLinesInserted(int startLine, int count)
 {
     Editor * e = static_cast<Editor *>(sender());
     pMainWindow->caretList().onLinesInserted(e,startLine,count);
+    if (e->isReplacingContent()) {
+        // The whole content of the editor is being replaced: this is not a line
+        // insertion of the user, and the editor remaps the markers of the file
+        // itself once the new content is in place (see onContentReplaced()).
+        return;
+    }
     pMainWindow->debugger()->breakpointModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
     pMainWindow->bookmarkModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
@@ -377,6 +396,10 @@ void EditorManager::onEditorLinesRemoved(int startLine, int count)
 {
     Editor * e = static_cast<Editor *>(sender());
     pMainWindow->caretList().onLinesDeleted(e,startLine,count);
+    if (e->isReplacingContent()) {
+        // see onEditorLinesInserted()
+        return;
+    }
     pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
@@ -387,6 +410,10 @@ void EditorManager::onEditorLineMoved(int fromLine, int toLine)
 {
     Editor * e = static_cast<Editor *>(sender());
     pMainWindow->caretList().onLinesMoved(e, fromLine, toLine);
+    if (e->isReplacingContent()) {
+        // see onEditorLinesInserted()
+        return;
+    }
     pMainWindow->debugger()->breakpointModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),fromLine,toLine,e->inProject());
 
@@ -621,7 +648,10 @@ bool EditorManager::closeEditor(Editor* editor, bool transferFocus, bool force) 
         if (!editor->isNew() && pMainWindow->visitHistoryManager()->addFile(editor->filename())) {
             pMainWindow->rebuildOpenedFileHisotryMenu();
         }
-        editor->clearBreakpoints();
+        // Closing a tab must not drop the breakpoints of the file: they stay in
+        // the breakpoint view (and in the session, like VSCode does), and are
+        // shown again when the file is reopened. They can still be removed from
+        // the breakpoint view itself.
         doRemoveEditor(editor);
     }
     updateLayout();

@@ -25,6 +25,8 @@
 #include "../widgets/cpudialog.h"
 #include "../systemconsts.h"
 #include "../editormanager.h"
+#include <qsynedit/document.h>
+#include <QFont>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -226,6 +228,10 @@ bool Debugger::startClient(int compilerSetIndex,
         mClient->skipStandardLibraryFunctions();
     }
 
+    // The debugger must not be given a line that doesn't hold the breakpoint's
+    // code any more: the breakpoints of the open files were re-anchored when the
+    // files were loaded/edited, put the others back on their code now.
+    reanchorBreakpointsFromDisk();
     sendAllBreakpointsToDebugger();
     pMainWindow->updateAppTitle();
     mInferiorHasBreakpoints = inferiorHasBreakpoints;
@@ -416,7 +422,7 @@ void Debugger::clearForProject()
     mWatchModel->clear(true);
 }
 
-void Debugger::addBreakpoint(int line, const QString &filename, bool forProject)
+void Debugger::addBreakpoint(int line, const QString &filename, bool forProject, const QString &fingerprint)
 {
     QMutexLocker locker{&mClientMutex};
     PBreakpoint bp=std::make_shared<Breakpoint>();
@@ -427,6 +433,7 @@ void Debugger::addBreakpoint(int line, const QString &filename, bool forProject)
     bp->enabled = true;
     bp->breakpointType = BreakpointType::Breakpoint;
     bp->timestamp = QDateTime::currentMSecsSinceEpoch();
+    bp->fingerprint = fingerprint;
     mBreakpointModel->addBreakpoint(bp,forProject);
     if (!mClient) {
         if (forProject && mBreakpointModel->isForProject()) {
@@ -503,6 +510,45 @@ void Debugger::setBreakPointCondition(int index, const QString &condition, bool 
         mClient->setBreakpointCondition(breakpoint);
 }
 
+// Lines of a source file, decoded with the same encoding detection as the
+// editor. Returns false when the file can't be read as text.
+static bool readSourceFileContent(const QString& filename, QStringList& content)
+{
+    QFont font;
+    QSynedit::Document document(font);
+    QByteArray realEncoding;
+    try {
+        document.loadFromFile(filename, ENCODING_AUTO_DETECT, realEncoding);
+    } catch (FileError&) {
+        return false;
+    }
+    content.clear();
+    content.reserve(document.count());
+    for (int i=0;i<document.count();i++)
+        content.append(document.getLine(i));
+    return true;
+}
+
+void Debugger::reanchorBreakpointsFromDisk()
+{
+    bool forProject = mBreakpointModel->isForProject();
+    QSet<QString> files;
+    foreach (const PBreakpoint& breakpoint, mBreakpointModel->breakpoints(forProject)) {
+        files.insert(breakpoint->filename);
+    }
+    foreach (const QString& filename, files) {
+        // The breakpoints of a file that is open in an editor are re-anchored by
+        // the editor itself, from the content it has: it may differ from the file
+        // on the disk (unsaved changes).
+        if (pMainWindow->editorManager()->getOpenedEditor(filename))
+            continue;
+        QStringList content;
+        if (!readSourceFileContent(filename, content))
+            continue;
+        mBreakpointModel->reanchorBreakpoints(filename, content, forProject);
+    }
+}
+
 void Debugger::sendAllBreakpointsToDebugger()
 {
     for (const PBreakpoint &breakpoint:mBreakpointModel->breakpoints(mBreakpointModel->isForProject())) {
@@ -527,6 +573,9 @@ void Debugger::saveForProject(const QString &filename, const QString &projectFol
 void Debugger::loadForNonproject(const QString &filename)
 {
     bool forProject = false;
+    // Restoring the session must take the saved file as it is, whatever its
+    // timestamp: the timestamp filter of load() exists to avoid importing entries
+    // that are already in the models (see save()), not to drop saved breakpoints.
     mLastLoadtime = 0;
     PDebugConfig pConfig = load(filename, forProject);
     if (pConfig->timestamp>0) {
@@ -538,6 +587,8 @@ void Debugger::loadForNonproject(const QString &filename)
 void Debugger::loadForProject(const QString &filename, const QString &projectFolder)
 {
     bool forProject = true;
+    // see loadForNonproject(): reopening a project (even in the same session) must
+    // restore all its breakpoints, whatever the timestamp of the saved file
     mProjectLastLoadtime = 0;
     PDebugConfig pConfig = load(filename, forProject);
     if (pConfig->timestamp>0) {

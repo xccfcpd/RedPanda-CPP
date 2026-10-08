@@ -138,6 +138,26 @@ void BookmarkModel::removeBookmarks(const QString &filename, bool forProject)
     }
 }
 
+void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,int> &lineMap, bool forProject)
+{
+    QList<PBookmark> bookmarks;
+    if (forProject)
+        bookmarks = mProjectBookmarks;
+    else
+        bookmarks = mBookmarks;
+    for (int i=0;i<bookmarks.count();i++) {
+        PBookmark bookmark = bookmarks[i];
+        if (bookmark->filename.compare(filename, PATH_SENSITIVITY) != 0)
+            continue;
+        int newLine = lineMap.value(bookmark->line, bookmark->line);
+        if (newLine!=bookmark->line) {
+            bookmark->line = newLine;
+            if (forProject==mIsForProject)
+                emit dataChanged(createIndex(i,0),createIndex(i,2));
+        }
+    }
+}
+
 void BookmarkModel::renameBookmarkFile(const QString& oldFilename, const QString& newFilename, bool forProject)
 {
     QList<PBookmark> bookmarks;

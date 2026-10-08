@@ -126,7 +126,7 @@ private:
 #endif
 private slots:
     void updateEditorTabCaption(Editor* e);
-    void onBreakpointAdded(const Editor* e, int line);
+    void onBreakpointAdded(const Editor* e, int line, const QString& fingerprint);
     void onBreakpointRemoved(const Editor* e, int line);
     void onBreakpointsCleared(const Editor* e);
     void onEditorShown(Editor *e);

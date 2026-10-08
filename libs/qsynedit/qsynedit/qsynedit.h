@@ -677,9 +677,15 @@ private:
     void doCopyToClipboard();
     void internalDoCopyToClipboard(const QString& s);
     void doPasteFromClipboard();
-    void doUndo();
+protected:
+    // Virtual, so that a class deriving from QSynEdit (the IDE's Editor) can wrap
+    // the undo/redo of a change that covered the whole document: such a change
+    // must not be reported to the rest of the application as a plain line
+    // deletion (the models of the IDE keep their marker lines).
+    virtual void doUndo();
+    virtual void doRedo();
+private:
     void doUndoItem();
-    void doRedo();
     void doRedoItem();
     void doZoomIn();
     void doZoomOut();

@@ -20,6 +20,7 @@
 #include <QAbstractTableModel>
 #include <memory>
 #include <QDebug>
+#include <QMap>
 
 struct Bookmark {
     QString filename;
@@ -43,6 +44,12 @@ public:
     PBookmark bookmark(const QString&filename, int line);
     bool removeBookmark(const QString&filename, int line, bool forProject);
     void removeBookmarks(const QString& filename, bool forProject);
+    // Moves the bookmarks of a file to the lines given by "lineMap" (old line ->
+    // new line). Used when the whole content of the file has been replaced (see
+    // Editor::isReplacingContent()): the bookmarks follow the code they are on
+    // instead of being dropped by the line bookkeeping. Lines that are not in the
+    // map keep their line number.
+    void moveBookmarksInFile(const QString& filename, const QMap<int,int>& lineMap, bool forProject);
     void renameBookmarkFile(const QString& oldFilename, const QString& newFilename, bool forProject);
     void clear(bool forProject);
     bool updateDescription(const QString&filename, int line, const QString& description, bool forProject);

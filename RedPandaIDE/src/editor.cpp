@@ -225,7 +225,28 @@ void Editor::loadFile(QString filename, bool parse) {
     //FileError should by catched by the caller of loadFile();
     QByteArray oldEditorEncoding = mEditorEncoding;
     QByteArray oldFileEncoding = mFileEncoding;
-    loadFromFile(filename,mEditorEncoding,mFileEncoding);
+    // Loading a file replaces the whole content of the document, and the line
+    // bookkeeping of the breakpoint/bookmark models would take that for "every
+    // line was deleted" and drop or shift the markers of the file. Remember the
+    // caret, the first displayed line and the markers as anchors, so they can be
+    // put back on the code they are on, and tell the models about the replacement
+    // (see isReplacingContent()). This also covers reloading the file that is
+    // already shown (after an external change, when the encoding is changed, ...).
+    CharPos oldCaret = caretXY();
+    int oldTopPos = topPos();
+    QMap<int,ReformatAnchor> anchors = markerAnchors();
+    anchors.insert(oldCaret.line, lineAnchor(oldCaret.line));
+    anchors.insert(oldTopPos, lineAnchor(oldTopPos));
+    {
+        mReplacingContent = true;
+        auto guard = finally([this]{ mReplacingContent = false; });
+        loadFromFile(filename,mEditorEncoding,mFileEncoding);
+    }
+    QMap<int,int> lineMap = remapLinesByAnchor(anchors);
+    setCaretXY(ensureCharPosValid(CharPos{oldCaret.ch,
+                                          lineMap.value(oldCaret.line, oldCaret.line)}));
+    setTopPos(lineMap.value(oldTopPos, oldTopPos));
+    onContentReplaced(lineMap);
     if (mEditorEncoding==ENCODING_AUTO_DETECT) {
         if (mFileEncoding==ENCODING_ASCII)
             mEditorEncoding=mEditorSettings->defaultEncoding();
@@ -509,6 +530,10 @@ bool Editor::inProject() const noexcept{
 
 bool Editor::isNew() const noexcept {
     return mIsNew;
+}
+
+bool Editor::isReplacingContent() const noexcept {
+    return mReplacingContent;
 }
 
 void Editor::undoSymbolCompletion(const CharPos &pos)
@@ -4492,6 +4517,11 @@ void Editor::setGetMacroVarsFunc(const GetMacroVarsFunc &newGetMacroVarsFunc)
     mGetMacroVarsFunc = newGetMacroVarsFunc;
 }
 
+void Editor::setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc)
+{
+    mContentReplacedFunc = newContentReplacedFunc;
+}
+
 const GetReformatterFunc &Editor::getReformatterFunc() const
 {
     return mGetReformatterFunc;
@@ -5164,19 +5194,10 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
 
     // The formatter (especially clang-format on a large file) can block for a
     // while, so run it on a worker thread and apply the result back on the GUI
-    // thread. Capture everything the asynchronous call and the result handler
-    // need; mBreakpointLines/mBookmarkLines are still at their old line numbers
-    // until replaceContent() runs inside finishReformat().
+    // thread. Only the text that is formatted is captured: the anchors that keep
+    // the markers on their code are built when the result is applied, from the
+    // content that was really formatted (see finishReformat()).
     QString sourceText = text();
-    QSet<int> breakpointsBackup = mBreakpointLines;
-    QSet<int> bookmarksBackup = mBookmarkLines;
-    QMap<int,ReformatAnchor> anchors;
-    foreach(int line, breakpointsBackup) {
-        anchors.insert(line, lineAnchor(line));
-    }
-    foreach(int line, bookmarksBackup) {
-        anchors.insert(line, lineAnchor(line));
-    }
 
     if (!asynchronous) {
         // The caller (the save path) needs the content reformatted *before* it
@@ -5197,8 +5218,7 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
             isOk = false;
             errorMessage = tr("The formatter crashed with an unknown error.");
         }
-        finishReformat(newContent, errorMessage, isOk, sourceText,
-                       breakpointsBackup, bookmarksBackup, anchors, doReparse, notify);
+        finishReformat(newContent, errorMessage, isOk, sourceText, doReparse, notify);
         return;
     }
 
@@ -5206,9 +5226,6 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
     QPointer<Editor> self = this;
     try {
         std::thread([formatter, sourceText = std::move(sourceText),
-                     breakpointsBackup = std::move(breakpointsBackup),
-                     bookmarksBackup = std::move(bookmarksBackup),
-                     anchors = std::move(anchors),
                      doReparse, notify, self]() {
             QString newContent;
             QString errorMessage;
@@ -5232,10 +5249,10 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
             // the last reference, so the formatter is destroyed there.
             QMetaObject::invokeMethod(self,
                                       [self, formatter, newContent, errorMessage, isOk, sourceText,
-                                       breakpointsBackup, bookmarksBackup, anchors, doReparse, notify]() {
+                                       doReparse, notify]() {
                 if (self)
                     self->finishReformat(newContent, errorMessage, isOk, sourceText,
-                                         breakpointsBackup, bookmarksBackup, anchors, doReparse, notify);
+                                         doReparse, notify);
             }, Qt::QueuedConnection);
         }).detach();
     } catch (const std::exception &e) {
@@ -5249,9 +5266,7 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
 }
 
 void Editor::finishReformat(const QString &newContent, const QString &errorMessage, bool isOk,
-                            const QString &sourceText,
-                            const QSet<int> &breakpointsBackup, const QSet<int> &bookmarksBackup,
-                            const QMap<int,ReformatAnchor> &anchors, bool doReparse, bool notify)
+                            const QString &sourceText, bool doReparse, bool notify)
 {
     // the editor may have become read-only (e.g. a debug session started) while
     // the formatter was running; don't touch it in that case.
@@ -5282,36 +5297,10 @@ void Editor::finishReformat(const QString &newContent, const QString &errorMessa
         mIsReformatting = false;
         return;
     }
-    // A single remap pass covers the caret, the first displayed line and the
-    // breakpoints/bookmarks, so the document is indexed only once.
-    QMap<int,int> lineMap = replaceContentAndRemap(newContent, doReparse, anchors);
-    // Move the breakpoints/bookmarks to the lines that now hold the same code.
-    // Rebuild the whole set from the remap result instead of toggling each line
-    // in place: toggling in place loses a marker when two of them swap places
-    // (A moves to B's line while B moves to A's line), and it also copes with
-    // lines whose anchor text is too short to remap (they simply stay put).
-    // Remove every old marker first, then add back all the remapped targets;
-    // this keeps the breakpoint model in sync and never drops a marker. Lines
-    // that did not move are left untouched (hasBreakpoint/newLine is still true).
-    QSet<int> breakpointTargets;
-    foreach(int line, breakpointsBackup)
-        breakpointTargets.insert(lineMap.value(line, line));
-    foreach(int line, breakpointsBackup)
-        if (lineMap.value(line, line) != line && hasBreakpoint(line))
-            toggleBreakpoint(line);
-    foreach(int newLine, breakpointTargets)
-        if (!hasBreakpoint(newLine))
-            toggleBreakpoint(newLine);
-
-    QSet<int> bookmarkTargets;
-    foreach(int line, bookmarksBackup)
-        bookmarkTargets.insert(lineMap.value(line, line));
-    foreach(int line, bookmarksBackup)
-        if (lineMap.value(line, line) != line && hasBookmark(line))
-            toggleBookmark(line);
-    foreach(int newLine, bookmarkTargets)
-        if (!hasBookmark(newLine))
-            toggleBookmark(newLine);
+    // The content is replaced; the caret, the first displayed line and the
+    // markers of the file follow the code they are on, and the models are told
+    // about it (see replaceContentAndRemap()).
+    replaceContentAndRemap(newContent, doReparse);
     mIsReformatting = false;
 }
 
@@ -5416,21 +5405,84 @@ QMap<int,int> Editor::remapLinesByAnchor(const QMap<int,ReformatAnchor> &anchors
     return result;
 }
 
-void Editor::replaceContent(const QString &newContent, bool doReparse)
+// The anchors of the markers of this file: their lines are the ones the models
+// have (mirrored in mBreakpointLines/mBookmarkLines) and the anchors describe the
+// code they are on, so that remapLinesByAnchor() can find them back in the new
+// content.
+QMap<int,Editor::ReformatAnchor> Editor::markerAnchors() const
 {
-    replaceContentAndRemap(newContent, doReparse, QMap<int,ReformatAnchor>());
+    QMap<int,ReformatAnchor> result;
+    foreach(int line, mBreakpointLines) {
+        result.insert(line, lineAnchor(line));
+    }
+    foreach(int line, mBookmarkLines) {
+        result.insert(line, lineAnchor(line));
+    }
+    return result;
 }
 
-QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doReparse,
-                                             const QMap<int,ReformatAnchor> &extraAnchors)
+// Tells the models that the whole content of this file has been replaced. They
+// re-anchor the breakpoints on their code and move the bookmarks that the given
+// line map is about, then sync the marker sets of this editor back; the markers
+// are never dropped, even when they can't be found back.
+void Editor::onContentReplaced(const QMap<int,int> &markerLineMap)
+{
+    if (mContentReplacedFunc)
+        mContentReplacedFunc(mFilename, inProject(), content(), markerLineMap);
+}
+
+// Runs "action" with the markers of the file kept on their code. Used for the
+// undo/redo of a change that covered the whole content of the document (a code
+// formatting, a replacement with a tool output): QSynEdit applies such a change
+// like a plain text edit ("every line is deleted, then the text is written
+// back"), which would make the models drop the breakpoints and the bookmarks of
+// the file. The editor therefore keeps them out of their line bookkeeping and
+// puts the markers back on the code they are on; the caret and the selection are
+// still restored by QSynEdit.
+void Editor::runWholeContentChange(const std::function<void()> &action)
+{
+    // Without the callback the markers can't be put back on their code: leave the
+    // models doing their own bookkeeping, or they would stay on stale lines.
+    if (!mContentReplacedFunc) {
+        action();
+        return;
+    }
+    QMap<int,ReformatAnchor> anchors = markerAnchors();
+    {
+        mReplacingContent = true;
+        auto guard = finally([this]{ mReplacingContent = false; });
+        action();
+    }
+    onContentReplaced(remapLinesByAnchor(anchors));
+}
+
+void Editor::doUndo()
+{
+    runWholeContentChange([this]{ QSynEdit::doUndo(); });
+}
+
+void Editor::doRedo()
+{
+    runWholeContentChange([this]{ QSynEdit::doRedo(); });
+}
+
+void Editor::replaceContent(const QString &newContent, bool doReparse)
+{
+    // The whole document is replaced (the "replace the whole document with the
+    // tool output" action). This is not a plain line edit: the caret, the first
+    // displayed line and the markers follow the code they are on, and the models
+    // are told about the replacement (see replaceContentAndRemap()).
+    replaceContentAndRemap(newContent, doReparse);
+}
+
+QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doReparse)
 {
     int oldTopPos = topPos();
     CharPos mOldCaret = caretXY();
-    // keep the caret and the first displayed line on the same code: their line
-    // numbers may change, so remember them as anchors, together with the ones the
-    // caller cares about (breakpoints/bookmarks), so everything is remapped in a
-    // single pass.
-    QMap<int,ReformatAnchor> anchors = extraAnchors;
+    // Keep the caret, the first displayed line and the markers of the file on the
+    // same code: their line numbers may change, so remember them as anchors and
+    // remap everything in a single pass.
+    QMap<int,ReformatAnchor> anchors = markerAnchors();
     anchors.insert(mOldCaret.line, lineAnchor(mOldCaret.line));
     anchors.insert(oldTopPos, lineAnchor(oldTopPos));
 
@@ -5439,7 +5491,15 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
     QSynedit::EditorOptions newOptions = oldOptions;
     newOptions.setFlag(QSynedit::EditorOption::AutoIndent,false);
     setOptions(newOptions);
-    replaceAll(newContent);
+    {
+        // While the whole content is replaced, the models must not do their
+        // incremental line bookkeeping: they would take it for "every line was
+        // deleted" and drop or shift the markers of this file (see
+        // isReplacingContent()).
+        mReplacingContent = true;
+        auto guard = finally([this]{ mReplacingContent = false; });
+        replaceAll(newContent);
+    }
     QMap<int,int> lineMap = remapLinesByAnchor(anchors);
     setCaretXY(ensureCharPosValid(CharPos{mOldCaret.ch,
                                           lineMap.value(mOldCaret.line, mOldCaret.line)}));
@@ -5452,6 +5512,8 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
         checkSyntaxInBack();
         reparseTodo();
     }
+    // the models move / re-anchor the markers of this file on the code they are on
+    onContentReplaced(lineMap);
     return lineMap;
 }
 
@@ -5498,7 +5560,13 @@ void Editor::toggleBreakpoint(int line)
         emit breakpointRemoved(this, line);
     } else {
         mBreakpointLines.insert(line);
-        emit breakpointAdded(this, line);
+        // remember the code the breakpoint is set on (with its neighbours, to tell
+        // repeated code lines apart), so that it can follow it when the file
+        // changes (see BreakpointModel::reanchorBreakpoints())
+        emit breakpointAdded(this, line,
+                             breakpointContextFingerprint(lineNonWhitespace(line-1),
+                                                          lineNonWhitespace(line),
+                                                          lineNonWhitespace(line+1)));
     }
 
     invalidateGutterLine(line);
