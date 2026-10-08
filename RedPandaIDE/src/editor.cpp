@@ -5447,12 +5447,29 @@ void Editor::runWholeContentChange(const std::function<void()> &action)
         action();
         return;
     }
+    // The anchors are cheap (one per marker); the map built from them is not: it
+    // indexes the whole document, and undo/redo can be pressed as fast as the user
+    // wants. Only the lines the markers are on are remembered first, and the map
+    // is built only if one of them doesn't hold the code it held before any more.
     QMap<int,ReformatAnchor> anchors = markerAnchors();
     {
         mReplacingContent = true;
         auto guard = finally([this]{ mReplacingContent = false; });
         action();
     }
+    // The lines a change moved the code away from now hold other code (a marker
+    // that stayed put on its code is left alone). Nothing moved means the models
+    // never touched the markers either (see isReplacingContent()) and the lines
+    // are still the ones the editor shows, so there is nothing to put back.
+    bool moved = false;
+    for (auto it=anchors.constBegin();it!=anchors.constEnd();++it) {
+        if (lineNonWhitespace(it.key())!=it.value().line) {
+            moved = true;
+            break;
+        }
+    }
+    if (!moved)
+        return;
     onContentReplaced(remapLinesByAnchor(anchors));
 }
 
