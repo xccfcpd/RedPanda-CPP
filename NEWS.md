@@ -1,4 +1,10 @@
 Red Panda C++ Version 3.5
+  - fix: Breakpoints and bookmarks are no longer dropped or shifted when the whole content of a file is replaced (reloading it from the disk, reformatting it, replacing it with a tool output); they follow the code they were set on, also when a file is reopened or restored from an earlier session, and closing a file doesn't drop its breakpoints any more. The breakpoints of files that are not open are put back on their code (read from the disk, with the same encoding detection as the editor) before the debugger starts.
+  - 修复：整篇内容被替换（从磁盘重新加载、格式化、被工具输出替换）时，断点与书签不再丢失或错位，而是跟随它们所在的代码；文件重新打开或从上次会话恢复时同样如此，并且关闭文件不再丢失其断点。未打开文件的断点会在启动调试前按磁盘内容（使用与编辑器相同的编码识别）回到其代码所在行。
+  - fix: Reloading a file no longer moves the caret and the first displayed line back to the beginning of the file.
+  - 修复：重新加载文件后，光标与首个可见行不再回到文件开头。
+  - fix: Undoing (Ctrl+Z) a code formatting or a replacement of the whole document no longer drops the breakpoints and the bookmarks of the file.
+  - 修复：撤销（Ctrl+Z）代码格式化或整篇替换后，不再丢失该文件的断点与书签。
   - fix: Stacktrace table shows extra rows.
   - 修复：调用栈表格会多显示若干行。
   - fix: The first line of disassembled code is lost in the cpu dialog.

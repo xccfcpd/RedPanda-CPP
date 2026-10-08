@@ -18,6 +18,7 @@
 #define EDITOR_H
 
 #include <QObject>
+#include <QMap>
 #include "utils/file.h"
 #include "utils/types.h"
 #include "utils/parsemacros.h"
@@ -63,6 +64,14 @@ using EvalTipReadyCallback = std::function<void (Editor *)>;
 using GetCompilerTypeForEditorFunc = std::function<CompilerType (const Editor *)>;
 using GetReformatterFunc = std::function<std::unique_ptr<BaseReformatter>(Editor *)>;
 using GetCppParserFunc = std::function<PCppParser (Editor *)>;
+// Called after the whole content of the document has been replaced (reloaded
+// from the disk, reformatted, replaced by a tool output). "content" is the new
+// content of the document and "markerLineMap" maps the old lines of the
+// breakpoints/bookmarks to their new ones; the implementation re-anchors the
+// markers of this file in the models and syncs the marker sets back.
+using ContentReplacedFunc = std::function<void (const QString& filename, bool inProject,
+                                                const QStringList& content,
+                                                const QMap<int,int>& markerLineMap)>;
 
 class Editor : public QSynedit::QSynEdit
 {
@@ -162,6 +171,14 @@ public:
 
     bool inProject() const noexcept;
     bool isNew() const noexcept;
+    // True while the whole content of the document is being replaced (reloaded
+    // from the disk, reformatted, replaced by a tool output). The line
+    // bookkeeping of the breakpoint/bookmark models is incremental and would
+    // treat such a replacement as "every line was deleted", dropping and
+    // mangling the markers of the file, so EditorManager skips it while this is
+    // true - the editor itself tells the models where the markers went (see
+    // ContentReplacedFunc).
+    bool isReplacingContent() const noexcept;
 
     void loadFile(QString filename = "", bool parse = true);
     void saveFile(QString filename);
@@ -335,13 +352,15 @@ public:
     const GetMacroVarsFunc &getMacroVarsFunc() const;
     void setGetMacroVarsFunc(const GetMacroVarsFunc &newGetMacroVarsFunc);
 
+    void setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc);
+
 signals:
     void fileSaving(Editor *e, const QString& filename);
     void fileSaveError(Editor *e, const QString& filename, const QString& reason);
     void fileSaved(Editor *e, const QString& filename);
     void fileRenamed(Editor *e, const QString& oldFilename, const QString& newFilename);
     void fileSaveAsed(Editor *e, const QString& oldFilename, const QString& newFilename);
-    void breakpointAdded(const Editor *e, int line);
+    void breakpointAdded(const Editor *e, int line, const QString& fingerprint);
     void breakpointRemoved(const Editor *e, int line);
     void breakpointsCleared(const Editor *e);
     void syntaxCheckRequested(Editor *e);
@@ -453,23 +472,34 @@ private:
     QString lineNonWhitespace(int line) const;
     ReformatAnchor lineAnchor(int line) const;
     QMap<int,int> remapLinesByAnchor(const QMap<int,ReformatAnchor>& anchors) const;
-    // replaceContent() that merges the caller's anchors (breakpoints/bookmarks)
-    // into the same single remap pass as the caret and the first displayed line,
-    // and hands the resulting old line -> new line map back to the caller.
-    QMap<int,int> replaceContentAndRemap(const QString& newContent, bool doReparse,
-                                         const QMap<int,ReformatAnchor>& extraAnchors);
+    // Replaces the whole content of the document: remaps the caret, the first
+    // displayed line and the markers of the file in a single pass (they follow the
+    // code they are on), tells the models that the content has been replaced, and
+    // hands the resulting old line -> new line map back to the caller.
+    QMap<int,int> replaceContentAndRemap(const QString& newContent, bool doReparse);
     // Applies the result of an asynchronous reformat on the GUI thread (see
-    // reformat()): replaces the content and moves the breakpoints/bookmarks to
-    // the lines that now hold the same code.
+    // reformat()).
     void finishReformat(const QString& newContent, const QString& errorMessage, bool isOk,
-                        const QString& sourceText,
-                        const QSet<int>& breakpointsBackup, const QSet<int>& bookmarksBackup,
-                        const QMap<int,ReformatAnchor>& anchors, bool doReparse, bool notify);
+                        const QString& sourceText, bool doReparse, bool notify);
+    // Anchors of the breakpoints and the bookmarks that the models hold for this
+    // file, so they can be found back after the whole content has been replaced.
+    QMap<int,ReformatAnchor> markerAnchors() const;
+    // Tells the models that the whole content of this file has been replaced (see
+    // ContentReplacedFunc), so that they move / re-anchor the markers of the file
+    // on the code they were set on.
+    void onContentReplaced(const QMap<int,int>& markerLineMap);
+    // Runs "action" (a change of the whole content of the document: the undo/redo
+    // of a code formatting or of a tool output replacement) with the markers of
+    // the file kept on their code, instead of letting the models do their
+    // incremental line bookkeeping on it (see isReplacingContent()).
+    void runWholeContentChange(const std::function<void()>& action);
 
 private:
     bool mInited;
     // set while an asynchronous reformat is running, to ignore re-entrant calls
     bool mIsReformatting = false;
+    // set while the whole content is being replaced (see isReplacingContent())
+    bool mReplacingContent = false;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEditorEncoding; // the encoding type set by the user
@@ -542,6 +572,7 @@ private:
     EvalTipReadyCallback mEvalTipReadyCallback;
     GetReformatterFunc mGetReformatterFunc;
     GetMacroVarsFunc mGetMacroVarsFunc;
+    ContentReplacedFunc mContentReplacedFunc;
     GetCppParserFunc mGetCppParserFunc;
 #ifdef ENABLE_SDCC
     GetCompilerTypeForEditorFunc mGetCompilerTypeForEditorFunc;
@@ -559,6 +590,12 @@ protected:
     void onGetEditingAreas(int Line, QSynedit::EditingAreaList &areaList) override;
     bool onGetSpecialLineColors(int Line, QColor &foreground, QColor &backgroundColor) override;
     void onPreparePaintHighlightToken(int line, int aChar, const QString &token, QSynedit::PTokenAttribute attr, QSynedit::FontStyles &style, QColor &foreground, QColor &background) override;
+    // An undo/redo of a change that covered the whole content of the document (a
+    // code formatting, a tool output replacement) must not be reported to the
+    // models as a plain line deletion: the markers are put back on their code, see
+    // runWholeContentChange().
+    void doUndo() override;
+    void doRedo() override;
 
     // QObject interface
 public:

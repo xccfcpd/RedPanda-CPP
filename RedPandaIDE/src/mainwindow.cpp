@@ -5651,11 +5651,9 @@ void MainWindow::onFileChanged(const QString &path)
                                       QMessageBox::Yes|QMessageBox::No,
                                       QMessageBox::No) == QMessageBox::Yes) {
                 try {
-                    int top = e->topPos();
-                    QSynedit::CharPos caretPos = e->caretXY();
+                    // loadFile() itself keeps the caret, the first displayed line
+                    // and the markers of the file on the code they are on
                     e->loadFile();
-                    mEditorManager->activeEditorAndSetCaret(e, QSynedit::CharPos{0,caretPos.line});
-                    e->setTopPos(top);
                 } catch(FileError e) {
                     QMessageBox::critical(this,tr("Error"),e.reason());
                 }

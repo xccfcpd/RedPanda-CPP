@@ -64,9 +64,54 @@ struct Breakpoint {
     bool enabled;
     BreakpointType breakpointType;
     qint64 timestamp;
+    // The code the breakpoint was set on, as normalized text (see
+    // breakpointContextFingerprint()): the line itself plus its neighbours, so
+    // that repeated lines can be told apart. It lets the breakpoint follow its
+    // code when the file changes (reloaded from the disk, reformatted, or
+    // restored from an older session); it's empty for breakpoints loaded from a
+    // config file written before this field existed.
+    QString fingerprint;
 };
 
 using PBreakpoint = std::shared_ptr<Breakpoint>;
+
+// Normalized text of a source line: whitespace is removed (reformatting mostly
+// changes the indentation and the spacing between tokens) and the result is
+// capped, so that a very long line doesn't bloat the session file.
+// (Inline: it is used by the editor, which is also built without the debugger
+// sources, in the tests.)
+inline QString breakpointFingerprint(const QString& lineText)
+{
+    // a longer line keeps only its first characters: the session file must stay
+    // small, and a prefix is specific enough to tell code apart
+    const int maxLength = 200;
+    QString result;
+    // lineText.length() is int in Qt5 and qsizetype in Qt6
+    result.reserve(qMin(static_cast<int>(lineText.length()), maxLength));
+    foreach (QChar ch, lineText) {
+        if (ch.isSpace())
+            continue;
+        result.append(ch);
+        if (result.length()>=maxLength)
+            break;
+    }
+    return result;
+}
+
+// Anchor of a breakpoint: the fingerprints of the line it is set on and of its
+// neighbours, joined by '\n'. The neighbours tell repeated code lines (many
+// "return 0;") apart; pass an empty string for a line that doesn't exist (the
+// first and the last line of the file). Normalized text never contains
+// whitespace, so the '\n' separator is unambiguous - and a fingerprint without
+// any '\n' is a plain line fingerprint, as written by older versions.
+inline QString breakpointContextFingerprint(const QString& previousLine,
+                                            const QString& line,
+                                            const QString& nextLine)
+{
+    return breakpointFingerprint(previousLine) + QLatin1Char('\n')
+            + breakpointFingerprint(line) + QLatin1Char('\n')
+            + breakpointFingerprint(nextLine);
+}
 
 struct Trace {
     QString funcname;
@@ -112,6 +157,16 @@ public:
     void removeBreakpoint(int index, bool forProject);
     void removeBreakpointsInFile(const QString& fileName, bool forProject);
     void renameBreakpointFilenames(const QString& oldFileName,const QString& newFileName, bool forProject);
+    // Puts the breakpoints of a file back on the code they were set on, using
+    // their fingerprint: a breakpoint whose line doesn't hold its code any more
+    // is moved to the nearest line that does - looking first for the whole
+    // context (the line and its neighbours), then for the line text alone.
+    // Content is the current content of the file. Breakpoints whose code can't be
+    // found keep their line - they are never dropped. Breakpoints that don't have
+    // a fingerprint yet store the one of the line they are on, so that they can
+    // be re-anchored from now on (also for config files written by older
+    // versions).
+    void reanchorBreakpoints(const QString& filename, const QStringList& content, bool forProject);
     PBreakpoint setBreakPointCondition(int index, const QString& condition, bool forProject);
     const QList<PBreakpoint>& breakpoints(bool forProject) const {
         return forProject?mProjectBreakpoints:mBreakpoints;
