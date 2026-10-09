@@ -3504,7 +3504,7 @@ void QSynedit::TestQSyneditCpp::test_delete_chars_in_file()
     QCOMPARE(mEdit->selEnd(),CharPos(4,3));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{3});
+    QCOMPARE(mDeleteStartLines, QList<int>{4});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -3590,7 +3590,7 @@ void QSynedit::TestQSyneditCpp::test_delete_chars_in_file()
     QCOMPARE(mEdit->caretXY(),CharPos(4,3));
     QCOMPARE(mEdit->selBegin(),CharPos(4,3));
     QCOMPARE(mEdit->selEnd(),CharPos(4,3));
-    QCOMPARE(mInsertStartLines, QList<int>{3});
+    QCOMPARE(mInsertStartLines, QList<int>{4});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -3653,7 +3653,7 @@ void QSynedit::TestQSyneditCpp::test_delete_chars_in_file()
     QCOMPARE(mEdit->selEnd(),CharPos(4,3));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{3});
+    QCOMPARE(mDeleteStartLines, QList<int>{4});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -3755,7 +3755,7 @@ void QSynedit::TestQSyneditCpp::test_delete_chars_in_file()
     QCOMPARE(mEdit->caretXY(),CharPos(4,3));
     QCOMPARE(mEdit->selBegin(),CharPos(4,3));
     QCOMPARE(mEdit->selEnd(),CharPos(4,3));
-    QCOMPARE(mInsertStartLines, QList<int>{3});
+    QCOMPARE(mInsertStartLines, QList<int>{4});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4094,7 +4094,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -4121,7 +4121,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -4146,7 +4146,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(16,6));
     QCOMPARE(mEdit->selBegin(),CharPos(16,6));
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4172,7 +4172,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(7,6));
     QCOMPARE(mEdit->selBegin(),CharPos(7,6));
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4204,7 +4204,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -4230,7 +4230,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -4257,7 +4257,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(16,6));
     QCOMPARE(mEdit->selBegin(),CharPos(16,6));
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4283,7 +4283,7 @@ void TestQSyneditCpp::test_merge_with_next_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(7,6));
     QCOMPARE(mEdit->selBegin(),CharPos(7,6));
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4746,7 +4746,7 @@ void QSynedit::TestQSyneditCpp::test_delete_prev_chars_at_file_begin_end()
     QCOMPARE(mEdit->caretXY(),CharPos(0,3));
     QCOMPARE(mEdit->selBegin(),CharPos(0,3));
     QCOMPARE(mEdit->selEnd(),CharPos(0,3));
-    QCOMPARE(mInsertStartLines, QList<int>{2});
+    QCOMPARE(mInsertStartLines, QList<int>{3});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -4862,7 +4862,7 @@ void QSynedit::TestQSyneditCpp::test_delete_prev_chars_at_file_begin_end()
     QCOMPARE(mEdit->caretXY(),CharPos(0,3));
     QCOMPARE(mEdit->selBegin(),CharPos(0,3));
     QCOMPARE(mEdit->selEnd(),CharPos(0,3));
-    QCOMPARE(mInsertStartLines, QList<int>{2});
+    QCOMPARE(mInsertStartLines, QList<int>{3});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -5008,7 +5008,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -5035,7 +5035,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -5060,7 +5060,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(0,7));
     QCOMPARE(mEdit->selBegin(),CharPos(0,7));
     QCOMPARE(mEdit->selEnd(),CharPos(0,7));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -5086,7 +5086,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(0,7));
     QCOMPARE(mEdit->selBegin(),CharPos(0,7));
     QCOMPARE(mEdit->selEnd(),CharPos(0,7));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -5118,7 +5118,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(7,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -5144,7 +5144,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->selEnd(),CharPos(16,6));
     QCOMPARE(mInsertStartLines, QList<int>{});
     QCOMPARE(mInsertLineCounts, QList<int>{});
-    QCOMPARE(mDeleteStartLines, QList<int>{6});
+    QCOMPARE(mDeleteStartLines, QList<int>{7});
     QCOMPARE(mDeleteLineCounts, QList<int>{1});
     QCOMPARE(mLineMovedFroms, QList<int>{});
     QCOMPARE(mStatusChanges,
@@ -5171,7 +5171,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(0,7));
     QCOMPARE(mEdit->selBegin(),CharPos(0,7));
     QCOMPARE(mEdit->selEnd(),CharPos(0,7));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});
@@ -5197,7 +5197,7 @@ void TestQSyneditCpp::test_merge_with_prev_line_with_collapsed_block()
     QCOMPARE(mEdit->caretXY(),CharPos(0,7));
     QCOMPARE(mEdit->selBegin(),CharPos(0,7));
     QCOMPARE(mEdit->selEnd(),CharPos(0,7));
-    QCOMPARE(mInsertStartLines, QList<int>{6});
+    QCOMPARE(mInsertStartLines, QList<int>{7});
     QCOMPARE(mInsertLineCounts, QList<int>{1});
     QCOMPARE(mDeleteStartLines, QList<int>{});
     QCOMPARE(mDeleteLineCounts, QList<int>{});

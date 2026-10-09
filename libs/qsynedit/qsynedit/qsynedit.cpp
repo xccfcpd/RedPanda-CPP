@@ -1461,6 +1461,11 @@ bool QSynEdit::shouldInsertAfterCurrentLine(int line, const QString &newLineText
     return true;
 }
 
+// Whether merging the current line with the next one is done by removing the next
+// line (true) or by removing the current line (false). QSynEdit removes the current
+// line to give it a fresh syntax state and to keep the fold of the next line,
+// collapsed, on it; that removal is then not reported to the application, because
+// the current line survives (see doMergeWithNextLine()).
 bool QSynEdit::shouldDeleteNextLine(int line, const QString &currentLineText, const QString &nextLineText) const
 {
     Q_UNUSED(currentLineText);
@@ -2008,10 +2013,20 @@ void QSynEdit::doMergeWithNextLine()
         beginEditing();
         QString nextLineText = mDocument->getLine(mCaretY+1);
         QString newString = currentLineText + nextLineText;
+        // The lines are merged on the current one: the line that really disappears
+        // from the document is the next one, and that is the line the application
+        // must be told about - it keeps its breakpoints, its bookmarks and its carets
+        // on the lines through these signals. When the current line starts or ends a
+        // syntax block QSynEdit deletes the next line and it is done; otherwise it
+        // deletes the current line (and puts the merged text back on it) to give it a
+        // fresh syntax state and to keep the fold of the next line, collapsed, on it.
+        // That removal must not be reported: the line survives, and the application
+        // would drop the markers that are set on the line the user is editing.
         if (shouldDeleteNextLine(mCaretY, currentLineText, nextLineText)) {
             properDeleteLine(mCaretY + 1, false);
         } else {
-            properDeleteLine(mCaretY, false);
+            deleteLinesWithoutReporting(mCaretY, 1, false);
+            emit linesDeleted(mCaretY + 1, 1);
         }
         properSetLine(mCaretY, newString, true);
         addChangeToUndo(ChangeReason::MergeWithNextLine, caretXY(), newCaret,
@@ -2029,10 +2044,14 @@ void QSynEdit::doMergeWithPrevLine()
         QString tempStr = lineText();
         beginEditing();
         QString lastLine = mDocument->getLine(mCaretY-1);
+        // The lines are merged on the previous one: the line that really disappears
+        // is the one of the caret, not the previous one that QSynEdit may remove
+        // internally - see doMergeWithNextLine().
         if (shouldDeleteNextLine(mCaretY-1, lastLine, tempStr)) {
             properDeleteLine(mCaretY, false);
         } else {
-            properDeleteLine(mCaretY-1, false);
+            deleteLinesWithoutReporting(mCaretY-1, 1, false);
+            emit linesDeleted(mCaretY, 1);
         }
         properSetLine(mCaretY-1, lastLine+tempStr, true);
         setCaretXY(CharPos{(int)lastLine.length(), mCaretY - 1});
@@ -4389,11 +4408,15 @@ void QSynEdit::doUndoItem()
             QString rightStr = tempStr.mid(startPos.ch);
             QStringList helper({"",""});
             beginEditing();
+            // Undoing a merge: the line the document gains is the next one, and the
+            // application must be told about that one - it would move the markers
+            // that are on the line that is split (see doMergeWithNextLine()).
             if (shouldInsertAfterCurrentLine(startPos.line, leftStr, rightStr, false)) {
                 properSetLine(startPos.line, leftStr, false);
                 properInsertLine(startPos.line+1, rightStr, true);
             } else {
-                properInsertLine(startPos.line, leftStr,false);
+                insertLineWithoutReporting(startPos.line, leftStr, false);
+                emit linesInserted(startPos.line+1, 1);
                 properSetLine(startPos.line+1, rightStr, true);
             }
             setCaretXY(item->changeStartPos());
@@ -4414,11 +4437,13 @@ void QSynEdit::doUndoItem()
             QString rightStr = tempStr.mid(startPos.ch);
             QStringList helper({"",""});
             beginEditing();
+            // Undoing a merge: see MergeWithNextLine above.
             if (shouldInsertAfterCurrentLine(startPos.line, leftStr, rightStr, false)) {
                 properSetLine(startPos.line, leftStr, false);
                 properInsertLine(startPos.line+1, rightStr, true);
             } else {
-                properInsertLine(startPos.line, leftStr,false);
+                insertLineWithoutReporting(startPos.line, leftStr, false);
+                emit linesInserted(startPos.line+1, 1);
                 properSetLine(startPos.line+1, rightStr, true);
             }
             setCaretXY(item->changeEndPos());
@@ -5579,13 +5604,18 @@ void QSynEdit::properSetLine(int line, const QString &sLineText, bool parseToEnd
 
 void QSynEdit::properInsertLine(int line, const QString &sLineText, bool parseToEnd)
 {
+    insertLineWithoutReporting(line, sLineText, parseToEnd);
+    emit linesInserted(line, 1);
+}
+
+void QSynEdit::insertLineWithoutReporting(int line, const QString &sLineText, bool parseToEnd)
+{
     mDocument->insertLine(line, sLineText);
     processCodeBlocksOnLinesInserted(line,1);
     if (parseToEnd)
         onLinesInserted(line, 1);
     else
         reparseLines(line,line+1, false);
-    emit linesInserted(line, 1);
     updateVScrollbar();
     //we must invalidate whole editor to properly render contents
     invalidateLines(line,INT_MAX);
@@ -5595,11 +5625,18 @@ void QSynEdit::properDeleteLines(int line, int count, bool parseToEnd)
 {
     if (count<=0)
         return;
+    deleteLinesWithoutReporting(line, count, parseToEnd);
+    emit linesDeleted(line,count);
+}
+
+void QSynEdit::deleteLinesWithoutReporting(int line, int count, bool parseToEnd)
+{
+    if (count<=0)
+        return;
     mDocument->deleteLines(line, count);
     processFoldsOnLinesDeleted(line, count);
     if (parseToEnd)
         onLinesDeleted(line,count);
-    emit linesDeleted(line,count);
     updateVScrollbar();
 
     //we must invalidate whole editor to properly render contents
