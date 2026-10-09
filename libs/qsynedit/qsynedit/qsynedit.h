@@ -619,6 +619,13 @@ private:
     void properDeleteLine(int line, bool parseToEnd) { properDeleteLines(line, 1, parseToEnd); }
     void properInsertLines(int line, int count, bool parseToEnd);
     void properMoveLine(int from, int to, bool parseToEnd);
+    // Same as properInsertLine() and properDeleteLines(), except that they do not
+    // emit linesInserted()/linesDeleted(): the caller reports the change to the
+    // application itself, naming the lines that really appear or disappear. Used
+    // when QSynEdit edits a line that the document does not lose (see
+    // doMergeWithNextLine()).
+    void insertLineWithoutReporting(int line, const QString& sLineText, bool parseToEnd);
+    void deleteLinesWithoutReporting(int line, int count, bool parseToEnd);
 
     //primitive edit operations
     void doDeleteText(CharPos startPos, CharPos endPos, SelectionMode mode);
