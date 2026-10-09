@@ -234,12 +234,12 @@ void Editor::loadFile(QString filename, bool parse) {
     // already shown (after an external change, when the encoding is changed, ...).
     CharPos oldCaret = caretXY();
     int oldTopPos = topPos();
-    QMap<int,ReformatAnchor> anchors = markerAnchors();
+    QMap<int,ReformatAnchor> anchors = anchorLines();
     anchors.insert(oldCaret.line, lineAnchor(oldCaret.line));
     anchors.insert(oldTopPos, lineAnchor(oldTopPos));
     {
-        mReplacingContent = true;
-        auto guard = finally([this]{ mReplacingContent = false; });
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
         loadFromFile(filename,mEditorEncoding,mFileEncoding);
     }
     QMap<int,int> lineMap = remapLinesByAnchor(anchors);
@@ -533,7 +533,7 @@ bool Editor::isNew() const noexcept {
 }
 
 bool Editor::isReplacingContent() const noexcept {
-    return mReplacingContent;
+    return mReplacingContentDepth>0;
 }
 
 void Editor::undoSymbolCompletion(const CharPos &pos)
@@ -4522,6 +4522,11 @@ void Editor::setContentReplacedFunc(const ContentReplacedFunc &newContentReplace
     mContentReplacedFunc = newContentReplacedFunc;
 }
 
+void Editor::setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc)
+{
+    mGetAnchorLinesFunc = newGetAnchorLinesFunc;
+}
+
 const GetReformatterFunc &Editor::getReformatterFunc() const
 {
     return mGetReformatterFunc;
@@ -5321,95 +5326,24 @@ QString Editor::lineNonWhitespace(int line) const
     return result;
 }
 
-Editor::ReformatAnchor Editor::lineAnchor(int line) const
+ReformatAnchor Editor::lineAnchor(int line) const
 {
-    ReformatAnchor anchor;
-    anchor.line = lineNonWhitespace(line);
-    // previous, this and next line: the context tells repeated lines (many
-    // "return 0;") and very short lines (a lone "}") apart. Non-whitespace text
-    // never contains a newline, so it is a safe separator.
-    QStringList context;
-    context << lineNonWhitespace(line-1)
-            << lineNonWhitespace(line)
-            << lineNonWhitespace(line+1);
-    anchor.context = context.join(QLatin1Char('\n'));
-    return anchor;
+    return EditorAnchors::lineAnchor(lineNonWhitespace(line-1),
+                                     lineNonWhitespace(line),
+                                     lineNonWhitespace(line+1));
 }
 
-// Maps every line of "anchors" to the line of the current content that holds
-// the same code, choosing the candidate closest to the original line. The
-// neighbours are tried first (they pin repeated lines down), then the line
-// itself. A line without a usable anchor (an empty line, or one that can't be
-// found back) keeps its original number and is reported in the debug output.
+// See EditorAnchors::remapLines(): the matching is done there, on plain text.
 QMap<int,int> Editor::remapLinesByAnchor(const QMap<int,ReformatAnchor> &anchors) const
 {
-    QMap<int,int> result;
-    if (anchors.isEmpty())
-        return result;
-
-    int lineCount = document()->count();
-    // tier 1: previous + this + next line; tier 2: the line's own text
-    QMap<QString,QList<int>> contextIndex;
-    QMap<QString,QList<int>> lineIndex;
-    for (int line=0;line<lineCount;line++) {
-        ReformatAnchor anchor = lineAnchor(line);
-        // an empty line has no usable anchor, and its context would match every
-        // other empty line
-        if (anchor.line.isEmpty())
-            continue;
-        contextIndex[anchor.context].append(line);
-        // a very short line (e.g. "}") matches too many lines on its own; it is
-        // handled through the context instead
-        if (anchor.line.length()>1)
-            lineIndex[anchor.line].append(line);
-    }
-
-    auto findNearest = [lineCount](const QMap<QString,QList<int>> &index,
-                                   const QString &key, int oldLine) {
-        if (key.isEmpty())
-            return -1;
-        auto candidates = index.constFind(key);
-        if (candidates==index.constEnd())
-            return -1;
-        int newLine = -1;
-        int minDistance = lineCount+1;
-        foreach(int candidate, *candidates) {
-            int distance = qAbs(candidate-oldLine);
-            if (distance<minDistance) {
-                minDistance = distance;
-                newLine = candidate;
-            }
-        }
-        return newLine;
-    };
-
-    QList<int> unmappedLines;
-    for (auto it=anchors.constBegin();it!=anchors.constEnd();++it) {
-        int oldLine = it.key();
-        int newLine = -1;
-        if (!it.value().line.isEmpty()) {
-            newLine = findNearest(contextIndex, it.value().context, oldLine);
-            if (newLine<0 && it.value().line.length()>1)
-                newLine = findNearest(lineIndex, it.value().line, oldLine);
-        }
-        if (newLine<0) {
-            newLine = qBound(0, oldLine, lineCount>0? lineCount-1 : 0);
-            unmappedLines.append(oldLine);
-        }
-        result.insert(oldLine, newLine);
-    }
-    if (!unmappedLines.isEmpty()) {
-        qDebug() << "reformat: no text anchor found for" << unmappedLines.count()
-                 << "line(s), keeping the old line number(s):" << unmappedLines;
-    }
-    return result;
+    return EditorAnchors::remapLines(anchors, document()->content());
 }
 
 // The anchors of the markers of this file: their lines are the ones the models
 // have (mirrored in mBreakpointLines/mBookmarkLines) and the anchors describe the
 // code they are on, so that remapLinesByAnchor() can find them back in the new
 // content.
-QMap<int,Editor::ReformatAnchor> Editor::markerAnchors() const
+QMap<int,ReformatAnchor> Editor::markerAnchors() const
 {
     QMap<int,ReformatAnchor> result;
     foreach(int line, mBreakpointLines) {
@@ -5417,6 +5351,23 @@ QMap<int,Editor::ReformatAnchor> Editor::markerAnchors() const
     }
     foreach(int line, mBookmarkLines) {
         result.insert(line, lineAnchor(line));
+    }
+    return result;
+}
+
+// The markers, plus the lines the application holds outside of the models (the
+// history of the caret positions of this file, see CaretList::remapLines()). They
+// are moved with the same line map, so they must be anchored too, otherwise they
+// would be left on stale lines. Kept separate from markerAnchors() because the
+// caret history can be long and the undo/redo path (see runWholeContentChange())
+// only needs the markers to know whether anything moved at all.
+QMap<int,ReformatAnchor> Editor::anchorLines() const
+{
+    QMap<int,ReformatAnchor> result = markerAnchors();
+    if (mGetAnchorLinesFunc) {
+        foreach(int line, mGetAnchorLinesFunc()) {
+            result.insert(line, lineAnchor(line));
+        }
     }
     return result;
 }
@@ -5447,23 +5398,29 @@ void Editor::runWholeContentChange(const std::function<void()> &action)
         action();
         return;
     }
-    // The anchors are cheap (one per marker); the map built from them is not: it
-    // indexes the whole document, and undo/redo can be pressed as fast as the user
-    // wants. Only the lines the markers are on are remembered first, and the map
-    // is built only if one of them doesn't hold the code it held before any more.
-    QMap<int,ReformatAnchor> anchors = markerAnchors();
+    // The anchors must be taken on the old content: they are what the lines of the
+    // new one are matched against (see remapLinesByAnchor()). They cover the markers
+    // and the carets of the file (see anchorLines()). The map built from them
+    // indexes the whole document, so it is built only if a line doesn't hold the
+    // code it held before any more.
+    QMap<int,ReformatAnchor> anchors = anchorLines();
     {
-        mReplacingContent = true;
-        auto guard = finally([this]{ mReplacingContent = false; });
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
         action();
     }
     // The lines a change moved the code away from now hold other code (a marker
     // that stayed put on its code is left alone). Nothing moved means the models
     // never touched the markers either (see isReplacingContent()) and the lines
     // are still the ones the editor shows, so there is nothing to put back.
+    // The whole anchor is compared, not just the text of the line itself: a line
+    // that moved away while an identical one took its place would look unchanged
+    // otherwise, and the markers would be left on stale lines. remapLinesByAnchor()
+    // matches on the same anchors.
     bool moved = false;
     for (auto it=anchors.constBegin();it!=anchors.constEnd();++it) {
-        if (lineNonWhitespace(it.key())!=it.value().line) {
+        ReformatAnchor current = lineAnchor(it.key());
+        if (current.line!=it.value().line || current.context!=it.value().context) {
             moved = true;
             break;
         }
@@ -5499,7 +5456,7 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
     // Keep the caret, the first displayed line and the markers of the file on the
     // same code: their line numbers may change, so remember them as anchors and
     // remap everything in a single pass.
-    QMap<int,ReformatAnchor> anchors = markerAnchors();
+    QMap<int,ReformatAnchor> anchors = anchorLines();
     anchors.insert(mOldCaret.line, lineAnchor(mOldCaret.line));
     anchors.insert(oldTopPos, lineAnchor(oldTopPos));
 
@@ -5513,8 +5470,8 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
         // incremental line bookkeeping: they would take it for "every line was
         // deleted" and drop or shift the markers of this file (see
         // isReplacingContent()).
-        mReplacingContent = true;
-        auto guard = finally([this]{ mReplacingContent = false; });
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
         replaceAll(newContent);
     }
     QMap<int,int> lineMap = remapLinesByAnchor(anchors);

@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QMap>
+#include "editoranchors.h"
 #include "utils/file.h"
 #include "utils/types.h"
 #include "utils/parsemacros.h"
@@ -72,6 +73,11 @@ using GetCppParserFunc = std::function<PCppParser (Editor *)>;
 using ContentReplacedFunc = std::function<void (const QString& filename, bool inProject,
                                                 const QStringList& content,
                                                 const QMap<int,int>& markerLineMap)>;
+// Lines hold by the application outside of the breakpoint/bookmark models (the
+// history of the caret positions of the file, see CaretList). The editor anchors
+// them with the markers, so that they follow their code when the whole content is
+// replaced. Set by EditorManager.
+using GetAnchorLinesFunc = std::function<QList<int> ()>;
 
 class Editor : public QSynedit::QSynEdit
 {
@@ -354,6 +360,8 @@ public:
 
     void setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc);
 
+    void setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc);
+
 signals:
     void fileSaving(Editor *e, const QString& filename);
     void fileSaveError(Editor *e, const QString& filename, const QString& reason);
@@ -460,15 +468,10 @@ private:
 
     // After the content has been reformatted or replaced, line numbers can't be
     // used to locate the caret/breakpoints/bookmarks any more: formatters merge
-    // and split lines. These helpers find those lines back by their text.
-    // Line numbers are 0-based here, like everywhere else in the editor.
-    // A line is described both by its own text and by the text of its neighbours:
-    // the context tells repeated lines (many "return 0;") and very short lines
-    // (a lone "}") apart.
-    struct ReformatAnchor {
-        QString line;      // non-whitespace text of the line itself
-        QString context;   // non-whitespace text of the previous, this and next line
-    };
+    // and split lines. These helpers find those lines back by their text; the
+    // anchoring itself is in EditorAnchors (see editoranchors.h), so that it can be
+    // tested without a document. Line numbers are 0-based here, like everywhere
+    // else in the editor.
     QString lineNonWhitespace(int line) const;
     ReformatAnchor lineAnchor(int line) const;
     QMap<int,int> remapLinesByAnchor(const QMap<int,ReformatAnchor>& anchors) const;
@@ -484,6 +487,10 @@ private:
     // Anchors of the breakpoints and the bookmarks that the models hold for this
     // file, so they can be found back after the whole content has been replaced.
     QMap<int,ReformatAnchor> markerAnchors() const;
+    // The same, plus the lines the application holds outside of the models (the
+    // history of the caret positions of the file): everything that has to follow
+    // the code it is on when the whole content is replaced.
+    QMap<int,ReformatAnchor> anchorLines() const;
     // Tells the models that the whole content of this file has been replaced (see
     // ContentReplacedFunc), so that they move / re-anchor the markers of the file
     // on the code they were set on.
@@ -498,8 +505,10 @@ private:
     bool mInited;
     // set while an asynchronous reformat is running, to ignore re-entrant calls
     bool mIsReformatting = false;
-    // set while the whole content is being replaced (see isReplacingContent())
-    bool mReplacingContent = false;
+    // Depth of the whole-content replacements that are running (see
+    // isReplacingContent()): a counter, so that a replacement started while
+    // another one runs doesn't clear the flag the other one relies on.
+    int mReplacingContentDepth = 0;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEditorEncoding; // the encoding type set by the user
@@ -573,6 +582,7 @@ private:
     GetReformatterFunc mGetReformatterFunc;
     GetMacroVarsFunc mGetMacroVarsFunc;
     ContentReplacedFunc mContentReplacedFunc;
+    GetAnchorLinesFunc mGetAnchorLinesFunc;
     GetCppParserFunc mGetCppParserFunc;
 #ifdef ENABLE_SDCC
     GetCompilerTypeForEditorFunc mGetCompilerTypeForEditorFunc;

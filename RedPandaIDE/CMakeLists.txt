@@ -7,6 +7,7 @@ target_qt_plain_cpp(RedPandaIDE
     src/autolinkmanager
     src/colorscheme
     src/customfileiconprovider
+    src/editoranchors
     src/projectoptions
     src/settings
     src/syntaxermanager
@@ -243,6 +244,7 @@ target_qt_plain_cpp(test-editor
     src/utils/ui
 
     src/colorscheme
+    src/editoranchors
     src/syntaxermanager
     src/iconsmanager
     src/systemconsts
@@ -265,6 +267,7 @@ target_moc_classes(test-editor
     #test
     test/test_editor_base
     test/test_editor_symbol_completion
+    test/test_editor_anchors
 )
 target_include_directories(test-editor PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})

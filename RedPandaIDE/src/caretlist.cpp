@@ -16,6 +16,7 @@
  */
 #include "caretlist.h"
 #include <QDebug>
+#include <QSet>
 
 const PEditorCaret CaretList::NullCaret;
 
@@ -140,6 +141,35 @@ void CaretList::onLinesMoved(const Editor *editor, int fromLine, int toLine)
             }
         }
     }
+}
+
+// Puts the carets of a file back on their code after the whole content of its
+// editor has been replaced: "lineMap" maps the lines of the old content to the
+// lines of the new one (see Editor::replaceContentAndRemap()). The incremental
+// line bookkeeping (onLinesDeleted() and the others) is skipped while that
+// replacement runs, so this is the only place that moves them.
+void CaretList::remapLines(const Editor *editor, const QMap<int,int> &lineMap)
+{
+    for (PEditorCaret& caret:mList) {
+        if (caret->editor!=editor)
+            continue;
+        auto it=lineMap.constFind(caret->line);
+        if (it!=lineMap.constEnd())
+            caret->line=it.value();
+    }
+}
+
+QList<int> CaretList::caretLines(const Editor *editor) const
+{
+    // One anchor per entry would be far too many: the same line is visited over
+    // and over while editing, and one anchor per distinct line is enough to move
+    // them all (remapLines() moves the entries themselves).
+    QSet<int> lines;
+    for (const PEditorCaret& caret:mList) {
+        if (caret->editor==editor)
+            lines.insert(caret->line);
+    }
+    return lines.values();
 }
 
 void CaretList::removeCaret(int index)
