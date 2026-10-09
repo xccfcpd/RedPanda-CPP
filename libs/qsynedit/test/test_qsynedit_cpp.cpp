@@ -11113,5 +11113,79 @@ void TestQSyneditCpp::test_auto_indent_for_if_else_3()
     QCOMPARE(mEdit->content(),text1);
 }
 
+// The lines are merged on the current one and the next line is empty: QSynEdit
+// removes the next line (QSynEdit::shouldDeleteNextLine() returns true), which
+// reports it by itself. The line that disappears is the next one.
+void TestQSyneditCpp::test_merge_with_next_line_reports_the_deleted_line()
+{
+    mEdit->setContent(QStringList({"int a;",""}));
+    clearSignalDatas();
+    mEdit->setCaretXY(CharPos{6,0});
+    QTest::keyPress(mEdit.get(),Qt::Key_Delete);
+    QCOMPARE(mEdit->content(),QStringList{"int a;"});
+    QCOMPARE(mDeleteStartLines,QList<int>({1}));
+    QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+}
+
+// The next line is not empty and does not start/end a syntax block, so QSynEdit
+// removes the *current* line and puts the merged text back on it to give it a
+// fresh syntax state (QSynEdit::shouldDeleteNextLine() returns false). That
+// removal must not be reported - the current line survives, and the application
+// would drop the markers of the line the user is editing. The line that really
+// disappears is still the next one, and it is the one named here.
+void TestQSyneditCpp::test_merge_with_next_line_reports_the_deleted_line_when_the_current_is_replaced()
+{
+    mEdit->setContent(QStringList({"int a;","int b;"}));
+    clearSignalDatas();
+    mEdit->setCaretXY(CharPos{6,0});
+    QTest::keyPress(mEdit.get(),Qt::Key_Delete);
+    QCOMPARE(mEdit->content(),QStringList{"int a;int b;"});
+    QCOMPARE(mDeleteStartLines,QList<int>({1}));
+    QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+}
+
+// Same, merging on the previous line: the line that disappears is the one of the
+// caret (index 1), not the previous one that QSynEdit may remove internally.
+void TestQSyneditCpp::test_merge_with_prev_line_reports_the_deleted_line()
+{
+    mEdit->setContent(QStringList({"int a;","int b;"}));
+    clearSignalDatas();
+    mEdit->setCaretXY(CharPos{0,1});
+    QTest::keyPress(mEdit.get(),Qt::Key_Backspace);
+    QCOMPARE(mEdit->content(),QStringList{"int a;int b;"});
+    QCOMPARE(mDeleteStartLines,QList<int>({1}));
+    QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+}
+
+// Undoing a merge adds a line back: the application must be told about the line
+// that appears (the next one), not the one QSynEdit inserts internally.
+void TestQSyneditCpp::test_undo_of_a_merge_reports_the_inserted_line()
+{
+    mEdit->setContent(QStringList({"int a;",""}));
+    mEdit->setCaretXY(CharPos{6,0});
+    QTest::keyPress(mEdit.get(),Qt::Key_Delete);
+    QCOMPARE(mEdit->content(),QStringList{"int a;"});
+    clearSignalDatas();
+    mEdit->undo();
+    QCOMPARE(mEdit->content(),QStringList({"int a;",""}));
+    QCOMPARE(mInsertStartLines,QList<int>({1}));
+    QCOMPARE(mInsertLineCounts,QList<int>({1}));
+}
+
+// Same, when QSynEdit had removed the current line to merged it: the content must
+// come back as it was, and the line reported as inserted is still the next one.
+void TestQSyneditCpp::test_undo_of_a_merge_reports_the_inserted_line_when_the_current_was_replaced()
+{
+    mEdit->setContent(QStringList({"int a;","int b;"}));
+    mEdit->setCaretXY(CharPos{6,0});
+    QTest::keyPress(mEdit.get(),Qt::Key_Delete);
+    QCOMPARE(mEdit->content(),QStringList{"int a;int b;"});
+    clearSignalDatas();
+    mEdit->undo();
+    QCOMPARE(mEdit->content(),QStringList({"int a;","int b;"}));
+    QCOMPARE(mInsertStartLines,QList<int>({1}));
+    QCOMPARE(mInsertLineCounts,QList<int>({1}));
+}
+
 }
 

@@ -88,6 +88,16 @@ private slots:
 
     void test_delete_and_backspace_chars_undo();
 
+    // The signals linesDeleted()/linesInserted() must name the line that really
+    // disappears from / appears in the document, even when QSynEdit edits another
+    // line internally to keep the syntax state and the folds (see
+    // QSynEdit::shouldDeleteNextLine()).
+    void test_merge_with_next_line_reports_the_deleted_line();
+    void test_merge_with_next_line_reports_the_deleted_line_when_the_current_is_replaced();
+    void test_merge_with_prev_line_reports_the_deleted_line();
+    void test_undo_of_a_merge_reports_the_inserted_line();
+    void test_undo_of_a_merge_reports_the_inserted_line_when_the_current_was_replaced();
+
     void test_break_line_in_empty_file();
     void test_break_lines();
     void test_break_lines_with_collapsed_block();
