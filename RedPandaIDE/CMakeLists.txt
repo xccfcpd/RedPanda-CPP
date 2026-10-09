@@ -272,6 +272,7 @@ target_moc_classes(test-editor
     test/test_editor_replace_content
     test/test_bookmark_remap
     test/test_formatter_arguments
+    test/test_breakpoint_anchor
 )
 target_include_directories(test-editor PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})
