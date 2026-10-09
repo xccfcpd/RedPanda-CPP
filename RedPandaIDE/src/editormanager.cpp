@@ -97,7 +97,7 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
                                         const QStringList& content,
                                         const QMap<int,int>& markerLineMap) {
         pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject);
-        pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, inProject);
+        pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, content.count(), inProject);
         // The carets follow the same map: their line bookkeeping is skipped while
         // the content is replaced, like the one of the models above.
         pMainWindow->caretList().remapLines(e, markerLineMap);

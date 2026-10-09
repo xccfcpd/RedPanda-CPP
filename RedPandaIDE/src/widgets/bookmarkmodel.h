@@ -48,8 +48,11 @@ public:
     // new line). Used when the whole content of the file has been replaced (see
     // Editor::isReplacingContent()): the bookmarks follow the code they are on
     // instead of being dropped by the line bookkeeping. Lines that are not in the
-    // map keep their line number.
-    void moveBookmarksInFile(const QString& filename, const QMap<int,int>& lineMap, bool forProject);
+    // map keep their line number. "lineCount" is the number of lines of the new
+    // content: a bookmark that would collide with another one is pushed to the
+    // next free line, but never past that last line.
+    void moveBookmarksInFile(const QString& filename, const QMap<int,int>& lineMap,
+                             int lineCount, bool forProject);
     void renameBookmarkFile(const QString& oldFilename, const QString& newFilename, bool forProject);
     void clear(bool forProject);
     bool updateDescription(const QString&filename, int line, const QString& description, bool forProject);

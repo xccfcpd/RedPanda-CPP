@@ -268,6 +268,7 @@ target_moc_classes(test-editor
     test/test_editor_base
     test/test_editor_symbol_completion
     test/test_editor_anchors
+    test/test_bookmark_remap
 )
 target_include_directories(test-editor PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})
