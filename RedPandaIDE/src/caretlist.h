@@ -20,6 +20,8 @@
 #include <memory>
 #include <QVector>
 #include <QObject>
+#include <QMap>
+#include <QList>
 
 class Editor;
 
@@ -42,6 +44,17 @@ public:
     const PEditorCaret &gotoAndGetPrevious();
     const PEditorCaret &gotoAndGetNext();
     void removeEditor(const Editor* editor);
+    // Puts the carets of a file back on their code after the whole content of its
+    // editor has been replaced: "lineMap" maps the lines of the old content to the
+    // lines of the new one (see Editor::replaceContentAndRemap()). The incremental
+    // line bookkeeping (onLinesDeleted() and the others) is skipped while that
+    // replacement runs, so this is the only place that moves them.
+    void remapLines(const Editor* editor, const QMap<int,int>& lineMap);
+    // The distinct lines the carets of the given file are on: the editor anchors
+    // them when it replaces the whole content, so that the history entries are
+    // moved too and not left on stale lines (see remapLines()). Distinct lines,
+    // because the history can get long.
+    QList<int> caretLines(const Editor* editor) const;
     void reset();
     void pause();
     void unPause();

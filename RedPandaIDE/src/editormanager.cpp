@@ -98,9 +98,16 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
                                         const QMap<int,int>& markerLineMap) {
         pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject);
         pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, inProject);
+        // The carets follow the same map: their line bookkeeping is skipped while
+        // the content is replaced, like the one of the models above.
+        pMainWindow->caretList().remapLines(e, markerLineMap);
         e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
         e->resetBookmarks(pMainWindow->bookmarkModel());
     });
+    // The carets of the file follow the same line map (see CaretList::remapLines()):
+    // the editor anchors their lines like the markers, so they are moved by the
+    // replacement instead of being left on stale lines.
+    e->setAnchorLinesFunc([this, e]{ return pMainWindow->caretList().caretLines(e); });
     e->applySettings();
     e->setEditorEncoding(encoding);
     e->setFilename(filename);
@@ -379,13 +386,14 @@ void EditorManager::onFileSaveError(Editor *e, const QString& filename, const QS
 void EditorManager::onEditorLinesInserted(int startLine, int count)
 {
     Editor * e = static_cast<Editor *>(sender());
-    pMainWindow->caretList().onLinesInserted(e,startLine,count);
     if (e->isReplacingContent()) {
         // The whole content of the editor is being replaced: this is not a line
         // insertion of the user, and the editor remaps the markers of the file
-        // itself once the new content is in place (see onContentReplaced()).
+        // (its carets included) itself once the new content is in place (see
+        // onContentReplaced()).
         return;
     }
+    pMainWindow->caretList().onLinesInserted(e,startLine,count);
     pMainWindow->debugger()->breakpointModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
     pMainWindow->bookmarkModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
@@ -395,11 +403,11 @@ void EditorManager::onEditorLinesInserted(int startLine, int count)
 void EditorManager::onEditorLinesRemoved(int startLine, int count)
 {
     Editor * e = static_cast<Editor *>(sender());
-    pMainWindow->caretList().onLinesDeleted(e,startLine,count);
     if (e->isReplacingContent()) {
         // see onEditorLinesInserted()
         return;
     }
+    pMainWindow->caretList().onLinesDeleted(e,startLine,count);
     pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
@@ -409,13 +417,13 @@ void EditorManager::onEditorLinesRemoved(int startLine, int count)
 void EditorManager::onEditorLineMoved(int fromLine, int toLine)
 {
     Editor * e = static_cast<Editor *>(sender());
-    pMainWindow->caretList().onLinesMoved(e, fromLine, toLine);
     if (e->isReplacingContent()) {
         // see onEditorLinesInserted()
         return;
     }
+    pMainWindow->caretList().onLinesMoved(e, fromLine, toLine);
     pMainWindow->debugger()->breakpointModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
-    pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),fromLine,toLine,e->inProject());
+    pMainWindow->bookmarkModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
 
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
