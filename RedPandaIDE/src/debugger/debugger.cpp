@@ -922,9 +922,12 @@ void Debugger::save(const QString &filename, const QString& projectFolder)
         QJsonObject rootObj;
         rootObj["timestamp"] = QString("%1").arg(saveTimestamp);
 
-        if (forProject) {
-            rootObj["breakpoints"] = mBreakpointModel->toJson(projectFolder);
-        }
+        // The breakpoints of the files of a project are saved in the debug file of
+        // the project, the ones of the other files in the application's one: both
+        // have to be written, they are put back when the session is loaded again
+        // (see loadForNonproject()). toJson() writes the list that matches
+        // projectFolder, and stores the filenames of a project relative to it.
+        rootObj["breakpoints"] = mBreakpointModel->toJson(projectFolder);
         rootObj["watchvars"] = mWatchModel->toJson(forProject);
         QJsonDocument doc;
         doc.setObject(rootObj);

@@ -1,4 +1,6 @@
 Red Panda C++ Version 3.5
+  - fix: The breakpoints of the files that are not part of a project are saved when the application is closed, and put back when it is started again and the file is reopened (as the breakpoints of the project files, which are stored in the debug file of the project).
+  - 修复：非工程文件的断点在关闭程序时会被保存，重新启动并再次打开该文件时会恢复（与工程文件的断点一致，后者保存在工程的调试文件中）。
   - fix: Merging two lines (pressing Delete at the end of a line, or Backspace at the beginning of the next one) no longer drops the breakpoints, the bookmarks and the carets that are set on the line the text is merged on, and undoing the merge keeps them there.
   - 修复：把两行合并（在行尾按 Delete，或在下一行行首按 Backspace）时，不再丢失设置在两行文本合并后所在行上的断点、书签与光标；撤销该合并时它们也留在此行。
   - fix: Breakpoints and bookmarks are no longer dropped or shifted when the whole content of a file is replaced (reloading it from the disk, reformatting it, replacing it with a tool output); they follow the code they were set on, also when a file is reopened or restored from an earlier session, and closing a file doesn't drop its breakpoints any more. The breakpoints of files that are not open are put back on their code (read from the disk, with the same encoding detection as the editor) before the debugger starts.
