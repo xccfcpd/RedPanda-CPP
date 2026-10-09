@@ -20,69 +20,11 @@
 #include <QFont>
 #include "../utils.h"
 #include "../settings.h"
+#include "breakpointanchor.h"
 
-// Fingerprint of a line of the given content (empty if the line doesn't exist).
-static QString contentFingerprint(const QStringList& content, int line)
-{
-    if (line<0 || line>=content.count())
-        return QString();
-    return breakpointFingerprint(content[line]);
-}
-
-// Anchor of a line of the given content, as stored in Breakpoint::fingerprint.
-static QString contentContextFingerprint(const QStringList& content, int line)
-{
-    if (line<0 || line>=content.count())
-        return QString();
-    return breakpointContextFingerprint(line>0? content[line-1] : QString(),
-                                        content[line],
-                                        line+1<content.count()? content[line+1] : QString());
-}
-
-// The line fingerprint inside a stored anchor: the middle field of a context
-// fingerprint, or the whole value when it is a plain line fingerprint (a
-// breakpoint stored by an older version).
-static QString lineFingerprintOf(const QString& fingerprint)
-{
-    QStringList parts = fingerprint.split(QLatin1Char('\n'));
-    if (parts.count()==3)
-        return parts[1];
-    return fingerprint;
-}
-
-// Nearest line of the content whose anchor is "fingerprint", or -1 if there is
-// none. "useContext" chooses between the context anchors (the line together with
-// its neighbours) and the plain line anchors. A plain anchor of one character (a
-// lone "}") matches too many places to be relied on, so it is never searched for.
-// With "uniqueOnly", an anchor that matches more than one line is ambiguous and
-// isn't used at all: that keeps a plain line anchor from moving a breakpoint to
-// another line that happens to hold the same code.
-static int findNearestLineByAnchor(const QStringList& content, const QString& fingerprint,
-                                   int nearLine, bool useContext, bool uniqueOnly = false)
-{
-    if (fingerprint.isEmpty())
-        return -1;
-    if (!useContext && fingerprint.length()<=1)
-        return -1;
-    int result = -1;
-    int matches = 0;
-    int minDistance = content.count()+1;
-    for (int line=0;line<content.count();line++) {
-        QString anchor = useContext? contentContextFingerprint(content, line)
-                                   : contentFingerprint(content, line);
-        if (anchor!=fingerprint)
-            continue;
-        matches++;
-        int distance = qAbs(line-nearLine);
-        if (distance<minDistance) {
-            minDistance = distance;
-            result = line;
-        }
-    }
-    if (uniqueOnly && matches>1)
-        return -1;
-    return result;
-}
+// The anchors of the breakpoints (contentFingerprint(), contentContextFingerprint(),
+// lineFingerprintOf(), findNearestLineByAnchor() and reanchorBreakpoint()) live in
+// breakpointanchor.h, so that they are tested without the debugger sources.
 
 QJsonArray BreakpointModel::toJson(const QString& projectFolder)
 {
@@ -265,33 +207,11 @@ void BreakpointModel::reanchorBreakpoints(const QString &filename, const QString
         PBreakpoint breakpoint = lst[i];
         if (breakpoint->filename!=filename)
             continue;
-        QString current = contentContextFingerprint(content, breakpoint->line);
-        bool changed = false;
-        if (breakpoint->fingerprint.isEmpty()) {
-            // no fingerprint to look for (the breakpoint comes from an older
-            // config file): remember the code it is on, so it can follow it from
-            // now on
-            breakpoint->fingerprint = current;
-            changed = true;
-        } else if (breakpoint->fingerprint!=current) {
-            // The line doesn't hold the code the breakpoint was set on any more.
-            // Look for it: first with the neighbours (they tell repeated code
-            // lines apart), then with the line text alone (which also handles
-            // fingerprints stored before the neighbours were kept).
-            int newLine = findNearestLineByAnchor(content, breakpoint->fingerprint,
-                                                  breakpoint->line, true);
-            if (newLine<0)
-                newLine = findNearestLineByAnchor(content, lineFingerprintOf(breakpoint->fingerprint),
-                                                  breakpoint->line, false, true);
-            if (newLine>=0 && newLine!=breakpoint->line)
-                breakpoint->line = newLine;
-            // When the code can't be found any more, the breakpoint stays on the
-            // line it was on: it is never dropped, it just follows the code that
-            // is there from now on.
-            breakpoint->fingerprint = contentContextFingerprint(content, breakpoint->line);
-            changed = true;
-        }
-        if (changed && forProject==mIsForProject) {
+        ReanchoredBreakpoint reanchored = reanchorBreakpoint(content, breakpoint->line,
+                                                             breakpoint->fingerprint);
+        breakpoint->line = reanchored.line;
+        breakpoint->fingerprint = reanchored.fingerprint;
+        if (reanchored.changed && forProject==mIsForProject) {
             QModelIndex index=createIndex(i,0);
             emit dataChanged(index,createIndex(i,2));
         }
