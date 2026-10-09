@@ -5,6 +5,7 @@
 #include "test_editor_replace_content.h"
 #include "test_bookmark_remap.h"
 #include "test_formatter_arguments.h"
+#include "test_breakpoint_anchor.h"
 
 int main(int argc, char *argv[]) {
     int status = 0;
@@ -34,6 +35,11 @@ int main(int argc, char *argv[]) {
     //the command line the formatters are run with, built from the settings
     {
         TestFormatterArguments tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
+    //re-anchoring a breakpoint on its code when the file changes
+    {
+        TestBreakpointAnchor tc;
         status |= QTest::qExec(&tc, argc, argv);
     }
 
