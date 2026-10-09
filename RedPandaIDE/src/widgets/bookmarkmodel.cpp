@@ -138,23 +138,64 @@ void BookmarkModel::removeBookmarks(const QString &filename, bool forProject)
     }
 }
 
-void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,int> &lineMap, bool forProject)
+void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,int> &lineMap,
+                                        int lineCount, bool forProject)
 {
     QList<PBookmark> bookmarks;
     if (forProject)
         bookmarks = mProjectBookmarks;
     else
         bookmarks = mBookmarks;
+    // The model doesn't hold two bookmarks on the same line (see addBookmark()):
+    // the lines of the bookmarks that stay put are reserved first (a line map can
+    // send a moved bookmark on one of them, see Editor::remapLinesByAnchor()), then
+    // a bookmark that lands on a taken line is pushed to the next free one.
+    QSet<int> takenLines;
+    for (int i=0;i<bookmarks.count();i++) {
+        PBookmark bookmark = bookmarks[i];
+        if (bookmark->filename.compare(filename, PATH_SENSITIVITY) != 0)
+            continue;
+        if (lineMap.value(bookmark->line, bookmark->line)==bookmark->line)
+            takenLines.insert(bookmark->line);
+    }
+    // A pushed bookmark must stay inside the new content: a short file can have
+    // fewer lines than the number of bookmarks that collide on one of its last
+    // lines, and pushing past the end would leave a bookmark on a line that is not
+    // there any more.
+    const int lastLine = qMax(0, lineCount-1);
     for (int i=0;i<bookmarks.count();i++) {
         PBookmark bookmark = bookmarks[i];
         if (bookmark->filename.compare(filename, PATH_SENSITIVITY) != 0)
             continue;
         int newLine = lineMap.value(bookmark->line, bookmark->line);
-        if (newLine!=bookmark->line) {
-            bookmark->line = newLine;
-            if (forProject==mIsForProject)
-                emit dataChanged(createIndex(i,0),createIndex(i,2));
+        if (newLine==bookmark->line)
+            continue;
+        int mappedLine = qBound(0, newLine, lastLine);
+        int freeLine = -1;
+        // the first free line at or after the mapped one, inside the document
+        for (int candidate=mappedLine;candidate<=lastLine;candidate++) {
+            if (!takenLines.contains(candidate)) {
+                freeLine = candidate;
+                break;
+            }
         }
+        // the tail is fully booked: use the last free line before the mapped one
+        // (the whole document is booked only in theory, and there is then no free
+        // line to keep the two bookmarks apart anyway)
+        if (freeLine<0) {
+            for (int candidate=mappedLine-1;candidate>=0;candidate--) {
+                if (!takenLines.contains(candidate)) {
+                    freeLine = candidate;
+                    break;
+                }
+            }
+        }
+        if (freeLine<0)
+            freeLine = mappedLine;
+        takenLines.insert(freeLine);
+        bookmark->line = freeLine;
+        if (forProject==mIsForProject)
+            emit dataChanged(createIndex(i,0),createIndex(i,2));
     }
 }
 

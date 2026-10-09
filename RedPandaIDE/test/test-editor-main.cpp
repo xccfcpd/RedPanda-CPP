@@ -2,6 +2,7 @@
 #include <QGuiApplication>
 #include "test_editor_symbol_completion.h"
 #include "test_editor_anchors.h"
+#include "test_bookmark_remap.h"
 
 int main(int argc, char *argv[]) {
     int status = 0;
@@ -16,6 +17,11 @@ int main(int argc, char *argv[]) {
     //the anchoring of the lines, used to keep the markers on their code
     {
         TestEditorAnchors tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
+    //the bookmarks follow the line map of a content replacement
+    {
+        TestBookmarkRemap tc;
         status |= QTest::qExec(&tc, argc, argv);
     }
 
