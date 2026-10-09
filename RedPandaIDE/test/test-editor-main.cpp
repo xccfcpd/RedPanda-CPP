@@ -2,7 +2,9 @@
 #include <QGuiApplication>
 #include "test_editor_symbol_completion.h"
 #include "test_editor_anchors.h"
+#include "test_editor_replace_content.h"
 #include "test_bookmark_remap.h"
+#include "test_formatter_arguments.h"
 
 int main(int argc, char *argv[]) {
     int status = 0;
@@ -19,9 +21,19 @@ int main(int argc, char *argv[]) {
         TestEditorAnchors tc;
         status |= QTest::qExec(&tc, argc, argv);
     }
+    //the whole content of a file is replaced: the models are told about it once
+    {
+        TestEditorReplaceContent tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
     //the bookmarks follow the line map of a content replacement
     {
         TestBookmarkRemap tc;
+        status |= QTest::qExec(&tc, argc, argv);
+    }
+    //the command line the formatters are run with, built from the settings
+    {
+        TestFormatterArguments tc;
         status |= QTest::qExec(&tc, argc, argv);
     }
 

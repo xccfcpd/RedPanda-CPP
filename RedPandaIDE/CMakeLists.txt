@@ -227,6 +227,7 @@ target_qt_plain_cpp(test-editor
     src/settings/dirsettings
     src/settings/editorsettings
     src/settings/codecompletionsettings
+    src/settings/codeformattersettings
 
     src/parser/cppparser
     src/parser/cpppreprocessor
@@ -268,7 +269,9 @@ target_moc_classes(test-editor
     test/test_editor_base
     test/test_editor_symbol_completion
     test/test_editor_anchors
+    test/test_editor_replace_content
     test/test_bookmark_remap
+    test/test_formatter_arguments
 )
 target_include_directories(test-editor PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})
