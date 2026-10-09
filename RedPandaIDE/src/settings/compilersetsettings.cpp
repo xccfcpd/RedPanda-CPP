@@ -1043,7 +1043,10 @@ QStringList CompilerSet::defines(bool isCpp) {
         QList<QByteArray> lines = output.split('\n');
         for (QByteArray& line:lines) {
             QByteArray trimmedLine = line.trimmed();
-            if (!trimmedLine.isEmpty()) {
+            // Keep only real preprocessor directives. Compiler diagnostics
+            // (which are merged into stdout) must not be treated as defines,
+            // otherwise addHardDefineByLine() asserts on them in debug builds.
+            if (trimmedLine.startsWith('#')) {
                 result.append(trimmedLine);
             }
         }
