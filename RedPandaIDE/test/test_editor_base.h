@@ -16,6 +16,12 @@ public:
     TestEditorBase(QObject *parent=nullptr);
 protected:
     void init_editor();
+    // The editor is shared by all the tests of a class (see init_editor()), so a
+    // callback installed by one of them must not be left for the next one: it usually
+    // captures the model of the test that installed it, which is destroyed with it
+    // (see ContentReplacedFunc).
+protected slots:
+    void cleanup();
 
 protected:
     std::shared_ptr<Editor> mEditor;

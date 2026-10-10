@@ -162,8 +162,11 @@ public:
     // is moved to the nearest line that does - looking first for the whole
     // context (the line and its neighbours), then for the line text alone.
     // Content is the current content of the file. Breakpoints whose code can't be
-    // found keep their line - they are never dropped. Breakpoints that don't have
-    // a fingerprint yet store the one of the line they are on, so that they can
+    // found keep their line and their fingerprint - they are never dropped, and
+    // that fingerprint is the memory of the code they were set on: the content can
+    // hold it again, for one by undoing the merge of its line with the line above,
+    // and the breakpoint then follows it. Breakpoints that don't have a
+    // fingerprint yet store the one of the line they are on, so that they can
     // be re-anchored from now on (also for config files written by older
     // versions).
     void reanchorBreakpoints(const QString& filename, const QStringList& content, bool forProject);
@@ -180,6 +183,7 @@ public slots:
     void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject);
     void onFileInsertLines(const QString& filename, int startLine, int count, bool forProject);
     void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject);
+    void onFileMergeLines(const QString& filename, int removedLine, int intoLine, bool forProject);
 private:
     bool isForProject() const;
     void setIsForProject(bool newIsForProject);

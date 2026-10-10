@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "debugger.h"
+#include "breakpointanchor.h"
 #include "gdbmidebugger.h"
 #include "../utils.h"
 #include "../utils/pe.h"
@@ -529,6 +530,20 @@ static bool readSourceFileContent(const QString& filename, QStringList& content)
     return true;
 }
 
+// The number of lines the file has: from the editor that has it open (its content may
+// differ from the disk - unsaved changes), from the disk otherwise. 0 when the file
+// can't be read: nothing is known about it.
+static int sourceFileLineCount(const QString& filename)
+{
+    Editor* editor = pMainWindow->editorManager()->getOpenedEditor(filename);
+    if (editor)
+        return editor->lineCount();
+    QStringList content;
+    if (!readSourceFileContent(filename, content))
+        return 0;
+    return content.count();
+}
+
 void Debugger::reanchorBreakpointsFromDisk()
 {
     bool forProject = mBreakpointModel->isForProject();
@@ -551,12 +566,26 @@ void Debugger::reanchorBreakpointsFromDisk()
 
 void Debugger::sendAllBreakpointsToDebugger()
 {
+    // The number of lines of the files the breakpoints are in (0: unknown)
+    QHash<QString,int> lineCounts;
     for (const PBreakpoint &breakpoint:mBreakpointModel->breakpoints(mBreakpointModel->isForProject())) {
-        if (mBreakpointModel->isForProject()) {
-            sendBreakpointCommand(breakpoint);
-        } else if (breakpoint->filename == mCurrentSourceFile) {
-            sendBreakpointCommand(breakpoint);
+        if (!mBreakpointModel->isForProject() && breakpoint->filename != mCurrentSourceFile)
+            continue;
+        // A breakpoint whose code has gone from the file keeps its anchor and the line
+        // it was on (see reanchorBreakpoint()), and that line can be past the end of the
+        // content: the debugger must not be given it, it resolves to nothing in the file.
+        // The breakpoint stays in the list - it is where the user deletes it - and it
+        // goes back to its code if the code comes back.
+        auto lineCount = lineCounts.constFind(breakpoint->filename);
+        if (lineCount==lineCounts.constEnd())
+            lineCount = lineCounts.insert(breakpoint->filename,
+                                          sourceFileLineCount(breakpoint->filename));
+        if (lineCount.value()>0 && !lineIsInContent(breakpoint->line, lineCount.value())) {
+            qDebug()<<"the line of the breakpoint is not in the file any more, it is not"
+                      " given to the debugger:"<<breakpoint->filename<<breakpoint->line+1;
+            continue;
         }
+        sendBreakpointCommand(breakpoint);
     }
 }
 

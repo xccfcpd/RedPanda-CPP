@@ -317,6 +317,24 @@ void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int
     }
 }
 
+void BreakpointModel::onFileMergeLines(const QString &filename, int removedLine, int intoLine, bool forProject)
+{
+    // The line is removed (onFileDeleteLines() is called right after), but its text is
+    // appended to the line it is merged into: a breakpoint set on it follows its code
+    // there instead of being dropped.
+    const QList<PBreakpoint> &list=breakpoints(forProject);
+
+    for (int i = 0; i<list.count();i++){
+        PBreakpoint breakpoint = list[i];
+        if  (breakpoint->filename == filename
+             && breakpoint->line == removedLine) {
+            breakpoint->line = intoLine;
+            if (forProject == mIsForProject)
+                emit dataChanged(createIndex(i,0),createIndex(i,2));
+        }
+    }
+}
+
 bool BreakpointModel::isForProject() const
 {
     return mIsForProject;

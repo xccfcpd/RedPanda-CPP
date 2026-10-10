@@ -138,6 +138,8 @@ private slots:
     void onEditorLinesInserted(int startLine, int count);
     void onEditorLinesRemoved(int startLine, int count);
     void onEditorLineMoved(int fromLine, int toLine);
+    void onEditorLinesMerged(int removedLine, int intoLine);
+    void onEditorLinesSplit(int mergedLine, int newLine);
     void onEditorStatusChanged(QSynedit::StatusChanges changes);
     void onEditorFontSizeChangedByWheel(int newSize);
     void onEditorFileEncodingChanged(Editor *e);

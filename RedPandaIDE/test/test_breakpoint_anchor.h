@@ -18,9 +18,15 @@ private slots:
     void test_reanchor_followsTheCode();
     void test_reanchor_remembersTheAnchorOfAnOlderBreakpoint();
     void test_reanchor_keepsTheLineWhenTheCodeIsGone();
+    void test_reanchor_findsTheCodeAfterAMergeAndAReformat();
+    void test_reanchor_keepsTheAnchorWhileTheCodeIsMerged();
+    void test_reanchor_keepsTheAnchorWhenTheCodeIsInsideALongerLine();
+    void test_reanchor_keepsTheAnchorWhenTheLineWasSplit();
+    void test_reanchor_findsTheCodeAgainWhenTheMergeIsUndone();
     void test_reanchor_doesNothingWhenNothingMoved();
     void test_reanchor_readsAPlainFingerprint();
     void test_reanchor_scalesToALargeContent();
+    void test_lineIsInContent_rejectsALinePastTheEnd();
 };
 
 #endif // TEST_BREAKPOINT_ANCHOR_H

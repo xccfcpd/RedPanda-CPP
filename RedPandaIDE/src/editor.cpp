@@ -243,10 +243,16 @@ void Editor::loadFile(QString filename, bool parse) {
         loadFromFile(filename,mEditorEncoding,mFileEncoding);
     }
     QMap<int,int> lineMap = remapLinesByAnchor(anchors);
+    // The models are told about the replacement before the caret is moved to its new
+    // line: the map is about the lines the markers were on before, while the caret the
+    // editor reports when it moves is recorded by the application
+    // (EditorManager::onEditorStatusChanged() -> CaretList::addCaret() -> the entry is
+    // already on its code). Remapping the history after that move would move that entry
+    // a second time (see CaretList::remapLines()).
+    onContentReplaced(lineMap);
     setCaretXY(ensureCharPosValid(CharPos{oldCaret.ch,
                                           lineMap.value(oldCaret.line, oldCaret.line)}));
     setTopPos(lineMap.value(oldTopPos, oldTopPos));
-    onContentReplaced(lineMap);
     if (mEditorEncoding==ENCODING_AUTO_DETECT) {
         if (mFileEncoding==ENCODING_ASCII)
             mEditorEncoding=mEditorSettings->defaultEncoding();
@@ -534,6 +540,10 @@ bool Editor::isNew() const noexcept {
 
 bool Editor::isReplacingContent() const noexcept {
     return mReplacingContentDepth>0;
+}
+
+bool Editor::isRestoringContentByUndoRedo() const noexcept {
+    return mContentRestoredByUndoRedo;
 }
 
 void Editor::undoSymbolCompletion(const CharPos &pos)
@@ -5427,7 +5437,12 @@ void Editor::runWholeContentChange(const std::function<void()> &action)
     }
     if (!moved)
         return;
+    // Undoing/redoing a change can give back the line a merge took away, and the
+    // models have to keep what they remembered of that merge while they are told
+    // where the markers went (see BookmarkModel::moveBookmarksInFile()).
+    mContentRestoredByUndoRedo = true;
     onContentReplaced(remapLinesByAnchor(anchors));
+    mContentRestoredByUndoRedo = false;
 }
 
 void Editor::doUndo()
@@ -5475,6 +5490,9 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
         replaceAll(newContent);
     }
     QMap<int,int> lineMap = remapLinesByAnchor(anchors);
+    // the models move / re-anchor the markers of this file on the code they are on.
+    // They are told before the caret is moved to its new line: see loadFile().
+    onContentReplaced(lineMap);
     setCaretXY(ensureCharPosValid(CharPos{mOldCaret.ch,
                                           lineMap.value(mOldCaret.line, mOldCaret.line)}));
     setTopPos(lineMap.value(oldTopPos, oldTopPos));
@@ -5486,8 +5504,6 @@ QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doR
         checkSyntaxInBack();
         reparseTodo();
     }
-    // the models move / re-anchor the markers of this file on the code they are on
-    onContentReplaced(lineMap);
     return lineMap;
 }
 

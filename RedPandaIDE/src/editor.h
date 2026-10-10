@@ -185,6 +185,11 @@ public:
     // true - the editor itself tells the models where the markers went (see
     // ContentReplacedFunc).
     bool isReplacingContent() const noexcept;
+    // True while the whole content of the document is being restored by the undo/redo
+    // of a previous change (see runWholeContentChange()). The bookmark model keeps
+    // what it remembered of the merges of the file while it is, because the split such
+    // an undo runs reports the line a merge gave back (see BookmarkModel::moveBookmarksInFile()).
+    bool isRestoringContentByUndoRedo() const noexcept;
 
     void loadFile(QString filename = "", bool parse = true);
     void saveFile(QString filename);
@@ -509,6 +514,9 @@ private:
     // isReplacingContent()): a counter, so that a replacement started while
     // another one runs doesn't clear the flag the other one relies on.
     int mReplacingContentDepth = 0;
+    // Set while the replacement that is running is the undo/redo of a previous
+    // change (see isRestoringContentByUndoRedo()).
+    bool mContentRestoredByUndoRedo = false;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEditorEncoding; // the encoding type set by the user

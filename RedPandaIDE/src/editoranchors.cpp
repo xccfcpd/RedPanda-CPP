@@ -16,6 +16,10 @@
  */
 #include "editoranchors.h"
 
+// the keys of the anchors are the fingerprints of the models (see
+// EditorAnchors::lineKey()), and a line joined by an edit is followed through
+// findLineHoldingMostOfTheCode()
+#include "debugger/breakpointanchor.h"
 #include "debugger/debuggermodels.h"
 
 #include <QDebug>
@@ -94,6 +98,16 @@ QMap<int,int> EditorAnchors::remapLines(const QMap<int,ReformatAnchor> &anchors,
             newLine = findNearest(contextIndex, it.value().context, oldLine);
             if (newLine<0 && it.value().line.length()>1)
                 newLine = findNearest(lineIndex, it.value().line, oldLine);
+            if (newLine<0 && it.value().line.length()>1) {
+                // tier 3: before the content was replaced an edit joined the line with
+                // its neighbors (the models follow the merge and move their markers to
+                // the line it happened on - see BreakpointModel::onFileMergeLines()),
+                // so the anchor's text is not the text of any line any more. The code
+                // is still there, at the head of one of the new lines (the replacement
+                // splits the joined line back): follow it there, instead of leaving
+                // the marker on the line number the merge put it on.
+                newLine = findLineHoldingMostOfTheCode(content, it.value().line);
+            }
         }
         if (newLine<0) {
             newLine = qBound(0, oldLine, lineCount>0? lineCount-1 : 0);

@@ -1,13 +1,16 @@
 #include "test_bookmark_remap.h"
 
+#include "src/editor.h"
 #include "src/widgets/bookmarkmodel.h"
 
 #include <QTest>
 
+#include <qsynedit/qsynedit.h>
+
 #include <algorithm>
 
 TestBookmarkRemap::TestBookmarkRemap(QObject *parent):
-    QObject{parent}
+    TestEditorBase{parent}
 {
 }
 
@@ -36,7 +39,7 @@ void TestBookmarkRemap::test_move_usesTheLineMap()
     model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
     // the two lines were pushed down by two lines of header
     QMap<int,int> lineMap{{0,2}, {1,3}};
-    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false);
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false, false);
     QCOMPARE(bookmarkLines(model), QList<int>({2, 3}));
 }
 
@@ -48,7 +51,7 @@ void TestBookmarkRemap::test_move_stayPutBookmarksAreReserved()
     // line 1 stays on its code, and line 0 is moved onto it: the bookmark that
     // didn't move keeps its line, the other one is pushed to the next free one
     QMap<int,int> lineMap{{0,1}};
-    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false);
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false, false);
     QCOMPARE(sortedBookmarkLines(model), QList<int>({1, 2}));
 }
 
@@ -59,7 +62,7 @@ void TestBookmarkRemap::test_move_collisionPushedToTheNextFreeLine()
     model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
     // both lines are reformatted into the same line 2
     QMap<int,int> lineMap{{0,2}, {1,2}};
-    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false);
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false, false);
     QCOMPARE(sortedBookmarkLines(model), QList<int>({2, 3}));
 }
 
@@ -73,7 +76,7 @@ void TestBookmarkRemap::test_move_neverPushedPastTheLastLine()
     model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
     QMap<int,int> lineMap{{0,4}, {1,4}};
     const int lineCount = 5; // lines 0..4
-    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, lineCount, false);
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, lineCount, false, false);
     QList<int> lines = sortedBookmarkLines(model);
     QCOMPARE(lines, QList<int>({3, 4}));
     // no bookmark outside of the document
@@ -87,6 +90,579 @@ void TestBookmarkRemap::test_move_onlyTheGivenFileIsMoved()
     model.addBookmark(QStringLiteral("a.cpp"), 0, QString(), false);
     model.addBookmark(QStringLiteral("b.cpp"), 0, QString(), false);
     QMap<int,int> lineMap{{0,2}};
-    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false);
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 5, false, false);
     QCOMPARE(model.bookmark(QStringLiteral("b.cpp"), 0, false)->line, 0);
+}
+
+// The line the bookmark is set on is merged into the line above: the bookmark follows
+// its code onto the merged line (the model is told right after the merge, and before
+// the line is reported as deleted).
+void TestBookmarkRemap::test_merge_movesTheBookmarkOfTheMergedLine()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+}
+
+// Undoing that merge (Ctrl+Z) gives the line back: a bookmark has no fingerprint to
+// find its code with, like a breakpoint does - the merge is the only thing that
+// remembered that it was on that line.
+void TestBookmarkRemap::test_split_putsTheBookmarkOfTheMergeBackOnItsLine()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    // the undo puts the line back, then reports the split
+    model.onFileInsertLines(QStringLiteral("a.cpp"), 1, 1, false);
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+}
+
+// A line split is reported for a line that wasn't merged by us (the user typed a
+// return, and undid it): the bookmarks must stay where they are.
+void TestBookmarkRemap::test_split_withoutAMergeDoesNothing()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+}
+
+// The merged line already has a bookmark: it follows its own code, which is at the
+// beginning of the merged line, and the one that comes from the line below - whose own
+// line is gone - takes the next one. The model holds no two bookmarks on a line, and
+// undoing the merge leaves both on the lines the user set them on.
+void TestBookmarkRemap::test_merge_pushesTheBookmarkWhenTheMergedLineAlreadyHasOne()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 0, QString(), false);
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(sortedBookmarkLines(model), QList<int>({0, 1}));
+    model.onFileInsertLines(QStringLiteral("a.cpp"), 1, 1, false);
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(sortedBookmarkLines(model), QList<int>({0, 1}));
+}
+
+// A merge that was never undone leaves its record behind. A later, unrelated split on
+// the same line must not move a bookmark that is not on that line any more: the
+// bookmark only follows the merge while it is still on (or right below) the merged
+// line - otherwise the edits in between took it away from it, and putting it back on
+// the line of a merge nobody undid would be wrong.
+void TestBookmarkRemap::test_split_leavesABookmarkThatIsNotOnTheMergedLineAlone()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 5, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 5, 4, 6, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 5, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({4}));
+    // the two lines above the bookmark are removed: it moves up, away from the merge
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 0, 2, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({2}));
+    // a split is reported for the line the merge removed: it is not about that bookmark
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 4, 5, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({2}));
+}
+
+// The line map of a content change is keyed by the lines of the old content, and the
+// bookmark of the line below a merge sits on the line the merge took away: looking the
+// line of the bookmark that the split put back up in that map answers with the code of
+// the bookmark below, and takes the first one away from its own line.
+void TestBookmarkRemap::test_move_bookmarksPutBackByASplitAreReserved()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.addBookmark(QStringLiteral("a.cpp"), 2, QString(), false);
+    // the line 1 is joined onto the line 0, and the line 2 moves up on the line 1
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0, 1}));
+    // undoing the merge splits the line back (inside the whole content change), and
+    // the change ends by re-anchoring the bookmarks of the file - the model is told
+    // that the content is restored by that undo (see Editor::isRestoringContentByUndoRedo())
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QMap<int,int> lineMap{{0,0}, {1,2}};
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), lineMap, 4, false, true);
+    QCOMPARE(sortedBookmarkLines(model), QList<int>({1, 2}));
+}
+
+// A merge that was never undone leaves its record behind. The whole content of the file
+// can be replaced afterwards by something else than the undo of that merge (a reload from
+// the disk, a reformat, the output of a tool): the record then describes the lines of a
+// content that doesn't exist any more, and a split reported on the line of that old merge
+// must not put the bookmark back on the line it was on in that old content.
+void TestBookmarkRemap::test_split_recordsAreDroppedByAReplacementOfTheContent()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    // the new content is not the undo of that merge (the editor says so, see
+    // Editor::isRestoringContentByUndoRedo()): the merge is forgotten
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), QMap<int,int>(), 3, false, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    // a split of the new content is reported on the line that old merge removed
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+}
+
+// The record is needed while the content is restored by an undo/redo: the split such a
+// change runs reports the line a merge gave back, and the redo of a merge leaves a record
+// that the next undo has to find. The whole content change of the redo must not drop it.
+void TestBookmarkRemap::test_split_recordsAreKeptWhileTheContentIsRestoredByUndoRedo()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    // the merge, then the undo of it: the split is reported inside the whole content
+    // change of the undo, which re-anchors the bookmarks of the file right after
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    model.onFileInsertLines(QStringLiteral("a.cpp"), 1, 1, false);
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), QMap<int,int>{{0,0}, {1,2}}, 3, false, true);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+    // the redo merges the lines again, and leaves a record behind: the next undo (the
+    // split below) can only put the bookmark back if that record survived the redo
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    model.onFileDeleteLines(QStringLiteral("a.cpp"), 1, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    model.moveBookmarksInFile(QStringLiteral("a.cpp"), QMap<int,int>{{0,0}}, 2, false, true);
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+}
+
+// The whole chain, on a real editor: the caret is at the end of the line above the
+// bookmark and Delete joins the two lines - the bookmark's own line disappears. The
+// handler is called with exactly what the editor's signals carry, the way
+// EditorManager wires it, and the bookmark must end up on the merged line and still be
+// shown by the editor.
+void TestBookmarkRemap::test_editor_mergeOfTheBookmarkedLineKeepsTheBookmarkOnTheMergedLine()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    QVERIFY(mEditor->hasBookmark(1));
+    // what EditorManager does with the line signals of the editor
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    mEditor->setCaretXY(QSynedit::CharPos{6, 0});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;keepMe();", "int b;"}));
+    // the bookmark followed its code onto the merged line, and the editor shows it there
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    QVERIFY(mEditor->hasBookmark(0));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// The other direction: the caret is at the end of the line the bookmark is on, and the
+// line below is joined to it. The bookmark's code did not move, so the bookmark must
+// not move either - and the line that was removed must not take it away.
+void TestBookmarkRemap::test_editor_mergeOfTheLineBelowKeepsTheBookmarkWhereItIs()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    QVERIFY(mEditor->hasBookmark(1));
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    mEditor->setCaretXY(QSynedit::CharPos{9, 1});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;", "keepMe();int b;"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+    QVERIFY(mEditor->hasBookmark(1));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// The same join, made the way it is usually made: the line break is selected (here with
+// the whole next line) and deleted. The editor joins the lines itself, and the line the
+// bookmark is on keeps its text - it is put back at the end of the line above, so the
+// bookmark has to follow its code there. Reporting that line as deleted takes the
+// bookmark away from code that is still in the document.
+void TestBookmarkRemap::test_editor_deleteOfALineBreakKeepsTheBookmarkOfTheJoinedLine()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    // The application runs undo through runWholeContentChange() (see Editor::doUndo())
+    // and re-anchors the markers of the file afterwards (see ContentReplacedFunc): as
+    // far as the models are concerned, the whole content of the document is replaced
+    // while the undo runs (see Editor::isReplacingContent()).
+    mEditor->setContentReplacedFunc([this, &model](const QString& filename, bool inProject,
+                                                   const QStringList& content,
+                                                   const QMap<int,int>& markerLineMap) {
+        model.moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
+                                  mEditor->isRestoringContentByUndoRedo());
+        mEditor->resetBookmarks(&model);
+    });
+    QVERIFY(mEditor->hasBookmark(1));
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // The insertion the undo of a merge runs (see doUndoItem()) is skipped while the
+    // whole content is being replaced, like the application does (see
+    // EditorManager::onEditorLinesInserted()): the bookmark the split put back on its
+    // line is already on it, and the insertion must not move it off it again.
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesInserted, this,
+            [this, &model](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileInsertLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // Undoing runs as a whole content change (see Editor::doUndo()), and the split is
+    // reported inside it. The application must not skip that report: it is the one that
+    // puts the bookmark back on its line (see EditorManager::onEditorLinesSplit()).
+    bool splitWhileReplacingContent = false;
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model, &splitWhileReplacingContent](int mergedLine, int newLine) {
+                splitWhileReplacingContent = splitWhileReplacingContent
+                        || mEditor->isReplacingContent();
+                model.onFileSplitLines(mEditor->filename(), mergedLine, newLine,
+                                       mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // from the end of the first line to the beginning of the second one: the selection
+    // holds the line break, so deleting it joins the two lines
+    mEditor->setSelBeginEnd(QSynedit::CharPos{6, 0}, QSynedit::CharPos{0, 1});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;keepMe();", "int b;"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    QVERIFY(mEditor->hasBookmark(0));
+    QVERIFY(!mEditor->isReplacingContent());
+    // undoing that deletion splits the lines back: the bookmark follows its code again
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({"int a;", "keepMe();", "int b;"}));
+    QVERIFY(splitWhileReplacingContent);
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+    QVERIFY(mEditor->hasBookmark(1));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// The usual way the lines get joined while editing: a selection that spans lines is
+// typed over (the text of the selection is deleted first - see doSetSelTextPrimitive() -
+// and that deletion joins the lines). Undoing it puts the lines back, and the bookmark
+// must be back on the line it was set on.
+void TestBookmarkRemap::test_editor_undoOfTypingOverASelectionPutsTheBookmarkBack()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;", "int c;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    QVERIFY(mEditor->hasBookmark(1));
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model](int mergedLine, int newLine) {
+                model.onFileSplitLines(mEditor->filename(), mergedLine, newLine,
+                                       mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesInserted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileInsertLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // the code of the bookmarked line is part of the selection, so the typing joins it
+    // onto the line above
+    mEditor->setSelBeginEnd(QSynedit::CharPos{6, 0}, QSynedit::CharPos{6, 1});
+    QTest::keyClicks(mEditor.get(), QStringLiteral("X"));
+    QCOMPARE(mEditor->content(), QStringList({"int a;X();", "int b;", "int c;"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    QVERIFY(mEditor->hasBookmark(0));
+    // the lines come back: the bookmark must be back on its own line
+    mEditor->undo();
+    if (mEditor->content() != QStringList({"int a;", "keepMe();", "int b;", "int c;"}))
+        mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({"int a;", "keepMe();", "int b;", "int c;"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({1}));
+    QVERIFY(mEditor->hasBookmark(1));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// Two bookmarks, one above the other: the line break between the lines they are on is
+// deleted (the editor joins them), and undoing it gives the lines back. The bookmark of
+// the joined line follows its code onto the line above, the one of the line below moves
+// up while the join lasts - and both must be back on their own line. The bookmark of the
+// joined line is put back by the split reported inside the undo, and then the whole
+// content change re-anchors the markers of the file: that re-anchoring must not move it
+// again, because the line it was put back on is the line the other bookmark was on while
+// the join lasted (whose number the line map answers for with that other one's code).
+void TestBookmarkRemap::test_editor_undoOfAJoinKeepsTheBookmarksOnTheirLines()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;", "int c;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    model.addBookmark(filename, 2, QString(), false);
+    mEditor->resetBookmarks(&model);
+    mEditor->setContentReplacedFunc([this, &model](const QString &filename, bool inProject,
+                                                   const QStringList &content,
+                                                   const QMap<int,int> &markerLineMap) {
+        model.moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
+                                  mEditor->isRestoringContentByUndoRedo());
+        mEditor->resetBookmarks(&model);
+    });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model](int mergedLine, int newLine) {
+                model.onFileSplitLines(mEditor->filename(), mergedLine, newLine,
+                                       mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // from the end of the first line to the beginning of the second one: the selection
+    // holds the line break, so deleting it joins the two lines
+    mEditor->setSelBeginEnd(QSynedit::CharPos{6, 0}, QSynedit::CharPos{0, 1});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;keepMe();", "int b;", "int c;"}));
+    QCOMPARE(sortedBookmarkLines(model), QList<int>({0, 1}));
+    // the lines come back, and each bookmark is back on the line it was set on
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({"int a;", "keepMe();", "int b;", "int c;"}));
+    QCOMPARE(sortedBookmarkLines(model), QList<int>({1, 2}));
+    QVERIFY(mEditor->hasBookmark(1));
+    QVERIFY(mEditor->hasBookmark(2));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// A line break is inserted at the very beginning of the document, above lines that hold
+// the same text (here closing braces), and then undone: every line of the document
+// moves down by one and back up again, and the bookmark has to follow it - the lines it
+// passes through hold the same text as the one it is set on, and are surrounded by the
+// same ones, so nothing in their content tells them apart.
+void TestBookmarkRemap::test_editor_undoOfABreakAboveIdenticalLinesMovesTheBookmarkBack()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"}", "}", "}", "}"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 3, QString(), false);
+    mEditor->resetBookmarks(&model);
+    QVERIFY(mEditor->hasBookmark(3));
+    mEditor->setContentReplacedFunc([this, &model](const QString& filename, bool inProject,
+                                                   const QStringList& content,
+                                                   const QMap<int,int>& markerLineMap) {
+        model.moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
+                                  mEditor->isRestoringContentByUndoRedo());
+        mEditor->resetBookmarks(&model);
+    });
+    // the line bookkeeping of the models is skipped while the whole content of the
+    // editor is being replaced (see EditorManager::onEditorLinesInserted())
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesInserted, this,
+            [this, &model](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileInsertLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    mEditor->setCaretXY(QSynedit::CharPos{0, 0});
+    QTest::keyPress(mEditor.get(), Qt::Key_Return);
+    QCOMPARE(mEditor->content(), QStringList({"", "}", "}", "}", "}"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({4}));
+    // the line goes away again: the bookmark is back on its own line
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({"}", "}", "}", "}"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({3}));
+    QVERIFY(mEditor->hasBookmark(3));
+    // redoing it puts that line back above the bookmark, which the line has to follow
+    mEditor->redo();
+    QCOMPARE(mEditor->content(), QStringList({"", "}", "}", "}", "}"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({4}));
+    QVERIFY(mEditor->hasBookmark(4));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// Every line of the file carries a bookmark, and the first two lines are joined: the
+// bookmark of the joined line has no free line to be pushed to (see
+// BookmarkModel::onFileMergeLines()), but it must not be left past the last line of the
+// file either - a line no bookmark could ever be set on.
+void TestBookmarkRemap::test_editor_mergeNeverPushesABookmarkPastTheLastLine()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "int b;", "int c;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 0, QString(), false);
+    model.addBookmark(filename, 1, QString(), false);
+    model.addBookmark(filename, 2, QString(), false);
+    mEditor->resetBookmarks(&model);
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // from the end of the first line to the beginning of the second one: the selection
+    // holds the line break, so deleting it joins the two lines
+    mEditor->setSelBeginEnd(QSynedit::CharPos{6, 0}, QSynedit::CharPos{0, 1});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;int b;", "int c;"}));
+    const int lineCount = mEditor->content().count();
+    const QList<int> lines = bookmarkLines(model);
+    QCOMPARE(lines.count(), 3);
+    for (int line: lines) {
+        QVERIFY2(line < lineCount, qPrintable(QStringLiteral("bookmark on line %1 of %2")
+                                              .arg(line).arg(lineCount)));
+    }
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// A bookmark is set on the line a merge goes into, and the merge is undone: the split
+// that puts the merged bookmark back on its own line lands on the line of that other
+// bookmark (see BookmarkModel::onFileSplitLines()). Two bookmarks of a file on the same
+// line is what the model keeps out (see addBookmark()).
+void TestBookmarkRemap::test_editor_undoOfAMergeNeverLeavesTwoBookmarksOnALine()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    mEditor->setFilename(filename);
+    mEditor->setContent(QStringList({"int a;", "keepMe();", "int b;"}));
+    BookmarkModel model;
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    mEditor->setContentReplacedFunc([this, &model](const QString& filename, bool inProject,
+                                                   const QStringList& content,
+                                                   const QMap<int,int>& markerLineMap) {
+        model.moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
+                                  mEditor->isRestoringContentByUndoRedo());
+        mEditor->resetBookmarks(&model);
+    });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model](int removedLine, int intoLine) {
+                model.onFileMergeLines(mEditor->filename(), removedLine, intoLine,
+                                       mEditor->content().count(), mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileDeleteLines(mEditor->filename(), startLine, count,
+                                        mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model](int mergedLine, int newLine) {
+                model.onFileSplitLines(mEditor->filename(), mergedLine, newLine,
+                                       mEditor->inProject());
+                mEditor->resetBookmarks(&model);
+            });
+    // join the first two lines: the bookmark follows its code onto the joined line
+    mEditor->setSelBeginEnd(QSynedit::CharPos{6, 0}, QSynedit::CharPos{0, 1});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({"int a;keepMe();", "int b;"}));
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    // the user marks the line below while the merge lasts
+    model.addBookmark(filename, 1, QString(), false);
+    mEditor->resetBookmarks(&model);
+    QCOMPARE(bookmarkLines(model), QList<int>({0, 1}));
+    // undoing the merge puts the first bookmark back on its own line
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({"int a;", "keepMe();", "int b;"}));
+    const QList<int> lines = bookmarkLines(model);
+    QCOMPARE(lines.count(), 2);
+    QVERIFY2(lines[0] != lines[1], qPrintable(QStringLiteral("two bookmarks on line %1")
+                                              .arg(lines[0])));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// A bookmark sits on a line a merge removes, and the user drops it while the merge
+// lasts: what the merge remembered of it (see mMergedBookmarks) is about a bookmark the
+// model does not hold any more, and undoing that merge must not put it back on its line.
+void TestBookmarkRemap::test_split_doesNotPutBackABookmarkRemovedWhileTheMergeLasted()
+{
+    BookmarkModel model;
+    model.addBookmark(QStringLiteral("a.cpp"), 1, QString(), false);
+    model.onFileMergeLines(QStringLiteral("a.cpp"), 1, 0, 3, false);
+    QCOMPARE(bookmarkLines(model), QList<int>({0}));
+    // it is the bookmark the merge moved onto the merged line, and it is dropped here
+    QVERIFY(model.removeBookmark(QStringLiteral("a.cpp"), 0, false));
+    QCOMPARE(bookmarkLines(model), QList<int>());
+    // the undo of the merge reports the line split back into it
+    model.onFileSplitLines(QStringLiteral("a.cpp"), 0, 1, false);
+    QCOMPARE(bookmarkLines(model), QList<int>());
 }
