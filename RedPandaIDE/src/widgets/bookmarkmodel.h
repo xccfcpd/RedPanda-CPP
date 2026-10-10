@@ -50,7 +50,9 @@ public:
     // instead of being dropped by the line bookkeeping. Lines that are not in the
     // map keep their line number. "lineCount" is the number of lines of the new
     // content: a bookmark that would collide with another one is pushed to the
-    // next free line, but never past that last line.
+    // next free line, but never past that last line. The bookmarks that
+    // onFileSplitLines() put back on their own line are left on it (see
+    // mBookmarksPutBackBySplit).
     void moveBookmarksInFile(const QString& filename, const QMap<int,int>& lineMap,
                              int lineCount, bool forProject);
     void renameBookmarkFile(const QString& oldFilename, const QString& newFilename, bool forProject);
@@ -91,6 +93,14 @@ private:
         QList<PBookmark> bookmarks;
     };
     QMap<QString, QList<MergedLines>> mMergedBookmarks;
+    // The bookmarks that the undoing of a merge put back on their own line (see
+    // onFileSplitLines()): the split happens inside the content change that undoes the
+    // merge, and that change ends with moveBookmarksInFile(). Their line is exact then,
+    // while the line map is keyed by the lines the old content had: the line one of
+    // them sits on may be the line another marker was only passing through during the
+    // merge, and moving it by the map would send it to that one's code. Removed by the
+    // moveBookmarksInFile() call of the file they belong to.
+    QList<PBookmark> mBookmarksPutBackBySplit;
     qint64 mLastLoadBookmarksTimestamp;
     qint64 mLastLoadProjectBookmarksTimestamp;
     bool mIsForProject;

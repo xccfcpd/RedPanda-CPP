@@ -23,10 +23,12 @@ private slots:
     void test_split_withoutAMergeDoesNothing();
     void test_merge_pushesTheBookmarkWhenTheMergedLineAlreadyHasOne();
     void test_split_leavesABookmarkThatIsNotOnTheMergedLineAlone();
+    void test_move_bookmarksPutBackByASplitAreReserved();
     void test_editor_mergeOfTheBookmarkedLineKeepsTheBookmarkOnTheMergedLine();
     void test_editor_mergeOfTheLineBelowKeepsTheBookmarkWhereItIs();
     void test_editor_deleteOfALineBreakKeepsTheBookmarkOfTheJoinedLine();
     void test_editor_undoOfTypingOverASelectionPutsTheBookmarkBack();
+    void test_editor_undoOfAJoinKeepsTheBookmarksOnTheirLines();
 };
 
 #endif // TEST_BOOKMARK_REMAP_H

@@ -146,6 +146,18 @@ void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,
         bookmarks = mProjectBookmarks;
     else
         bookmarks = mBookmarks;
+    // The bookmarks that the merge being undone put back on their own line (see
+    // onFileSplitLines()) are looked at first: their line is known exactly, while the
+    // line map is keyed by the lines the old content had. The line one of them sits on
+    // is the line another marker was only passing through while the merge lasted, and
+    // its number maps to that one's code: moving the bookmark by the map would take it
+    // away from the line the split put it back on.
+    QList<PBookmark> putBack;
+    for (int i=mBookmarksPutBackBySplit.count()-1;i>=0;i--) {
+        PBookmark bookmark = mBookmarksPutBackBySplit[i];
+        if (bookmark->filename.compare(filename, PATH_SENSITIVITY) == 0)
+            putBack.append(mBookmarksPutBackBySplit.takeAt(i));
+    }
     // The model doesn't hold two bookmarks on the same line (see addBookmark()):
     // the lines of the bookmarks that stay put are reserved first (a line map can
     // send a moved bookmark on one of them, see Editor::remapLinesByAnchor()), then
@@ -155,7 +167,8 @@ void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,
         PBookmark bookmark = bookmarks[i];
         if (bookmark->filename.compare(filename, PATH_SENSITIVITY) != 0)
             continue;
-        if (lineMap.value(bookmark->line, bookmark->line)==bookmark->line)
+        if (putBack.contains(bookmark)
+                || lineMap.value(bookmark->line, bookmark->line)==bookmark->line)
             takenLines.insert(bookmark->line);
     }
     // A pushed bookmark must stay inside the new content: a short file can have
@@ -166,6 +179,9 @@ void BookmarkModel::moveBookmarksInFile(const QString &filename, const QMap<int,
     for (int i=0;i<bookmarks.count();i++) {
         PBookmark bookmark = bookmarks[i];
         if (bookmark->filename.compare(filename, PATH_SENSITIVITY) != 0)
+            continue;
+        // put back on its own line by the split above: it stays there
+        if (putBack.contains(bookmark))
             continue;
         int newLine = lineMap.value(bookmark->line, bookmark->line);
         if (newLine==bookmark->line)
@@ -571,6 +587,9 @@ void BookmarkModel::onFileSplitLines(const QString &filename, int mergedLine, in
                 || bookmark->line < mergedLine)
             continue;
         bookmark->line = newLine;
+        // Its line is exact now: the content change this split runs in ends with
+        // moveBookmarksInFile(), which must not look it up in the line map again.
+        mBookmarksPutBackBySplit.append(bookmark);
         if (forProject == mIsForProject)
             emit dataChanged(createIndex(i,0),createIndex(i,2));
     }
