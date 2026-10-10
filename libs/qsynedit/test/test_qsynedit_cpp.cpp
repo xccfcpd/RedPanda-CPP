@@ -11125,6 +11125,12 @@ void TestQSyneditCpp::test_merge_with_next_line_reports_the_deleted_line()
     QCOMPARE(mEdit->content(),QStringList{"int a;"});
     QCOMPARE(mDeleteStartLines,QList<int>({1}));
     QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+    // The text of the next line is put back at the end of the current one: the markers
+    // of the next line must follow their code there, and be told before the line is
+    // reported as deleted.
+    QCOMPARE(mMergedLines,QList<int>({1}));
+    QCOMPARE(mMergedIntoLines,QList<int>({0}));
+    QCOMPARE(mLineSignals,QList<LineSignal>({MergedLine, DeletedLine}));
 }
 
 // The next line is not empty and does not start/end a syntax block, so QSynEdit
@@ -11142,6 +11148,9 @@ void TestQSyneditCpp::test_merge_with_next_line_reports_the_deleted_line_when_th
     QCOMPARE(mEdit->content(),QStringList{"int a;int b;"});
     QCOMPARE(mDeleteStartLines,QList<int>({1}));
     QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+    QCOMPARE(mMergedLines,QList<int>({1}));
+    QCOMPARE(mMergedIntoLines,QList<int>({0}));
+    QCOMPARE(mLineSignals,QList<LineSignal>({MergedLine, DeletedLine}));
 }
 
 // Same, merging on the previous line: the line that disappears is the one of the
@@ -11155,6 +11164,10 @@ void TestQSyneditCpp::test_merge_with_prev_line_reports_the_deleted_line()
     QCOMPARE(mEdit->content(),QStringList{"int a;int b;"});
     QCOMPARE(mDeleteStartLines,QList<int>({1}));
     QCOMPARE(mDeleteLineCounts,QList<int>({1}));
+    // The markers of the line of the caret follow its text, merged on the previous one.
+    QCOMPARE(mMergedLines,QList<int>({1}));
+    QCOMPARE(mMergedIntoLines,QList<int>({0}));
+    QCOMPARE(mLineSignals,QList<LineSignal>({MergedLine, DeletedLine}));
 }
 
 // Undoing a merge adds a line back: the application must be told about the line
@@ -11170,6 +11183,13 @@ void TestQSyneditCpp::test_undo_of_a_merge_reports_the_inserted_line()
     QCOMPARE(mEdit->content(),QStringList({"int a;",""}));
     QCOMPARE(mInsertStartLines,QList<int>({1}));
     QCOMPARE(mInsertLineCounts,QList<int>({1}));
+    // The markers that followed their code onto the merged line come back on their own
+    // line. The application reads the content from the editor to find the code of the
+    // breakpoints: the line must be split when it is told about the split.
+    QCOMPARE(mLineSignals,QList<LineSignal>({InsertedLine, SplitLine}));
+    QCOMPARE(mSplitLines,QList<int>({0}));
+    QCOMPARE(mSplitNewLines,QList<int>({1}));
+    QCOMPARE(mSplitContent,QStringList({"int a;",""}));
 }
 
 // Same, when QSynEdit had removed the current line to merged it: the content must
@@ -11185,6 +11205,11 @@ void TestQSyneditCpp::test_undo_of_a_merge_reports_the_inserted_line_when_the_cu
     QCOMPARE(mEdit->content(),QStringList({"int a;","int b;"}));
     QCOMPARE(mInsertStartLines,QList<int>({1}));
     QCOMPARE(mInsertLineCounts,QList<int>({1}));
+    // Same as above: the split is reported, with the content already split.
+    QCOMPARE(mLineSignals,QList<LineSignal>({InsertedLine, SplitLine}));
+    QCOMPARE(mSplitLines,QList<int>({0}));
+    QCOMPARE(mSplitNewLines,QList<int>({1}));
+    QCOMPARE(mSplitContent,QStringList({"int a;","int b;"}));
 }
 
 }

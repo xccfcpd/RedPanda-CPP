@@ -513,6 +513,16 @@ signals:
     void linesDeleted(int firstLine, int count);
     void linesInserted(int firstLine, int count);
     void lineMoved(int from, int to);
+    // Sent just before the linesDeleted() that removes it: the text of the line is
+    // appended to the end of the previous one, which survives (the lines are merged,
+    // see doMergeWithNextLine()). The markers the application holds on that line
+    // (breakpoints, bookmarks...) follow their code instead of being dropped.
+    void linesMerged(int removedLine, int intoLine);
+    // Sent when such a merge is undone (Ctrl+Z): the line is split back, and the text
+    // of the line that was merged is put on the new one, right after the line it was
+    // merged into. The markers that followed their code onto the merged line (see
+    // linesMerged()) come back on the line they were set on.
+    void linesSplit(int mergedLine, int newLine);
     void changed();
     void gutterClicked(Qt::MouseButton button, int x, int y, int line);
     void statusChanged(QSynedit::StatusChanges changes);

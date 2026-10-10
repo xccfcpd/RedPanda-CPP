@@ -2023,11 +2023,15 @@ void QSynEdit::doMergeWithNextLine()
         // That removal must not be reported: the line survives, and the application
         // would drop the markers that are set on the line the user is editing.
         if (shouldDeleteNextLine(mCaretY, currentLineText, nextLineText)) {
-            properDeleteLine(mCaretY + 1, false);
+            deleteLinesWithoutReporting(mCaretY + 1, 1, false);
         } else {
             deleteLinesWithoutReporting(mCaretY, 1, false);
-            emit linesDeleted(mCaretY + 1, 1);
         }
+        // The text of the next line is put back at the end of the current one: the
+        // application must be told that the markers it holds on the next line follow
+        // their code there, before the line is reported as deleted.
+        emit linesMerged(mCaretY + 1, mCaretY);
+        emit linesDeleted(mCaretY + 1, 1);
         properSetLine(mCaretY, newString, true);
         addChangeToUndo(ChangeReason::MergeWithNextLine, caretXY(), newCaret,
                         QStringList{}, mActiveSelectionMode);
@@ -2048,11 +2052,14 @@ void QSynEdit::doMergeWithPrevLine()
         // is the one of the caret, not the previous one that QSynEdit may remove
         // internally - see doMergeWithNextLine().
         if (shouldDeleteNextLine(mCaretY-1, lastLine, tempStr)) {
-            properDeleteLine(mCaretY, false);
+            deleteLinesWithoutReporting(mCaretY, 1, false);
         } else {
             deleteLinesWithoutReporting(mCaretY-1, 1, false);
-            emit linesDeleted(mCaretY, 1);
         }
+        // Same as doMergeWithNextLine(): the text of the line of the caret is put back
+        // at the end of the previous one, and the markers of the caret line follow it.
+        emit linesMerged(mCaretY, mCaretY - 1);
+        emit linesDeleted(mCaretY, 1);
         properSetLine(mCaretY-1, lastLine+tempStr, true);
         setCaretXY(CharPos{(int)lastLine.length(), mCaretY - 1});
         addChangeToUndo(ChangeReason::MergeWithPrevLine, caretXY(), caretBackup, QStringList{},
@@ -4420,6 +4427,10 @@ void QSynEdit::doUndoItem()
                 properSetLine(startPos.line+1, rightStr, true);
             }
             setCaretXY(item->changeStartPos());
+            // The line is split back, and the text of the line that was merged is on
+            // the new one: the markers the application moved onto the merged line (see
+            // doMergeWithNextLine()) come back on the line they were set on.
+            emit linesSplit(startPos.line, startPos.line+1);
             endEditing();
             mRedoList->addRedo(
                         item->changeReason(),
@@ -4447,6 +4458,8 @@ void QSynEdit::doUndoItem()
                 properSetLine(startPos.line+1, rightStr, true);
             }
             setCaretXY(item->changeEndPos());
+            // The line is split back too: see the MergeWithNextLine case above.
+            emit linesSplit(startPos.line, startPos.line+1);
             endEditing();
             mRedoList->addRedo(
                         item->changeReason(),
@@ -4474,9 +4487,19 @@ void QSynEdit::doUndoItem()
                     std::swap(xFrom, xTo);
                 startPos.ch = xposToGlyphStartChar(startPos.line,xFrom);
             }
+            // Undoing a deletion that spanned lines undoes a join: the text that was put
+            // back at the end of the first line goes back to the last one, and the markers
+            // that followed it there (see doDeleteText()) must follow it back.
+            bool joinedLines = item->changeReason() == ChangeReason::Delete
+                    && item->changeSelMode() == SelectionMode::Normal
+                    && startPos.line < endPos.line
+                    && startPos.line < mDocument->count()
+                    && !mDocument->getLine(startPos.line).left(startPos.ch).trimmed().isEmpty();
             doInsertText(startPos,item->changeText(),item->changeSelMode(),
                          startPos.line,
                          endPos.line);
+            if (joinedLines)
+                emit linesSplit(startPos.line, endPos.line);
             if (item->changeReason() == ChangeReason::DeleteChar
                     || item->changeReason() == ChangeReason::MergeWithNextLine)
                 setCaretXY(item->changeStartPos());
@@ -5706,6 +5729,16 @@ void QSynEdit::doDeleteText(CharPos startPos, CharPos endPos, SelectionMode mode
             // the selection mark.
             QString startLineLeft = mDocument->getLine(startPos.line).left(startPos.ch);
             QString newString = startLineLeft + mDocument->getLine(endPos.line).mid(endPos.ch);
+            // Deleting a selection that spans lines joins them: the text of the last line
+            // is put back at the end of the first one. When the first line keeps a part of
+            // its text, the last line is the one that disappears, and the markers set on
+            // it must follow their code onto the joined line before that line is reported
+            // as deleted - see doMergeWithNextLine(). When nothing is left on the first
+            // line, it is the one that is reported (and deleted), and the last line takes
+            // its place: the deletion report moves the markers of the last line there by
+            // itself, so the merge must not be reported for it.
+            if (endPos.line != startPos.line && !startLineLeft.trimmed().isEmpty())
+                emit linesMerged(endPos.line, startPos.line);
             // Delete all lines in the selection range.
             if (startLineLeft.trimmed().isEmpty()) {
                 properDeleteLines(startPos.line, endPos.line - startPos.line, false);
