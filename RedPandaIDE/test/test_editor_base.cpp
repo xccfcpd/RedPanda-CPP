@@ -29,3 +29,8 @@ void TestEditorBase::init_editor()
     mEditor->setFormatter(std::make_shared<QSynedit::CppFormatter>());
     mEditor->applySettings();
 }
+
+void TestEditorBase::cleanup()
+{
+    mEditor->setContentReplacedFunc(nullptr);
+}

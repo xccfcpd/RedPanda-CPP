@@ -77,6 +77,7 @@ target("RedPandaIDE")
         "src/autolinkmanager.cpp",
         "src/colorscheme.cpp",
         "src/customfileiconprovider.cpp",
+        "src/editoranchors.cpp",
         "src/projectoptions.cpp",
         "src/settings.cpp",
         "src/syntaxermanager.cpp",
