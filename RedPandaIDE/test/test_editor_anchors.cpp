@@ -165,6 +165,30 @@ void TestEditorAnchors::test_remap_repeatedLinesUseTheirContext()
     QCOMPARE(map.value(5), 7);
 }
 
+void TestEditorAnchors::test_remap_lineJoinedByAnEditFollowsItsCode()
+{
+    // an edit joined the line with the one below it before the content was replaced:
+    // the models follow the merge and move their markers to the line it happened on
+    // (see BreakpointModel::onFileMergeLines()), so the anchor of that line is the
+    // text of two lines, and no line of the new content has it. The replacement splits
+    // the line back; the code is at the head of the line it comes back on, and the
+    // marker has to follow it there instead of staying on the line number the merge
+    // put it on.
+    QStringList oldContent = {QStringLiteral("void f() {"),
+                              QStringLiteral("    for (j = 1; j <= i; j++)"),
+                              QStringLiteral("        cout << i << \"*\" << j;cout << \"\\n\";"),
+                              QStringLiteral("}")};
+    QMap<int,ReformatAnchor> anchors = anchorsOf(oldContent, {2});
+    QStringList newContent = {QStringLiteral("void f()"),
+                              QStringLiteral("{"),
+                              QStringLiteral("    for (j = 1; j <= i; j++)"),
+                              QStringLiteral("        cout << i << \"*\" << j;"),
+                              QStringLiteral("    cout << \"\\n\";"),
+                              QStringLiteral("}")};
+    QMap<int,int> map = EditorAnchors::remapLines(anchors, newContent);
+    QCOMPARE(map.value(2), 3);
+}
+
 void TestEditorAnchors::test_remap_anchorNotFoundKeepsTheOldLine()
 {
     QStringList oldContent = {QStringLiteral("a = 1;"),

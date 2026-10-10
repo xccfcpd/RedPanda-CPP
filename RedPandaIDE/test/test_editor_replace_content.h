@@ -25,6 +25,8 @@ private slots:
     void test_replaceContent_setsTheFlagWhileTheContentIsReplaced();
     void test_undoOfAWholeContentChange_notifiesTheModelsOnce();
     void test_redoOfAWholeContentChange_notifiesTheModelsOnce();
+    void test_replaceContent_reanchorsTheBreakpointOfAMergedLineOnItsCode();
+    void test_replaceContent_reanchorsTheBreakpointOfAMergedLineWithTheAppWiring();
 private:
     // Records what the editor tells the models (see ContentReplacedFunc) and
     // anchors one line, to stand for the breakpoints, the bookmarks and the carets

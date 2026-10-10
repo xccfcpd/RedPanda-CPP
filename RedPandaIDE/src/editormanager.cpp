@@ -166,6 +166,8 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
     connect(e, &Editor::linesDeleted, this, &EditorManager::onEditorLinesRemoved);
     connect(e, &Editor::linesInserted, this, &EditorManager::onEditorLinesInserted);
     connect(e, &Editor::lineMoved, this, &EditorManager::onEditorLineMoved);
+    connect(e, &Editor::linesMerged, this, &EditorManager::onEditorLinesMerged);
+    connect(e, &Editor::linesSplit, this, &EditorManager::onEditorLinesSplit);
     connect(e, &Editor::statusChanged, this, &EditorManager::onEditorStatusChanged);
     connect(e, &Editor::fontSizeChangedByWheel, this, &EditorManager::onEditorFontSizeChangedByWheel);
     connect(e, &Editor::fileEncodingChanged, this, &EditorManager::onEditorFileEncodingChanged);
@@ -410,6 +412,43 @@ void EditorManager::onEditorLinesRemoved(int startLine, int count)
     pMainWindow->caretList().onLinesDeleted(e,startLine,count);
     pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
+    e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    e->resetBookmarks(pMainWindow->bookmarkModel());
+}
+
+void EditorManager::onEditorLinesMerged(int removedLine, int intoLine)
+{
+    Editor * e = static_cast<Editor *>(sender());
+    // A merge is reported even while the whole content is being replaced (see
+    // isReplacingContent()): unlike a line insertion or removal, it is not a
+    // consequence of "every line is deleted and written back", but the only report
+    // of a single line whose text now lives on another one. The anchors the whole
+    // content replacement works with can't find that text again - it is not on a
+    // line of its own any more - so a marker that is left out of this bookkeeping
+    // is left on a stale line.
+    // The line disappears (onEditorLinesRemoved() is called right after and moves the
+    // lines below it up), but its text is appended to the line it is merged into: the
+    // markers set on it follow their code there instead of being dropped.
+    pMainWindow->debugger()->breakpointModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->inProject());
+    pMainWindow->bookmarkModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->inProject());
+    e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    e->resetBookmarks(pMainWindow->bookmarkModel());
+}
+
+void EditorManager::onEditorLinesSplit(int mergedLine, int newLine)
+{
+    Editor * e = static_cast<Editor *>(sender());
+    // Report the split while the whole content is being replaced too - see
+    // onEditorLinesMerged(). This is the case that matters most: undoing an edit
+    // runs that way (see Editor::doUndo()), and this is the report that puts a
+    // bookmark back on the line it was set on.
+    // The merge is undone: the line is split back, and the text of the line that was
+    // merged is on `newLine` again. The breakpoints find it with their fingerprint
+    // (the merged line doesn't hold the code they were set on any more); the bookmarks
+    // have no fingerprint to do that with, so the model puts back the ones it moved
+    // onto the merged line when the merge was done.
+    pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(e->filename(), e->content(), e->inProject());
+    pMainWindow->bookmarkModel()->onFileSplitLines(e->filename(), mergedLine, newLine, e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
 }

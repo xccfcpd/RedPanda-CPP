@@ -67,6 +67,13 @@ public slots:
     void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject);
     void onFileInsertLines(const QString& filename, int startLine, int count, bool forProject);
     void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject);
+    void onFileMergeLines(const QString& filename, int removedLine, int intoLine, bool forProject);
+    // Puts the bookmarks that onFileMergeLines() moved onto the merged line back on
+    // their own line, when that merge is undone (the editor reports the line split
+    // back into it and `newLine`). A bookmark has no fingerprint to find its code
+    // with, like a breakpoint does: what was remembered of the merge is the only
+    // memory of where it was.
+    void onFileSplitLines(const QString& filename, int mergedLine, int newLine, bool forProject);
 private:
     bool isBookmarkExists(const QString&filename, int line, bool forProject);
     void save(const QString& filename, const QString& projectFolder);
@@ -75,6 +82,15 @@ private:
 private:
     QList<PBookmark> mBookmarks;
     QList<PBookmark> mProjectBookmarks;
+    // What the merges moved, per file (innermost last): the bookmarks that were on the
+    // line that disappeared and the line they came from, so that undoing a merge puts
+    // them back where they were (see onFileSplitLines()). A bookmark has no fingerprint
+    // to find its code with, like a breakpoint does.
+    struct MergedLines {
+        int removedLine = 0;
+        QList<PBookmark> bookmarks;
+    };
+    QMap<QString, QList<MergedLines>> mMergedBookmarks;
     qint64 mLastLoadBookmarksTimestamp;
     qint64 mLastLoadProjectBookmarksTimestamp;
     bool mIsForProject;

@@ -496,6 +496,86 @@ void BookmarkModel::onFileLineMoved(const QString &filename, int fromLine, int t
     }
 }
 
+void BookmarkModel::onFileMergeLines(const QString &filename, int removedLine, int intoLine, bool forProject)
+{
+    // Same as BreakpointModel::onFileMergeLines(): the bookmark follows the text of the
+    // line it is set on, which is merged into the line above instead of being lost.
+    QList<PBookmark> bookmarks;
+    if (forProject)
+        bookmarks = mProjectBookmarks;
+    else
+        bookmarks = mBookmarks;
+    QList<PBookmark> moved;
+    for (int i = 0; i<bookmarks.count();i++){
+        PBookmark bookmark = bookmarks[i];
+        if  (bookmark->filename == filename
+             && bookmark->line == removedLine) {
+            // The model holds no two bookmarks of a file on the same line. The one that
+            // is already on the line the merge goes into follows its own code, which is
+            // at the beginning of the merged line; this one follows the code that was
+            // appended after it, so it can't take that line: it takes the next free one.
+            // The line it comes from has just been merged away, and the line that
+            // follows the merged one is free; onFileDeleteLines(), called right after,
+            // brings it back on it.
+            int line = intoLine;
+            if (isBookmarkExists(filename, line, forProject)) {
+                line = removedLine+1;
+                while (isBookmarkExists(filename, line, forProject))
+                    ++line;
+            }
+            bookmark->line = line;
+            moved.append(bookmark);
+            if (forProject == mIsForProject)
+                emit dataChanged(createIndex(i,0),createIndex(i,2));
+        }
+    }
+    // Remember them and the line they were on: undoing that merge puts them back on
+    // their own line (see onFileSplitLines()), and nothing else in the model knows
+    // where they were. Merges are undone in the reverse order they were done in, so
+    // they are kept as a stack, innermost last.
+    if (!moved.isEmpty())
+        mMergedBookmarks[filename].append(MergedLines{removedLine, moved});
+}
+
+void BookmarkModel::onFileSplitLines(const QString &filename, int mergedLine, int newLine, bool forProject)
+{
+    QMap<QString, QList<MergedLines>>::iterator it = mMergedBookmarks.find(filename);
+    if (it==mMergedBookmarks.end())
+        return;
+    QList<MergedLines> &merges = it.value();
+    // The split being reported undoes the merge that removed `newLine`; that merge is
+    // the innermost (last) one that did. Any other one is none of our business.
+    int mergeIndex = -1;
+    for (int i = merges.count()-1;i>=0;i--) {
+        if (merges[i].removedLine == newLine) {
+            mergeIndex = i;
+            break;
+        }
+    }
+    if (mergeIndex<0)
+        return;
+    QList<PBookmark> moved = merges.takeAt(mergeIndex).bookmarks;
+    QList<PBookmark> bookmarks;
+    if (forProject)
+        bookmarks = mProjectBookmarks;
+    else
+        bookmarks = mBookmarks;
+    for (int i = 0; i<bookmarks.count();i++){
+        PBookmark bookmark = bookmarks[i];
+        // The bookmark must still be a bookmark of that file (if it is not, it was
+        // removed in between, or removed and set again: the merge is not about it any
+        // more) and still be on the merged line or below it. Being the exact bookmark
+        // the merge moved, it is put back on the line it was set on, whatever the edits
+        // in between did to its line.
+        if (!moved.contains(bookmark) || bookmark->filename != filename
+                || bookmark->line < mergedLine)
+            continue;
+        bookmark->line = newLine;
+        if (forProject == mIsForProject)
+            emit dataChanged(createIndex(i,0),createIndex(i,2));
+    }
+}
+
 void BookmarkModel::removeBookmarkAt(int i, bool forProject)
 {
     if (forProject == mIsForProject)

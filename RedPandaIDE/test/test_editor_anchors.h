@@ -27,6 +27,7 @@ private slots:
     void test_remap_linesRemovedBeforeTheAnchor();
     void test_remap_reindentedContent();
     void test_remap_repeatedLinesUseTheirContext();
+    void test_remap_lineJoinedByAnEditFollowsItsCode();
     void test_remap_anchorNotFoundKeepsTheOldLine();
     void test_remap_anchorPastTheEndOfTheContent();
     void test_remap_emptyContent();
