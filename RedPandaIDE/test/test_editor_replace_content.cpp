@@ -244,7 +244,7 @@ void TestEditorReplaceContent::test_replaceContent_reanchorsTheBreakpointOfAMerg
     });
     // the edit joins the three lines after "int i, j;" into it, one line break at a time
     for (int i=0;i<3;i++) {
-        mEditor->setSelBeginEnd(QSynedit::CharPos{mEditor->content().at(5).length(),5},
+        mEditor->setSelBeginEnd(QSynedit::CharPos{(int)mEditor->content().at(5).length(),5},
                                 QSynedit::CharPos{0,6});
         QTest::keyPress(mEditor.get(), Qt::Key_Delete);
     }
