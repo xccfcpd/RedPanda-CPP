@@ -923,6 +923,12 @@ void Debugger::save(const QString &filename, const QString& projectFolder)
     } catch (FileError& e) {
 
     }
+    if (!pConfig) {
+        // load() failed: the file can't be read, or it doesn't hold a debug config any
+        // more. Start from an empty one - the configs below are dereferenced, and this
+        // is the path the user takes when the saved debug file got damaged.
+        pConfig = std::make_shared<DebugConfig>();
+    }
 
     QFile file(filename);
     if (file.open(QFile::WriteOnly | QFile::Truncate)) {
