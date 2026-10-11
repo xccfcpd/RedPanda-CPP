@@ -318,3 +318,69 @@ void TestEditorReplaceContent::test_replaceContent_movesTheCaretAfterTheModelsWe
     QVERIFY(order.lastIndexOf(QStringLiteral("caret"))
             > order.indexOf(QStringLiteral("models")));
 }
+
+// Undoing a whole content change is the other way around, and that is what makes it safe:
+// the caret is put back where it was while the change is applied (QSynEdit restores it),
+// but the notification of that move - which is what the application records the history
+// entry from (EditorManager::onEditorStatusChanged() -> CaretList::addCaret()) - is only
+// emitted after the models have been told about the replacement, and after the window in
+// which the content is replaced has closed (see Editor::isReplacingContent()). The entry
+// therefore joins the history once the lines that were already in it have been moved by
+// the map: it is already on its code and the map is not applied to it (see
+// CaretList::remapLines()). This test pins that order down - a caret move notified while
+// the content is replaced would be recorded before the remap, and moved a second time.
+void TestEditorReplaceContent::test_undoOfAWholeContentChange_movesTheCaretAfterTheModelsWereTold()
+{
+    mEditor->setCaretXY(QSynedit::CharPos{3,1}); // inside "int main()"
+    mEditor->replaceContent(QStringLiteral("// a new line\npreamble\nint main()\n{\n}"));
+    QCOMPARE(mEditor->caretXY().line, 2);
+    // the replacement above is what the undo below takes back: only it is watched
+    mCalls = 0;
+    mLastLineMap.clear();
+    QStringList order;
+    QList<bool> caretMovedWhileTheContentWasReplaced;
+    connect(mEditor.get(), &QSynedit::QSynEdit::statusChanged, this,
+            [this, &order, &caretMovedWhileTheContentWasReplaced](
+                QSynedit::StatusChanges changes) {
+        if (!changes.testFlag(QSynedit::StatusChange::CaretY))
+            return;
+        order.append(QStringLiteral("caret"));
+        caretMovedWhileTheContentWasReplaced.append(mEditor->isReplacingContent());
+    });
+    int caretLineWhenTheModelsWereTold = -1;
+    mEditor->setContentReplacedFunc([this, &order, &caretLineWhenTheModelsWereTold](
+                                        const QString& /*filename*/, bool /*inProject*/,
+                                        const QStringList& content,
+                                        const QMap<int,int>& lineMap) {
+        ++mCalls;
+        mLastContent = content;
+        mLastLineMap = lineMap;
+        caretLineWhenTheModelsWereTold = mEditor->caretXY().line;
+        order.append(QStringLiteral("models"));
+    });
+    mEditor->undo();
+    const int lineOfTheCaret = mEditor->caretXY().line;
+    // installRecorder() clears what the undo recorded: read it before restoring it
+    const int calls = mCalls;
+    const QStringList content = mLastContent;
+    const QStringList recordedOrder = order;
+    const int caretMovesInsideTheReplacement = caretMovedWhileTheContentWasReplaced.count(true);
+    const int caretMovesOutsideOfTheReplacement = caretMovedWhileTheContentWasReplaced.count(false);
+    // the lambda captures locals: drop the connection before leaving the test
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+    installRecorder();
+    // the undo put "int main()" - and the caret in it - back on line 1, and the models
+    // were told about the replacement once
+    QCOMPARE(calls, 1);
+    QCOMPARE(content, QStringList({"preamble","int main()","{","}"}));
+    QCOMPARE(lineOfTheCaret, 1);
+    // the caret itself is already where the undo put it back when the models are told...
+    QCOMPARE(caretLineWhenTheModelsWereTold, 1);
+    // ...but the history entry is recorded from the notification of that move, and it
+    // comes after them
+    QCOMPARE(recordedOrder, QStringList({QStringLiteral("models"), QStringLiteral("caret")}));
+    // and outside of the window in which the content is replaced: the application
+    // records that move in the history after the map has been applied to it
+    QCOMPARE(caretMovesInsideTheReplacement, 0);
+    QCOMPARE(caretMovesOutsideOfTheReplacement, 1);
+}
