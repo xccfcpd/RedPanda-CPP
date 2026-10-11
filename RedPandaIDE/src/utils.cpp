@@ -66,8 +66,14 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
         process.write(inputContent);
     }
     process.closeWriteChannel();
-    // don't hang forever if the process doesn't finish on its own
-    bool timedout = !process.waitForFinished(timeoutMs);
+    // A negative timeout waits for the process to finish on its own: -1 is what asks
+    // QProcess for that, the no-argument overload bounds the wait to 30 seconds, and
+    // only the callers that ask for a bound (the code formatters) can time out here.
+    bool timedout = false;
+    if (timeoutMs >= 0)
+        timedout = !process.waitForFinished(timeoutMs);
+    else
+        process.waitForFinished(-1);
     if (timedout) {
         process.kill();
         process.waitForFinished();

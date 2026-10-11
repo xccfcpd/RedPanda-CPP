@@ -49,7 +49,11 @@ ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir, con
                            bool separateStderr = false,
                            bool inheritEnvironment = true,
                            const QProcessEnvironment& env = QProcessEnvironment(),
-                           int timeoutMs = 30000,
+                           // A negative timeout waits for the process to finish on its own:
+                           // only the callers that ask for a bound (the code formatters) should
+                           // pass one - a tool or a git command of the user can run for minutes,
+                           // and killing it silently would be worse than waiting.
+                           int timeoutMs = -1,
                            int* exitCode = nullptr );
 
 void openFileFolderInExplorer(const QString& path);
