@@ -2,6 +2,7 @@
 
 #include "src/settings/basesettings.h"
 #include "src/settings/codeformattersettings.h"
+#include "src/utils/file.h"
 #include "src/utils/types.h"
 
 #include <QDir>
@@ -133,4 +134,31 @@ void TestFormatterArguments::test_clangFormat_extraArguments()
     // no extra argument is appended when the field is empty
     mSettings->setClangFormatExtraArguments(QString());
     QCOMPARE(mSettings->getClangFormatArguments(), QStringList{QStringLiteral("-style=file")});
+}
+
+void TestFormatterArguments::test_clangFormat_assumedFilename()
+{
+    // the reformatter tells clang-format which file is being formatted, so that
+    // it can detect the language and search for the nearest ".clang-format"
+    QCOMPARE(addAssumedFilenameArgument(
+                 QStringList{QStringLiteral("-style=file")},
+                 QStringLiteral("/tmp/example.cpp")),
+             QStringList({QStringLiteral("-style=file"),
+                          QStringLiteral("-assume-filename=/tmp/example.cpp")}));
+
+    // an option set by the user is kept, whatever spelling he used
+    const QStringList spellings{
+        QStringLiteral("-assume-filename=other.cpp"),
+        QStringLiteral("--assume-filename=other.cpp"),
+        QStringLiteral("-assume-filename"),
+        QStringLiteral("--assume-filename")};
+    foreach (const QString& spelling, spellings) {
+        QStringList args = addAssumedFilenameArgument(
+            QStringList{spelling, QStringLiteral("other.cpp")},
+            QStringLiteral("/tmp/example.cpp"));
+        QCOMPARE(args.size(), 2);
+        QVERIFY(args.contains(spelling));
+        foreach (const QString& arg, args)
+            QVERIFY(!arg.contains(QStringLiteral("example.cpp")));
+    }
 }

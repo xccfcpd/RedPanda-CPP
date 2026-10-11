@@ -27,6 +27,7 @@ private slots:
     void test_clangFormat_configFileStyle();
     void test_clangFormat_styleOverrides();
     void test_clangFormat_extraArguments();
+    void test_clangFormat_assumedFilename();
 private:
     std::unique_ptr<SettingsPersistor> mPersistor;
     std::unique_ptr<CodeFormatterSettings> mSettings;

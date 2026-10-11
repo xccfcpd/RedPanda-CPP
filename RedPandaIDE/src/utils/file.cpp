@@ -149,6 +149,31 @@ bool isFormattableCppFileName(const QString &fileName)
     return cppExtensions.contains(suffix);
 }
 
+namespace {
+
+// clang-format accepts the option with one or two leading dashes, and the value
+// either after a "=" or as the next command line argument
+bool isAssumedFilenameOption(const QString& arg)
+{
+    int pos = 0;
+    while (pos < arg.length() && arg.at(pos) == QLatin1Char('-'))
+        pos++;
+    return arg.mid(pos).startsWith(QStringLiteral("assume-filename"));
+}
+
+}
+
+QStringList addAssumedFilenameArgument(const QStringList& args, const QString& fileName)
+{
+    for (const QString& arg: args) {
+        if (isAssumedFilenameOption(arg))
+            return args;
+    }
+    QStringList arguments = args;
+    arguments.append(QString("-assume-filename=%1").arg(fileName));
+    return arguments;
+}
+
 static const QMap<QString,FileType> FileTypeMapping{
     {"None", FileType::None},
     {"ATTASM", FileType::GAS},

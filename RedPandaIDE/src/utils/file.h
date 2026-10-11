@@ -89,6 +89,11 @@ constexpr bool isFormattableCppFile(FileType fileType) {
 // Same as isFormattableCppFile(), but works on a file name instead of a FileType.
 bool isFormattableCppFileName(const QString& fileName);
 
+// Adds the "-assume-filename" option, that clang-format needs to know which file
+// is being formatted (it detects the language and the nearest ".clang-format"
+// file with it). It is not added when the user already set that option himself
+// through the extra command line options.
+QStringList addAssumedFilenameArgument(const QStringList& args, const QString& fileName);
 
 int getNewFileNumber();
 

@@ -91,17 +91,7 @@ QString ClangFormatReformatter::reformat(const QString &content, QString &errorM
         fileName = QDir(workingDir).absoluteFilePath("untitled.cpp");
     }
 
-    QStringList args = mArgs;
-    // clang-format uses the file name to detect the language and to search
-    // for the ".clang-format" file
-    bool hasAssumedFilename = false;
-    for (const QString& arg: mArgs) {
-        if (arg.startsWith("-assume-filename"))
-            hasAssumedFilename = true;
-    }
-    // let the user override it through the extra command line options
-    if (!hasAssumedFilename)
-        args.append(QString("-assume-filename=%1").arg(fileName));
+    QStringList args = addAssumedFilenameArgument(mArgs, fileName);
 
     QString command = escapeCommandForPlatformShell(extractFileName(mClangFormatPath), args);
     if (mLoggerFunc) {
