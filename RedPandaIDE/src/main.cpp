@@ -403,6 +403,9 @@ pSettings->codeCompletion().setShareParser(true);
 pSettings->codeCompletion().setClearWhenEditorHidden(true);
 // 修改结束 260725
             pSettings->editor().save();
+            // The code completion choices above only exist in memory until they
+            // are saved: editor().save() writes a different settings group.
+            pSettings->codeCompletion().save();
 
             //auto detect git in path
 #ifdef ENABLE_VCS
