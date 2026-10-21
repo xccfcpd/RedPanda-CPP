@@ -13070,4 +13070,35 @@ p, li { white-space: pre-wrap; }
         <translation>光标颜色</translation>
     </message>
 </context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>超时：进程在 %1 毫秒内没有结束！</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>无法启动进程！</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>进程崩溃！</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>超时！</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>读取错误：</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>写入错误：</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>未知错误：</translation>
+    </message>
+</context>
 </TS>

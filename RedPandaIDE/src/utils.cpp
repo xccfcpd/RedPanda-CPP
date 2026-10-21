@@ -88,26 +88,30 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
     if (exitCode != nullptr)
         *exitCode = process.exitStatus() == QProcess::NormalExit ? process.exitCode() : -1;
     if (timedout) {
-        errorMessage += QString("Timeout: the process doesn't finish in %1 ms!").arg(timeoutMs);
+        errorMessage += QCoreApplication::translate(
+                    "Utils", "Timeout: the process doesn't finish in %1 ms!")
+                .arg(timeoutMs);
     } else if (errorOccurred) {
         switch(process.error()) {
         case QProcess::FailedToStart:
-            errorMessage += "Failed to start process!";
+            errorMessage += QCoreApplication::translate(
+                        "Utils", "Failed to start process!");
             break;
         case QProcess::Crashed:
-            errorMessage += "Process crashed!";
+            errorMessage += QCoreApplication::translate(
+                        "Utils", "Process crashed!");
             break;
         case QProcess::Timedout:
-            errorMessage += "Timeout!";
+            errorMessage += QCoreApplication::translate("Utils", "Timeout!");
             break;
         case QProcess::ReadError:
-            errorMessage += "Read Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Read Error:");
             break;
         case QProcess::WriteError:
-            errorMessage += "Write Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Write Error:");
             break;
         case QProcess::UnknownError:
-            errorMessage += "Unknown Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Unknown Error:");
             break;
         }
         errorMessage += process.errorString();

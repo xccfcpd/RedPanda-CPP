@@ -13070,4 +13070,35 @@ p, li { white-space: pre-wrap; }
         <translation>光標顏色</translation>
     </message>
 </context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>逾時：行程在 %1 毫秒內沒有結束！</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>無法啟動行程！</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>行程崩潰！</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>逾時！</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>讀取錯誤：</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>寫入錯誤：</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>未知錯誤：</translation>
+    </message>
+</context>
 </TS>

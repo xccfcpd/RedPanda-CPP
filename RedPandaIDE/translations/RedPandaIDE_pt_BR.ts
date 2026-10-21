@@ -11997,4 +11997,35 @@
         <translation>Cor da margem à direita</translation>
     </message>
 </context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>Tempo limite excedido: o processo não terminou em %1 ms!</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>Falha ao iniciar o processo!</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>O processo travou!</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>Tempo limite excedido!</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>Erro de leitura:</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>Erro de escrita:</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>Erro desconhecido:</translation>
+    </message>
+</context>
 </TS>

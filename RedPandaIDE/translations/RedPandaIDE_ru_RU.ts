@@ -11096,4 +11096,35 @@
         <translation>Цвет линии правой границы</translation>
     </message>
 </context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>Тайм-аут: процесс не завершился за %1 мс!</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>Не удалось запустить процесс!</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>Процесс завершился аварийно!</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>Тайм-аут!</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>Ошибка чтения:</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>Ошибка записи:</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>Неизвестная ошибка:</translation>
+    </message>
+</context>
 </TS>
