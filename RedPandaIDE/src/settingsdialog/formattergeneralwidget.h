@@ -19,6 +19,7 @@
 
 #include <QAbstractListModel>
 #include <QComboBox>
+#include <QThreadPool>
 #include <QTimer>
 #include <QWidget>
 #include "settingswidget.h"
@@ -81,11 +82,16 @@ private:
     void updateClangFormatStyleDescription();
     void setupClangFormatComboboxes();
     int findClangFormatStyleIndex(QComboBox *comboBox, int value, int fallbackValue) const;
+    // Applies the result of the asynchronous demo to the widget, unless a newer
+    // demo has been requested in the meantime.
+    void applyDemoResult(quint64 generation, const QString& display);
 
 private:
     Ui::FormatterGeneralWidget *ui;
     FormatterStyleModel mStylesModel;
     QTimer mDemoTimer;
+    QThreadPool mDemoPool;
+    quint64 mDemoGeneration = 0;
 
     // SettingsWidget interface
 protected:

@@ -76,7 +76,10 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
         process.waitForFinished(-1);
     if (timedout) {
         process.kill();
-        process.waitForFinished();
+        // Don't let a process that ignores the kill add another 30 s to the
+        // timeout: the caller asked for a bound, so the wait after the kill is
+        // bounded too.
+        process.waitForFinished(1000);
     }
     // drain what's left, in case the signals above didn't deliver everything
     standardOutput.append(process.readAllStandardOutput());

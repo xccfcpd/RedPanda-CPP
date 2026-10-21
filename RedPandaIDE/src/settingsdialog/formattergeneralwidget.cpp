@@ -21,6 +21,38 @@
 #include "../reformatter/clangformatreformatter.h"
 #include "../reformatter/astyleformatter.h"
 #include <QFile>
+#include <QMetaObject>
+#include <QPointer>
+#include <QRunnable>
+
+#include <exception>
+#include <functional>
+#include <utility>
+
+namespace {
+
+// The demo formats a fixed, small sample. It is only a preview: a formatter that
+// hangs must not hold the settings page for the 30 s the editor uses.
+const int DEMO_TIMEOUT_MS = 3000;
+
+class DemoReformatTask : public QRunnable
+{
+public:
+    explicit DemoReformatTask(std::function<void()> action)
+        : mAction{std::move(action)}
+    {
+    }
+
+    void run() override
+    {
+        mAction();
+    }
+
+private:
+    std::function<void()> mAction;
+};
+
+} // namespace
 
 FormatterGeneralWidget::FormatterGeneralWidget(ColorManager *colorManager, const QString& name, const QString& group, IconsManager *iconsManager, QWidget *parent):
     SettingsWidget(name,group,iconsManager,parent),
@@ -35,6 +67,8 @@ FormatterGeneralWidget::FormatterGeneralWidget(ColorManager *colorManager, const
     ui->editDemo->applySettings();
     ui->editDemo->setReadOnly(true);
     ui->editDemo->setFileType(FileType::CppSource);
+    // One demo at a time; a newer request replaces the one that is queued.
+    mDemoPool.setMaxThreadCount(1);
     // Debounce: reformatting the demo spawns a clang-format process, so don't
     // start one for every intermediate settingsChanged while the user drags a
     // control - wait until the changes settle.
@@ -111,6 +145,11 @@ int FormatterGeneralWidget::findClangFormatStyleIndex(QComboBox *comboBox, int v
 
 FormatterGeneralWidget::~FormatterGeneralWidget()
 {
+    // Drop the demos that are queued and wait for the one that runs: its result
+    // is posted back to this widget, and it must not touch the UI after it is
+    // gone. The timeout of the demo makes this wait bounded.
+    mDemoPool.clear();
+    mDemoPool.waitForDone();
     delete ui;
 }
 
@@ -505,6 +544,12 @@ void FormatterGeneralWidget::on_chkBreakMaxCodeLength_stateChanged(int)
 
 void FormatterGeneralWidget::updateDemo()
 {
+    // A newer demo makes the result of the one that is running stale. The
+    // queued ones can be dropped; the running process cannot be interrupted,
+    // but its result is ignored when it arrives.
+    const quint64 generation = ++mDemoGeneration;
+    mDemoPool.clear();
+
     QFile file(":/codes/formatdemo.cpp");
     if (!file.open(QFile::ReadOnly))
         return;
@@ -513,49 +558,72 @@ void FormatterGeneralWidget::updateDemo()
     CodeFormatterSettings formatter(nullptr);
     updateCodeFormatter(formatter);
 
-    if (formatter.formatterEngine() == FormatterEngine::feClangFormat) {
-        const QString &clangFormat = pSettings->environment().clangFormatPath();
-        if (!fileExists(clangFormat)) {
-            ui->editDemo->setContent(tr("Can't find clang-format in \"%1\".").arg(clangFormat));
-            return;
-        }
-        ClangFormatReformatter reformatter(clangFormat,
-                                           formatter.getClangFormatArguments(),
-                                           QString(),
-                                           pSettings->dirs().projectDir(),
-                                           nullptr);
-        QString errorMessage;
-        bool isOk;
-        QString newContent = reformatter.reformat(QString::fromUtf8(content),
-                                                errorMessage, isOk);
-        QString display;
-        if (!errorMessage.isEmpty())
-            display += errorMessage + '\n';
-        display += newContent;
-        ui->editDemo->setContent(display);
-        return;
+    const int engine = formatter.formatterEngine();
+    const QString baseDirectory = pSettings->dirs().projectDir();
+    const QString demoContent = QString::fromUtf8(content);
+    QString program;
+    QStringList args;
+    if (engine == FormatterEngine::feClangFormat) {
+        program = pSettings->environment().clangFormatPath();
+        args = formatter.getClangFormatArguments();
+    } else {
+        program = pSettings->environment().AStylePath();
+        args = formatter.getAstyleArguments();
     }
 
-    const QString &astyle = pSettings->environment().AStylePath();
-    if (!fileExists(astyle)) {
-        ui->editDemo->setContent(Editor::tr("Can't find astyle in \"%1\".").arg(astyle));
+    // Only plain values are captured: the worker must not touch the widget or
+    // the settings object, which belong to the GUI thread. The formatter itself
+    // is created and destroyed inside the worker (it is a QObject).
+    QPointer<FormatterGeneralWidget> self = this;
+    mDemoPool.start(new DemoReformatTask(
+        [self, generation, engine, program, args, baseDirectory, demoContent]() {
+            QString display;
+            try {
+                if (engine == FormatterEngine::feClangFormat) {
+                    ClangFormatReformatter reformatter(program, args, QString(),
+                                                       baseDirectory, nullptr,
+                                                       nullptr, DEMO_TIMEOUT_MS);
+                    QString errorMessage;
+                    bool isOk = false;
+                    QString newContent = reformatter.reformat(demoContent,
+                                                              errorMessage, isOk);
+                    if (!errorMessage.isEmpty())
+                        display += errorMessage + '\n';
+                    display += newContent;
+                } else {
+                    // Use the same formatter as the editor, so the demo shows
+                    // exactly what reformatting the file would produce.
+                    AStyleReformatter reformatter(program, args, QString(),
+                                                  baseDirectory, nullptr,
+                                                  nullptr, DEMO_TIMEOUT_MS);
+                    QString errorMessage;
+                    bool isOk = false;
+                    QString newContent = reformatter.reformat(demoContent,
+                                                              errorMessage, isOk);
+                    if (!errorMessage.isEmpty())
+                        display += errorMessage + '\n';
+                    display += newContent;
+                }
+            } catch (const std::exception& e) {
+                display = tr("The formatter crashed: %1")
+                        .arg(QString::fromLocal8Bit(e.what()));
+            } catch (...) {
+                display = tr("The formatter crashed with an unknown error.");
+            }
+            // Post only the text back: the widget may have been destroyed while
+            // the demo was running.
+            QMetaObject::invokeMethod(self,
+                                      [self, generation, display]() {
+                if (self)
+                    self->applyDemoResult(generation, display);
+            }, Qt::QueuedConnection);
+        }));
+}
+
+void FormatterGeneralWidget::applyDemoResult(quint64 generation, const QString& display)
+{
+    if (generation != mDemoGeneration)
         return;
-    }
-    // use the same formatter as the editor, so the demo shows exactly what
-    // reformatting the file would produce (including its error handling)
-    AStyleReformatter reformatter(astyle,
-                                  formatter.getAstyleArguments(),
-                                  QString(),
-                                  pSettings->dirs().projectDir(),
-                                  nullptr);
-    QString errorMessage;
-    bool isOk;
-    QString newContent = reformatter.reformat(QString::fromUtf8(content),
-                                             errorMessage, isOk);
-    QString display;
-    if (!errorMessage.isEmpty())
-        display += errorMessage + '\n';
-    display += newContent;
     ui->editDemo->setContent(display);
 }
 

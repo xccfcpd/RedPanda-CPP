@@ -26,7 +26,8 @@ public:
     // (mirroring ClangFormatReformatter); astyle itself is run as a filter.
     AStyleReformatter(const QString& astylePath, const QStringList& args,
                       const QString& fileName, const QString& baseDirectory,
-                      LoggerFunc newLoggerFunc, QObject* parent = nullptr);
+                      LoggerFunc newLoggerFunc, QObject* parent = nullptr,
+                      int timeoutMs = 30000);
     QString reformat(const QString& content, QString &errorMessage, bool &isOk) override;
 private:
     QString mAstylePath;
@@ -34,6 +35,7 @@ private:
     QString mFileName;
     QString mBaseDirectory;
     LoggerFunc mLoggerFunc;
+    int mTimeoutMs;
 };
 
 #endif

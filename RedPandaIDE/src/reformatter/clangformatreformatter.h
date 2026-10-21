@@ -30,7 +30,8 @@ public:
                            const QString& fileName,
                            const QString& baseDirectory,
                            LoggerFunc newLoggerFunc,
-                           QObject* parent = nullptr);
+                           QObject* parent = nullptr,
+                           int timeoutMs = 30000);
     QString reformat(const QString& content, QString &errorMessage, bool &isOk) override;
 private:
     QString mClangFormatPath;
@@ -38,6 +39,7 @@ private:
     QString mFileName;
     QString mBaseDirectory;
     LoggerFunc mLoggerFunc;
+    int mTimeoutMs;
 };
 
 #endif
