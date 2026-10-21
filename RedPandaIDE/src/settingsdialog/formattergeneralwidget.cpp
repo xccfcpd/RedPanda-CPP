@@ -605,10 +605,12 @@ void FormatterGeneralWidget::updateDemo()
                     display += newContent;
                 }
             } catch (const std::exception& e) {
-                display = tr("The formatter crashed: %1")
+                // Reuse the editor's translations: these messages are already
+                // present in its translation context.
+                display = Editor::tr("The formatter crashed: %1")
                         .arg(QString::fromLocal8Bit(e.what()));
             } catch (...) {
-                display = tr("The formatter crashed with an unknown error.");
+                display = Editor::tr("The formatter crashed with an unknown error.");
             }
             // Post only the text back: the widget may have been destroyed while
             // the demo was running.
