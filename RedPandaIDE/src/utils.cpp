@@ -67,8 +67,8 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
     }
     process.closeWriteChannel();
     // A negative timeout waits for the process to finish on its own: -1 is what asks
-    // QProcess for that, the no-argument overload bounds the wait to 30 seconds, and
-    // only the callers that ask for a bound (the code formatters) can time out here.
+    // QProcess for that. The default timeout is bounded (see utils.h), because these
+    // waits run on the GUI thread; only a caller that really needs it passes -1.
     bool timedout = false;
     if (timeoutMs >= 0)
         timedout = !process.waitForFinished(timeoutMs);

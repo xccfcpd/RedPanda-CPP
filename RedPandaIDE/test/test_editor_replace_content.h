@@ -29,6 +29,7 @@ private slots:
     void test_replaceContent_reanchorsTheBreakpointOfAMergedLineWithTheAppWiring();
     void test_replaceContent_movesTheCaretAfterTheModelsWereTold();
     void test_undoOfAWholeContentChange_movesTheCaretAfterTheModelsWereTold();
+    void test_save_whileReformatting_savesTheFormattedContent();
 private:
     // Records what the editor tells the models (see ContentReplacedFunc) and
     // anchors one line, to stand for the breakpoints, the bookmarks and the carets

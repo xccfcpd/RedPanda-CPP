@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QThreadPool>
 #include "editoranchors.h"
 #include "utils/file.h"
 #include "utils/types.h"
@@ -486,9 +487,12 @@ private:
     // hands the resulting old line -> new line map back to the caller.
     QMap<int,int> replaceContentAndRemap(const QString& newContent, bool doReparse);
     // Applies the result of an asynchronous reformat on the GUI thread (see
-    // reformat()).
+    // reformat()). "generation" is the reformat the result belongs to: a result
+    // of a reformat that a newer one has replaced (the synchronous one a save
+    // starts, see reformat()) is stale and is ignored.
     void finishReformat(const QString& newContent, const QString& errorMessage, bool isOk,
-                        const QString& sourceText, bool doReparse, bool notify);
+                        const QString& sourceText, bool doReparse, bool notify,
+                        quint64 generation);
     // Anchors of the breakpoints and the bookmarks that the models hold for this
     // file, so they can be found back after the whole content has been replaced.
     QMap<int,ReformatAnchor> markerAnchors() const;
@@ -508,8 +512,16 @@ private:
 
 private:
     bool mInited;
-    // set while an asynchronous reformat is running, to ignore re-entrant calls
+    // set while a reformat is running, to ignore re-entrant calls. A save that
+    // needs the formatted content abandons the running one (see reformat()).
     bool mIsReformatting = false;
+    // Identifies the reformat the editor is waiting for: a result of an older
+    // reformat must not be applied once a newer one has replaced it.
+    quint64 mReformatGeneration = 0;
+    // The reformats of this editor run here. It is per editor (and not a static
+    // pool), so that destroying the editor can drop the reformats it queued
+    // without touching the ones of the other editors.
+    QThreadPool mReformatPool;
     // Depth of the whole-content replacements that are running (see
     // isReplacingContent()): a counter, so that a replacement started while
     // another one runs doesn't clear the flag the other one relies on.

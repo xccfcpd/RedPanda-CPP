@@ -49,11 +49,12 @@ ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir, con
                            bool separateStderr = false,
                            bool inheritEnvironment = true,
                            const QProcessEnvironment& env = QProcessEnvironment(),
-                           // A negative timeout waits for the process to finish on its own:
-                           // only the callers that ask for a bound (the code formatters) should
-                           // pass one - a tool or a git command of the user can run for minutes,
-                           // and killing it silently would be worse than waiting.
-                           int timeoutMs = -1,
+                           // A negative timeout waits for the process to finish on its own.
+                           // The default is bounded like the QProcess default used to be:
+                           // the calls run on the GUI thread, so a process that never exits
+                           // must not freeze the application forever. Callers that really
+                           // need to wait longer can pass a larger value (or -1) explicitly.
+                           int timeoutMs = 30000,
                            int* exitCode = nullptr );
 
 void openFileFolderInExplorer(const QString& path);

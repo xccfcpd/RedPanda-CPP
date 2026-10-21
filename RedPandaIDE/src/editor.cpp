@@ -32,10 +32,13 @@
 #include <QScrollBar>
 #include <QScreen>
 #include <memory>
-#include <thread>
+#include <functional>
+#include <utility>
 #include <exception>
 #include <QPointer>
 #include <QMetaObject>
+#include <QRunnable>
+#include <QThreadPool>
 #include <QStringList>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -69,6 +72,27 @@
 #include <QAbstractTextDocumentLayout>
 
 using QSynedit::CharPos;
+
+namespace {
+
+class ReformatTask : public QRunnable
+{
+public:
+    explicit ReformatTask(std::function<void()> action)
+        : mAction{std::move(action)}
+    {
+    }
+
+    void run() override
+    {
+        mAction();
+    }
+
+private:
+    std::function<void()> mAction;
+};
+
+} // namespace
 
 static QSet<QString> CppTypeQualifiers {
     "const",
@@ -171,6 +195,9 @@ Editor::Editor(QWidget *parent):
     setContextMenuPolicy(Qt::CustomContextMenu);
 
     mCanAutoSave = false;
+    // One reformat at a time is enough for an editor (mIsReformatting enforces it);
+    // keeping the pool per editor lets ~Editor() drop this editor's queued work.
+    mReformatPool.setMaxThreadCount(1);
 
 //    if (mParentPageControl) {
 //        //first showEvent triggered here
@@ -195,6 +222,12 @@ Editor::Editor(QWidget *parent):
 
 Editor::~Editor() {
     //qDebug()<<"editor "<<mFilename<<" deleted";
+    // A reformat still running would post its result back to this editor (and
+    // would use the formatters and the Qt application while they are being torn
+    // down). Drop the ones this editor queued and wait for the one that runs;
+    // the formatters have a bounded timeout, so this wait ends.
+    mReformatPool.clear();
+    mReformatPool.waitForDone();
     cleanAutoBackup();
 }
 
@@ -306,7 +339,11 @@ bool Editor::save(bool force, bool doReparse) {
         return saveAs("", doReparse);
     }    
     try {
-        if (mEditorSettings->autoFormatWhenSaved()) {
+        // A reformat the user started must be applied before the content is
+        // written, even when "format when saved" is off: the file must not be
+        // saved with the content that was formatted away, and the abandoned
+        // result must not mark the editor modified right after the save.
+        if (mEditorSettings->autoFormatWhenSaved() || mIsReformatting) {
             reformat(false, false, false);
         } else if (mEditorSettings->removeTrailingSpacesWhenSaved()) {
             trimTrailingSpaces();
@@ -406,7 +443,9 @@ bool Editor::saveAs(const QString &name, bool doCheckSyntax){
         mParser->invalidateFile(mFilename);
     }
 
-    if (mEditorSettings->autoFormatWhenSaved()) {
+    // See save(): a reformat that is still running is completed synchronously
+    // before the file is written, instead of being silently abandoned.
+    if (mEditorSettings->autoFormatWhenSaved() || mIsReformatting) {
         reformat(false, false, false);
     } else if (mEditorSettings->removeTrailingSpacesWhenSaved()) {
         trimTrailingSpaces();
@@ -5196,16 +5235,41 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
     if (!isFormattableCppFile(mFileType)
             && !(mFilename.isEmpty() && mFileType == FileType::None))
         return;
-    if (!mGetReformatterFunc)
+    if (!mGetReformatterFunc) {
+        // Nothing can format the content, but a save must not leave a running
+        // reformat to mark the editor modified after the file was written.
+        if (mIsReformatting && !asynchronous) {
+            ++mReformatGeneration;
+            mIsReformatting = false;
+        }
         return;
-    if (mIsReformatting)
+    }
+    if (mIsReformatting && asynchronous)
         return;
     // shared_ptr, so the formatter QObject stays alive while the worker runs but
     // is still destroyed on the GUI thread: the result handler keeps the last
     // reference, and a QObject must not be deleted from another thread.
     std::shared_ptr<BaseReformatter> formatter = mGetReformatterFunc(this);
-    if (!formatter)
+    if (!formatter) {
+        if (mIsReformatting && !asynchronous) {
+            ++mReformatGeneration;
+            mIsReformatting = false;
+        }
         return;
+    }
+
+    if (mIsReformatting) {
+        // A save needs the formatted content now: abandon the reformat that is
+        // running (its result is ignored through the generation below) and do
+        // the formatting synchronously. Skipping it would save the content
+        // without formatting, while the abandoned result would mark the editor
+        // modified right after the save.
+        ++mReformatGeneration;
+        mIsReformatting = false;
+        // Drop a reformat that is still queued (a running one is ignored through
+        // the generation above, its result will be stale).
+        mReformatPool.clear();
+    }
 
     // The formatter (especially clang-format on a large file) can block for a
     // while, so run it on a worker thread and apply the result back on the GUI
@@ -5213,6 +5277,8 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
     // the markers on their code are built when the result is applied, from the
     // content that was really formatted (see finishReformat()).
     QString sourceText = text();
+    const quint64 generation = ++mReformatGeneration;
+    mIsReformatting = true;
 
     if (!asynchronous) {
         // The caller (the save path) needs the content reformatted *before* it
@@ -5220,7 +5286,6 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
         // a worker thread would let the file be written before the result is
         // applied, leaving the saved file unformatted (and re-marking the editor
         // as modified right after saving).
-        mIsReformatting = true;
         QString newContent;
         QString errorMessage;
         bool isOk = false;
@@ -5233,46 +5298,49 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
             isOk = false;
             errorMessage = tr("The formatter crashed with an unknown error.");
         }
-        finishReformat(newContent, errorMessage, isOk, sourceText, doReparse, notify);
+        finishReformat(newContent, errorMessage, isOk, sourceText, doReparse, notify,
+                       generation);
         return;
     }
 
-    mIsReformatting = true;
     QPointer<Editor> self = this;
     try {
-        std::thread([formatter, sourceText = std::move(sourceText),
-                     doReparse, notify, self]() {
-            QString newContent;
-            QString errorMessage;
-            bool isOk = false;
-            // A throw inside the formatter would otherwise terminate the whole
-            // process (std::thread calls std::terminate on an uncaught exception)
-            // and leave mIsReformatting stuck at true forever. Catch it and report
-            // the failure back to the GUI thread like any other error.
-            try {
-                newContent = formatter->reformat(sourceText, errorMessage, isOk);
-            } catch (const std::exception &e) {
-                isOk = false;
-                errorMessage = tr("The formatter crashed: %1").arg(QString::fromLocal8Bit(e.what()));
-            } catch (...) {
-                isOk = false;
-                errorMessage = tr("The formatter crashed with an unknown error.");
-            }
-            // post the result back to the GUI thread; the lambda is copied into
-            // the event, so the worker thread's locals are safe to release
-            // afterwards. Capturing "formatter" here makes the GUI thread hold
-            // the last reference, so the formatter is destroyed there.
-            QMetaObject::invokeMethod(self,
-                                      [self, formatter, newContent, errorMessage, isOk, sourceText,
-                                       doReparse, notify]() {
-                if (self)
-                    self->finishReformat(newContent, errorMessage, isOk, sourceText,
-                                         doReparse, notify);
-            }, Qt::QueuedConnection);
-        }).detach();
+        mReformatPool.start(new ReformatTask(
+            [formatter, sourceText = std::move(sourceText),
+             doReparse, notify, self, generation]() {
+                QString newContent;
+                QString errorMessage;
+                bool isOk = false;
+                // A throw inside the formatter would otherwise terminate the
+                // worker (std::terminate on an uncaught exception) and leave
+                // mIsReformatting stuck at true forever. Catch it and report the
+                // failure back to the GUI thread like any other error.
+                try {
+                    newContent = formatter->reformat(sourceText, errorMessage, isOk);
+                } catch (const std::exception &e) {
+                    isOk = false;
+                    errorMessage = tr("The formatter crashed: %1").arg(QString::fromLocal8Bit(e.what()));
+                } catch (...) {
+                    isOk = false;
+                    errorMessage = tr("The formatter crashed with an unknown error.");
+                }
+                // post the result back to the GUI thread; the lambda is copied
+                // into the event, so the worker thread's locals are safe to
+                // release afterwards. Capturing "formatter" here makes the GUI
+                // thread hold the last reference, so the formatter is destroyed
+                // there.
+                QMetaObject::invokeMethod(self,
+                                          [self, formatter, newContent, errorMessage, isOk, sourceText,
+                                           doReparse, notify, generation]() {
+                    if (self)
+                        self->finishReformat(newContent, errorMessage, isOk, sourceText,
+                                             doReparse, notify, generation);
+                }, Qt::QueuedConnection);
+            }));
     } catch (const std::exception &e) {
-        // constructing the worker thread failed; don't leave the editor stuck
-        mIsReformatting = false;
+        // Starting the task failed; don't leave the editor stuck.
+        if (generation == mReformatGeneration)
+            mIsReformatting = false;
         if (notify)
             QMessageBox::critical(this, tr("Reformat Error"),
                                   tr("Failed to start the formatter: %1")
@@ -5281,8 +5349,13 @@ void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
 }
 
 void Editor::finishReformat(const QString &newContent, const QString &errorMessage, bool isOk,
-                            const QString &sourceText, bool doReparse, bool notify)
+                            const QString &sourceText, bool doReparse, bool notify,
+                            quint64 generation)
 {
+    // A newer reformat owns the editor now (the synchronous one a save starts,
+    // see reformat()): this result must not change its content or its flags.
+    if (generation != mReformatGeneration)
+        return;
     // the editor may have become read-only (e.g. a debug session started) while
     // the formatter was running; don't touch it in that case.
     if (readOnly()) {

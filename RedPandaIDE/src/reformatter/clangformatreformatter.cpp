@@ -22,8 +22,9 @@
 #include <QDir>
 #include <QFileInfo>
 
-// clang-format is a single-shot filter, it should never run that long
-static const int CLANG_FORMAT_TIMEOUT_MS = 15000;
+// clang-format is a single-shot filter; it can take a while on a large file, so
+// keep the bound the application used before (30 seconds)
+static const int CLANG_FORMAT_TIMEOUT_MS = 30000;
 
 ClangFormatReformatter::ClangFormatReformatter(const QString& clangFormatPath,
                                                const QStringList& args,

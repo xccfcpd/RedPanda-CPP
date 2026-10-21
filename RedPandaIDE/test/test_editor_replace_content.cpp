@@ -2,9 +2,32 @@
 
 #include "src/editor.h"
 #include "src/debugger/breakpointanchor.h"
+#include "src/settings/editorsettings.h"
 
 #include <QTest>
+#include <QFile>
+#include <QTemporaryDir>
+#include <QThread>
 #include <qsynedit/qsynedit.h>
+
+#include <memory>
+
+namespace {
+
+// A formatter that takes long enough for a save to happen while it runs. It is
+// not a real code formatter: it only makes the reformat recognizable.
+class SlowReformatter : public BaseReformatter
+{
+public:
+    QString reformat(const QString& content, QString& /*errorMessage*/, bool& isOk) override
+    {
+        QThread::msleep(100);
+        isOk = true;
+        return QStringLiteral("// formatted\n") + content;
+    }
+};
+
+} // namespace
 
 TestEditorReplaceContent::TestEditorReplaceContent(QObject *parent):
     TestEditorBase{parent}
@@ -383,4 +406,48 @@ void TestEditorReplaceContent::test_undoOfAWholeContentChange_movesTheCaretAfter
     // records that move in the history after the map has been applied to it
     QCOMPARE(caretMovesInsideTheReplacement, 0);
     QCOMPARE(caretMovesOutsideOfTheReplacement, 1);
+}
+
+// A save needs the formatted content before it writes the file. If the user
+// started a reformat and saves before it finished, save() must not silently write
+// the unformatted content and then let the abandoned result mark the editor
+// modified: it formats synchronously and ignores the stale result.
+void TestEditorReplaceContent::test_save_whileReformatting_savesTheFormattedContent()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    const QString fileName = dir.filePath(QStringLiteral("race.cpp"));
+    {
+        QFile file(fileName);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write("int  main() { return 0; }\n");
+    }
+
+    // The reformat was requested explicitly, so the save has to complete it even
+    // when "format when saved" is off.
+    mEditorSettings->setAutoFormatWhenSaved(false);
+    mEditor->setFilename(fileName);
+    mEditor->setFileType(FileType::CppSource, false);
+    mEditor->loadFile(fileName, false);
+    mEditor->setGetReformatterFunc([](Editor*) {
+        return std::make_unique<SlowReformatter>();
+    });
+
+    // Start the asynchronous reformat and save before it can finish.
+    mEditor->reformat(false, false, true);
+    QVERIFY(mEditor->save(false, false));
+
+    {
+        QFile file(fileName);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        const QString savedContent = QString::fromUtf8(file.readAll());
+        QVERIFY2(savedContent.startsWith(QStringLiteral("// formatted")),
+                 qPrintable(savedContent));
+    }
+
+    // Let the abandoned worker finish; its stale result must change nothing.
+    QTest::qWait(300);
+    QVERIFY(!mEditor->modified());
+
+    mEditorSettings->setAutoFormatWhenSaved(false);
 }

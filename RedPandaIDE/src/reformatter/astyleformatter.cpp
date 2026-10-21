@@ -22,8 +22,9 @@
 #include <QDir>
 #include <QFileInfo>
 
-// astyle is a single-shot filter, it should never run that long
-static const int ASTYLE_TIMEOUT_MS = 15000;
+// astyle is a single-shot filter; keep the bound the application used before
+// (30 seconds), so a large file is not killed while it is still being formatted
+static const int ASTYLE_TIMEOUT_MS = 30000;
 
 AStyleReformatter::AStyleReformatter(const QString& astylePath, const QStringList& args,
                                      const QString& fileName, const QString& baseDirectory,
