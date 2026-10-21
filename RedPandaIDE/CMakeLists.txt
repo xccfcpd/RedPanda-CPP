@@ -567,11 +567,28 @@ target_embed_resources(RedPandaIDE
     RESOURCE_NAME colorschemes
     FILES ${resource_colorscheme_files})
 
-# app icon
+# app icon and Windows version information
 
 if(WIN32)
+    # The PE version resource must use four numeric components. The fourth one
+    # is the git revision count, when it is available and still fits the 16-bit
+    # field of VERSIONINFO; otherwise it stays 0. The display string can keep
+    # the full version (including the pre-release suffix).
+    set(REDPANDA_WINDOWS_BUILD 0)
+    if(APP_VERSION_BUILD MATCHES "^[0-9]+$")
+        if(APP_VERSION_BUILD LESS 65536)
+            set(REDPANDA_WINDOWS_BUILD ${APP_VERSION_BUILD})
+        endif()
+    endif()
+    set(REDPANDA_WINDOWS_FILEVERSION
+        "${APP_VERSION_MAJOR},${APP_VERSION_MINOR},${APP_VERSION_PATCH},${REDPANDA_WINDOWS_BUILD}")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/resources/windows_version.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/windows_version.rc"
+        @ONLY)
     target_sources(RedPandaIDE PRIVATE
-        resources/windows_icon.rc)
+        resources/windows_icon.rc
+        "${CMAKE_CURRENT_BINARY_DIR}/windows_version.rc")
 elseif(MACOS)
     set(app_icon ../platform/macos/RedPandaIDE.icns)
     set_source_files_properties(${app_icon}

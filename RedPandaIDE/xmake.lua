@@ -40,8 +40,10 @@ target("RedPandaIDE")
         local version = json.decode(version_json)
 
         local redpanda_version = format("%d.%d.%d", version.major, version.minor, version.patch)
+        local version_build = 0
         try {function()
             local outdata = os.iorunv("git", {"rev-list", "HEAD", "--count"})
+            version_build = tonumber(outdata:trim()) or 0
             redpanda_version = redpanda_version .. "." .. outdata:trim()
         end}
 
@@ -51,6 +53,32 @@ target("RedPandaIDE")
         end
 
         target:add("defines", "REDPANDA_CPP_VERSION=\"" .. redpanda_version .. "\"")
+
+        -- Windows needs a VERSIONINFO resource for the file properties. Generate
+        -- it from the same template and the same version values as CMake uses,
+        -- so the xmake and CMake builds expose identical metadata.
+        if os.host() == "windows" then
+            version_build = math.floor(version_build)
+            if version_build < 0 or version_build > 65535 then
+                version_build = 0
+            end
+            local template = io.readfile(path.join(os.projectdir(),
+                                                   "RedPandaIDE/resources/windows_version.rc.in"))
+            if template then
+                local file_version = format("%d,%d,%d,%d",
+                                            version.major, version.minor, version.patch, version_build)
+                local rc_content = template:gsub("@REDPANDA_WINDOWS_FILEVERSION@", function()
+                    return file_version
+                end)
+                rc_content = rc_content:gsub("@REDPANDA_VERSION@", function()
+                    return redpanda_version
+                end)
+                local rc_path = path.join(target:autogendir(), "windows_version.rc")
+                os.mkdir(path.directory(rc_path))
+                io.writefile(rc_path, rc_content)
+                target:add("files", rc_path)
+            end
+        end
     end)
 
     -- defines
