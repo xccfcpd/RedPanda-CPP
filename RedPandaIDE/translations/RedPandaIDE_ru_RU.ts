@@ -6,22 +6,42 @@
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="35"/>
         <source>Can&apos;t find astyle in &quot;%1&quot;.</source>
-        <translation type="unfinished">Не могу найти astyle в &quot;%1&quot;.</translation>
+        <translation>Не могу найти astyle в &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle не может отформатировать &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>Содержимое &quot;%1&quot; не может быть преобразовано в UTF-8.</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="41"/>
         <source>Reformatting content using astyle...</source>
-        <translation type="unfinished">Переформатирование содержимого с помощью astyle...</translation>
+        <translation>Переформатирование содержимого с помощью astyle...</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="43"/>
         <source>- Astyle: %1</source>
-        <translation type="unfinished">- Astyle: %1</translation>
+        <translation>- Astyle: %1</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- Рабочий каталог: %1</translation>
     </message>
     <message>
         <location filename="../src/reformatter/astyleformatter.cpp" line="44"/>
         <source>- Command: %1</source>
-        <translation type="unfinished">- Команда: %1</translation>
+        <translation>- Команда: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle завершается с кодом %1.</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle не создает никакого вывода.</translation>
     </message>
 </context>
 <context>
@@ -46,11 +66,7 @@
         <source>Build time: %1 %2</source>
         <translation>Время сборки: %1 %2</translation>
     </message>
-    <message>
-        <source>Copyright(C) 2021-2025 瞿华(royqh1979@gmail.com)</source>
-        <translation type="vanished">Copyright(C) 2021-2026 Ку Хуа (royqh1979@gmail.com)</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/aboutdialog.ui" line="80"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Сайт: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
@@ -81,22 +97,22 @@
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="36"/>
         <source>, μarch level v4</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v4</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="38"/>
         <source>, μarch level v3</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v3</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="40"/>
         <source>, μarch level v2</source>
-        <translation type="unfinished"></translation>
+        <translation>, микроархитектура уровня v2</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="42"/>
         <source>, baseline</source>
-        <translation type="unfinished"></translation>
+        <translation>, базовая</translation>
     </message>
     <message>
         <location filename="../src/widgets/aboutdialog.cpp" line="82"/>
@@ -279,22 +295,22 @@
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="103"/>
         <source>Memory Usage:</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование памяти:</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="14"/>
         <source>Settings</source>
-        <translation type="unfinished">Настройки</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="110"/>
         <source>Each file use its own parser</source>
-        <translation type="unfinished"></translation>
+        <translation>Каждый файл использует свой парсер</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="117"/>
         <source>All files share one parser</source>
-        <translation type="unfinished"></translation>
+        <translation>Все файлы используют общий парсер</translation>
     </message>
     <message>
         <location filename="../src/widgets/choosethemedialog.ui" line="178"/>
@@ -959,23 +975,7 @@
         <source>Executable suffix</source>
         <translation>Суффикс исполнимого файла</translation>
     </message>
-    <message>
-        <source>Compilation Stages</source>
-        <translation type="vanished">Этапы компиляции</translation>
-    </message>
-    <message>
-        <source>Stop after the preprocessing stage</source>
-        <translation type="vanished">Остановка после этапа работы препроцессора</translation>
-    </message>
-    <message>
-        <source>Stop after the compilation proper stage</source>
-        <translation type="vanished">Остановка после завершения соответствующей стадии компиляции</translation>
-    </message>
-    <message>
-        <source>Link and generate the executable </source>
-        <translation type="vanished">Сборка и создание исполняемого файла </translation>
-    </message>
-    <message>
+                    <message>
         <location filename="../src/settingsdialog/compilersetoptionwidget.ui" line="469"/>
         <source>Preprocessing output suffix</source>
         <translation>Суффикс вывода препроцессора</translation>
@@ -1015,19 +1015,7 @@
         <source>Confirm</source>
         <translation>Подтверждение</translation>
     </message>
-    <message>
-        <source>Searching for compilers...</source>
-        <translation type="vanished">Поиск компиляторов...</translation>
-    </message>
-    <message>
-        <source>Abort</source>
-        <translation type="vanished">Прервать</translation>
-    </message>
-    <message>
-        <source>Searching...</source>
-        <translation type="vanished">Поиск...</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="328"/>
         <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="356"/>
         <source>Failed</source>
@@ -1395,7 +1383,7 @@
         <location filename="../src/editor.cpp" line="298"/>
         <location filename="../src/editor.cpp" line="418"/>
         <source>Save Error</source>
-        <translation type="unfinished">Ошибка сохранения</translation>
+        <translation>Ошибка сохранения</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="331"/>
@@ -1436,17 +1424,17 @@
         <location filename="../src/editor.cpp" line="3130"/>
         <location filename="../src/editor.cpp" line="3131"/>
         <source>Printing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать...</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3130"/>
         <source>Cancel</source>
-        <translation type="unfinished">Отмена</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3140"/>
         <source>Printing Page %1 / %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Печать страницы %1 / %2</translation>
     </message>
     <message>
         <location filename="../src/editor.cpp" line="3897"/>
@@ -1458,38 +1446,39 @@
     <message>
         <location filename="../src/editor.cpp" line="5150"/>
         <source>Reformat Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка переформатирования</translation>
     </message>
     <message>
-        <source>astyle not found</source>
-        <translation type="vanished">astyle не найден</translation>
+        <source>The formatter crashed: %1</source>
+        <translation>Форматировщик аварийно завершился: %1</translation>
     </message>
     <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>Форматировщик аварийно завершился с неизвестной ошибкой.</translation>
+    </message>
+
+    <message>
+        <source>The formatter can&apos;t be started.</source>
+        <translation>Не удалось запустить форматтер.</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>Не удалось запустить форматировщик: %1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>Переформатировать</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>Документ был изменён во время форматирования; результат не применён.</translation>
+    </message>
+        <message>
         <location filename="../src/settingsdialog/formattergeneralwidget.cpp" line="335"/>
         <source>Can&apos;t find astyle in &quot;%1&quot;.</source>
         <translation>Не могу найти astyle в &quot;%1&quot;.</translation>
     </message>
-    <message>
-        <source>Reformatting content using astyle...</source>
-        <translation type="vanished">Переформатирование содержимого с помощью astyle...</translation>
-    </message>
-    <message>
-        <source>- Astyle: %1</source>
-        <translation type="vanished">- Astyle: %1</translation>
-    </message>
-    <message>
-        <source>- Command: %1</source>
-        <translation type="vanished">- Команда: %1</translation>
-    </message>
-    <message>
-        <source>Break point condition</source>
-        <translation type="vanished">Условие точки останова</translation>
-    </message>
-    <message>
-        <source>Enter the condition of the breakpoint:</source>
-        <translation type="vanished">Введите условие для точки останова:</translation>
-    </message>
-    <message>
+                        <message>
         <location filename="../src/editor.cpp" line="5557"/>
         <source>Readonly</source>
         <translation>Только чтение</translation>
@@ -1592,11 +1581,7 @@
         <source>Copy &amp;&amp; Export As HTML</source>
         <translation>Копирование и экспорт в HTML</translation>
     </message>
-    <message>
-        <source>Use background color</source>
-        <translation type="vanished">Использовать фоновый цвет</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="84"/>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="178"/>
         <source>Use editor&apos;s color scheme</source>
@@ -1616,7 +1601,7 @@
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="106"/>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="210"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>Фон</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="129"/>
@@ -1627,7 +1612,7 @@
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="146"/>
         <source>Foreground</source>
-        <translation type="unfinished"></translation>
+        <translation>Передний план</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/editorclipboardwidget.ui" line="169"/>
@@ -1657,28 +1642,12 @@
         <source>Editors share one code parser</source>
         <translation>Редакторы используют один и тот же анализатор кода</translation>
     </message>
-    <message>
-        <source>Clear all parsed symbols when editor is hidden</source>
-        <translation type="vanished">Очистить все проанализированные символы, когда редактор скрыт</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="87"/>
         <source>Show completion suggestions while typing</source>
         <translation>Показывать предложения по завершению при вводе текста</translation>
     </message>
-    <message>
-        <source>Engine options</source>
-        <translation type="vanished">Параметры движка</translation>
-    </message>
-    <message>
-        <source>Scan local header files</source>
-        <translation type="vanished">Сканировать локальные заголовочные файлы</translation>
-    </message>
-    <message>
-        <source>Scan system header files</source>
-        <translation type="vanished">Сканировать системные заголовочные файлы</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/settingsdialog/editorcodecompletionwidget.ui" line="94"/>
         <source>Show keywords in suggestions</source>
         <translation>Показывать ключевые слова в предложениях</translation>
@@ -2398,7 +2367,7 @@
     <message>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="152"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/environmentappearancewidget.ui" line="155"/>
@@ -2577,7 +2546,7 @@
     <message>
         <location filename="../src/settingsdialog/environmentperformancewidget.ui" line="43"/>
         <source>Included files only parse once</source>
-        <translation type="unfinished"></translation>
+        <translation>Включённые файлы разбираются один раз</translation>
     </message>
 </context>
 <context>
@@ -3053,33 +3022,33 @@
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="116"/>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="124"/>
         <source>Invalid Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Недопустимое имя</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="91"/>
         <source>File or folder name cannot have leading or trailing spaces.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может начинаться или заканчиваться пробелами.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="99"/>
         <source>File or folder name cannot be empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может быть пустым.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="108"/>
         <source>File or folder name cannot end with a dot.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может заканчиваться точкой.</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="117"/>
         <source>File or folder name cannot contain any of the following characters:
 \ / : * ? &quot; &lt; &gt; |</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может содержать любой из следующих символов: \ / : * ? &quot; &lt; &gt; |</translation>
     </message>
     <message>
         <location filename="../src/widgets/filenameeditdelegate.cpp" line="125"/>
         <source>File or folder name cannot contain &apos;/&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла или папки не может содержать &apos;/&apos;.</translation>
     </message>
 </context>
 <context>
@@ -3483,6 +3452,169 @@
         <source>Indent at least one-half an additional indent.</source>
         <translation>Зделать по крайней мере половину дополнительного отступа.</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>Форматировщик</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>Файл (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>Нет (не форматировать)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>Параметры стиля</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>Использовать резервный стиль, если файл конфигурации .clang-format не найден:</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>Переопределить следующие параметры предопределенного стиля</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>Ширина отступа:</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>Использовать табуляцию:</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>Ширина табуляции:</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>Ограничение длины строки:</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>без ограничения</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>Сортировать директивы #include</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>Выравнивать последовательные присваивания</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>Дополнительные параметры командной строки:</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>Никогда</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>Только для отступов</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>Для продолжения строк и отступов</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>Выравнивать пробелами</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>Всегда</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>Читать ближайший файл конфигурации .clang-format. Если файл конфигурации не найден, используется резервный стиль.</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>Стиль, соответствующий стандартам кодирования LLVM.</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю C++ от Google.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Chromium.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Mozilla.</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю WebKit.</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>Стиль, соответствующий руководству по стилю Microsoft.</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>Стиль, соответствующий стандартам кодирования GNU.</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Не могу найти clang-format в &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>Примечание: переформатирование может изменить весь файл, например, преобразовать отступы табуляцией в пробелы. Поместите файл .clang-format в проект, чтобы точно контролировать результат.</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>Не могу найти clang-format в &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>Переформатирование содержимого с помощью clang-format...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- Команда: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format не создает никакого вывода.</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format не может отформатировать &quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>Содержимое &quot;%1&quot; не может быть преобразовано в UTF-8.</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format завершается с кодом %1.</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- Рабочий каталог: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -3496,6 +3628,10 @@
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="40"/>
         <source>Path to astyle</source>
         <translation>Путь к astyle</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>Путь к clang-format</translation>
     </message>
     <message>
         <location filename="../src/settingsdialog/formatterpathwidget.ui" line="27"/>
@@ -3699,345 +3835,37 @@
 </context>
 <context>
     <name>GitBranchDialog</name>
-    <message>
-        <source>Branch/Switch</source>
-        <translation type="vanished">Ветка/Переключение</translation>
-    </message>
-    <message>
-        <source>Switch To</source>
-        <translation type="vanished">Переключить на</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">Ветка</translation>
-    </message>
-    <message>
-        <source>Options</source>
-        <translation type="vanished">Параметры</translation>
-    </message>
-    <message>
-        <source>Overwrite working tree changed(force)</source>
-        <translation type="vanished">Перезаписать измененное рабочее дерево (принудительно)</translation>
-    </message>
-    <message>
-        <source>Track</source>
-        <translation type="vanished">Track</translation>
-    </message>
-    <message>
-        <source>Pass --track to git</source>
-        <translation type="vanished">Pass --track to git</translation>
-    </message>
-    <message>
-        <source>Force Track</source>
-        <translation type="vanished">Force Track</translation>
-    </message>
-    <message>
-        <source>Pass --no-track to git</source>
-        <translation type="vanished">Pass --no-track to git</translation>
-    </message>
-    <message>
-        <source>Force No Track</source>
-        <translation type="vanished">Force No Track</translation>
-    </message>
-    <message>
-        <source>Neither --track nor --no-track is passed to git</source>
-        <translation type="vanished">Neither --track nor --no-track is passed to git</translation>
-    </message>
-    <message>
-        <source>Not Specifiied</source>
-        <translation type="vanished">Не определено</translation>
-    </message>
-    <message>
-        <source>Create New Branch</source>
-        <translation type="vanished">Создать новую ветку</translation>
-    </message>
-    <message>
-        <source>Merge between original branch, working tree contents and the branch to switch to</source>
-        <translation type="vanished">Объединить исходную ветвь, содержимое рабочего дерева и ветвь, на которую нужно переключиться</translation>
-    </message>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">Слияние (merge)</translation>
-    </message>
-    <message>
-        <source>Force Creation (Reset branch if exists)</source>
-        <translation type="vanished">Принудительное создание (Переустановить ветку, если существует)</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">Ладно</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отмена</translation>
-    </message>
-</context>
+                                                                        </context>
 <context>
     <name>GitFetchDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">Диалог</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitLogDialog</name>
-    <message>
-        <source>Git Log</source>
-        <translation type="vanished">Протокол Git</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">Закрыть</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">Переустановка</translation>
-    </message>
-    <message>
-        <source>Revert</source>
-        <translation type="vanished">Вернуть (revert)</translation>
-    </message>
-    <message>
-        <source>branch</source>
-        <translation type="vanished">ветка</translation>
-    </message>
-    <message>
-        <source>Tag</source>
-        <translation type="vanished">Метка (tag)</translation>
-    </message>
-    <message>
-        <source>Reset &quot;%1&quot; to this...</source>
-        <translation type="vanished">Переустановить &quot;%1&quot; на это...</translation>
-    </message>
-    <message>
-        <source>Revert &quot;%1&quot; to this...</source>
-        <translation type="vanished">Вернуть &quot;%1&quot; на это...</translation>
-    </message>
-    <message>
-        <source>Create Branch at this version...</source>
-        <translation type="vanished">Создать ветку из этой версии...</translation>
-    </message>
-    <message>
-        <source>Create Tag at this version...</source>
-        <translation type="vanished">Создать Метку (tag) из этой версии...</translation>
-    </message>
-</context>
+                                        </context>
 <context>
     <name>GitLogModel</name>
-    <message>
-        <source>Date</source>
-        <translation type="vanished">Дата</translation>
-    </message>
-    <message>
-        <source>Author</source>
-        <translation type="vanished">Автор</translation>
-    </message>
-    <message>
-        <source>Title</source>
-        <translation type="vanished">Заголовок</translation>
-    </message>
-</context>
+            </context>
 <context>
     <name>GitManager</name>
-    <message>
-        <source>Folder &quot;%1&quot; already has a repository!</source>
-        <translation type="vanished">В каталоге &quot;%1&quot; уже есть репозиторий!</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitMergeDialog</name>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">Слияние</translation>
-    </message>
-    <message>
-        <source>From</source>
-        <translation type="vanished">Исходная</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">Ветка</translation>
-    </message>
-    <message>
-        <source>Option</source>
-        <translation type="vanished">Параметры</translation>
-    </message>
-    <message>
-        <source>No Commit</source>
-        <translation type="vanished">No Commit</translation>
-    </message>
-    <message>
-        <source>Squash</source>
-        <translation type="vanished">Подавление (Squash)</translation>
-    </message>
-    <message>
-        <source>No Fast Forward</source>
-        <translation type="vanished">Без Fast Forward</translation>
-    </message>
-    <message>
-        <source>Fast Forward Only</source>
-        <translation type="vanished">Только Fast Forward</translation>
-    </message>
-    <message>
-        <source>Merge Message</source>
-        <translation type="vanished">Сообщение слияния (merge)</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">Ладно</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отмена</translation>
-    </message>
-</context>
+                                            </context>
 <context>
     <name>GitPullDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">Диалог</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitPushDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">Диалог</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitRemoteDialog</name>
-    <message>
-        <source>Git Remote</source>
-        <translation type="vanished">Git удаленный</translation>
-    </message>
-    <message>
-        <source>Add Remote</source>
-        <translation type="vanished">Добавить удаленно</translation>
-    </message>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">Добавить</translation>
-    </message>
-    <message>
-        <source>Remove Remote</source>
-        <translation type="vanished">Удалить удалённо</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="vanished">Удалить</translation>
-    </message>
-    <message>
-        <source>Detail</source>
-        <translation type="vanished">Детали</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="vanished">Имя</translation>
-    </message>
-    <message>
-        <source>URL</source>
-        <translation type="vanished">Адрес (URL)</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">Закрыть</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">Ладно</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation type="vanished">Обновить</translation>
-    </message>
-</context>
+                                            </context>
 <context>
     <name>GitResetDialog</name>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">Переустановка / Сброс</translation>
-    </message>
-    <message>
-        <source>Reset current branch &quot;%1&quot; to</source>
-        <translation type="vanished">Изменить текущую ветку &quot;%1&quot; на</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">Ветка</translation>
-    </message>
-    <message>
-        <source>Tag</source>
-        <translation type="vanished">Метка</translation>
-    </message>
-    <message>
-        <source>Commit</source>
-        <translation type="vanished">Изменение</translation>
-    </message>
-    <message>
-        <source>Reset Type</source>
-        <translation type="vanished">Тип изменения (reset)</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Leave working tree and index untouched&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">Оставить рабочее дерево и индекс нетронутым</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset working tree and index (discarding local changes)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">Переустановить рабочее дерево и индекс (отмена локальных изменений)</translation>
-    </message>
-    <message>
-        <source>Soft</source>
-        <translation type="vanished">Мягкий (Soft)</translation>
-    </message>
-    <message>
-        <source>Hard</source>
-        <translation type="vanished">Жесткий (Hard)</translation>
-    </message>
-    <message>
-        <source>Leave working tree untouched, reset index</source>
-        <translation type="vanished">Оставить рабочее дерево нетронутым, сбросить индекс</translation>
-    </message>
-    <message>
-        <source>Mixed</source>
-        <translation type="vanished">Смешанный (Mixed)</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">Ладно</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отмена</translation>
-    </message>
-</context>
+                                                        </context>
 <context>
     <name>GitUserConfigDialog</name>
-    <message>
-        <source>Fill User Info</source>
-        <translation type="vanished">Заполнение информации о пользователе</translation>
-    </message>
-    <message>
-        <source>User Email:</source>
-        <translation type="vanished">E-Mail пользователя:</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">Ладно</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">Отмена</translation>
-    </message>
-    <message>
-        <source>User Name:</source>
-        <translation type="vanished">Имя пользователя:</translation>
-    </message>
-    <message>
-        <source>Git needs the following info to commit：</source>
-        <translation type="vanished">Git нужна следующая информация для фиксации изменений (commit)：</translation>
-    </message>
-</context>
+                        </context>
 <context>
     <name>InfoMessageBox</name>
     <message>
@@ -4398,7 +4226,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="792"/>
         <source>NPS</source>
-        <translation></translation>
+        <translation>NPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="804"/>
@@ -4409,7 +4237,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="807"/>
         <source>AP</source>
-        <translation></translation>
+        <translation>AP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="819"/>
@@ -4420,12 +4248,12 @@
     <message>
         <location filename="../src/mainwindow.ui" line="822"/>
         <source>RP</source>
-        <translation></translation>
+        <translation>RP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="834"/>
         <source>SP</source>
-        <translation></translation>
+        <translation>SP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="841"/>
@@ -4437,7 +4265,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="844"/>
         <source>SPA</source>
-        <translation></translation>
+        <translation>SPA</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="856"/>
@@ -4461,17 +4289,17 @@
     <message>
         <location filename="../src/mainwindow.ui" line="859"/>
         <source>LP</source>
-        <translation></translation>
+        <translation>LP</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="871"/>
         <source>IFPS</source>
-        <translation></translation>
+        <translation>IFPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="883"/>
         <source>EFPS</source>
-        <translation></translation>
+        <translation>EFPS</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="942"/>
@@ -5277,6 +5105,10 @@
         <translation>Руководство EGE</translation>
     </message>
     <message>
+        <source>Add Bookmark...</source>
+        <translation>Добавить закладку...</translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.ui" line="2709"/>
         <source>Modify Bookmark Description</source>
         <translation>Изменить описание закладки</translation>
@@ -5753,13 +5585,9 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3376"/>
         <source>Reparse Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Переразобрать код</translation>
     </message>
-    <message>
-        <source>AT&amp;&amp;T ASM</source>
-        <translation type="vanished">Ассемблер AT&amp;&amp;T</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/mainwindow.ui" line="3316"/>
         <source>Text File</source>
         <translation>Тектовый файл</translation>
@@ -5774,11 +5602,7 @@
         <source>C++ File</source>
         <translation>Файл Си++</translation>
     </message>
-    <message>
-        <source>Intel ASM</source>
-        <translation type="vanished">Ассемблер Intel</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/mainwindow.ui" line="3337"/>
         <source>Generate GIMPLE</source>
         <translation>Формирование GIMPLE</translation>
@@ -5786,7 +5610,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3340"/>
         <source>Ctrl+Shift+F12</source>
-        <translation></translation>
+        <translation>Ctrl+Shift+F12</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.ui" line="3345"/>
@@ -5801,7 +5625,7 @@
     <message>
         <location filename="../src/mainwindow.ui" line="3358"/>
         <source>NASM</source>
-        <translation></translation>
+        <translation>NASM</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="155"/>
@@ -6209,6 +6033,19 @@
         <translation>Удалить точку останова</translation>
     </message>
     <message>
+        <source>Add Breakpoint...</source>
+        <translation>Добавить точку останова...</translation>
+    </message>
+
+    <message>
+        <source>Add Breakpoint</source>
+        <translation>Добавить точку останова</translation>
+    </message>
+    <message>
+        <source>Condition of the new breakpoint (leave empty for none):</source>
+        <translation>Условие новой точки останова (оставьте пустым, если условия нет):</translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="3196"/>
         <source>Rename File</source>
         <translation>Удалить файл</translation>
@@ -6448,12 +6285,12 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Create File</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="4775"/>
         <source>Failed to create file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать файл %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="4793"/>
@@ -7092,7 +6929,7 @@
     <message>
         <location filename="../src/compiler/nasmfilecompiler.cpp" line="67"/>
         <source>The NASM &apos;%1&apos; doesn&apos;t exists!</source>
-        <translation></translation>
+        <translation>NASM &apos;%1&apos; не существует!</translation>
     </message>
     <message>
         <source>Please check the &quot;program&quot; page of compiler settings.</source>
@@ -8683,7 +8520,7 @@
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="193"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>Мультибиблиотечная сборка x86 (-mx)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="195"/>
@@ -8760,14 +8597,10 @@
         <source>Errors</source>
         <translation>Ошибки</translation>
     </message>
-    <message>
-        <source>Function without return type (return-type)</source>
-        <translation type="vanished">Функция без типа возвращаемого значения (return-type)</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="225"/>
         <source>No return statement in non-void function (return-type)</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет оператора return в не-void функции (return-type)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="226"/>
@@ -8777,7 +8610,7 @@
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="227"/>
         <source>Uninitialized variable visited (uninitialized)</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование неинициализированной переменной (uninitialized)</translation>
     </message>
     <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="228"/>
@@ -8985,22 +8818,22 @@
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1885"/>
         <source>Searching for compilers...</source>
-        <translation type="unfinished">Поиск компиляторов...</translation>
+        <translation>Поиск компиляторов...</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1886"/>
         <source>Abort</source>
-        <translation type="unfinished"></translation>
+        <translation>Прервать</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1893"/>
         <source>Searching...</source>
-        <translation type="unfinished">Поиск...</translation>
+        <translation>Поиск...</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="1915"/>
         <source>Searching %1/%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск %1/%2</translation>
     </message>
     <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="2011"/>
@@ -9149,11 +8982,7 @@
         <source>GB</source>
         <translation>ГБ</translation>
     </message>
-    <message>
-        <source>&lt;Auto Generated by Git&gt;</source>
-        <translation type="vanished">&lt;Автоматически сформировано Git&gt;</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/ojproblemsetmodel.cpp" line="193"/>
         <source>Can&apos;t parse problem set file &apos;%1&apos;:%2</source>
         <translation>Невозможно расшифроваь файл с набором проблем &apos;%1&apos;:%2</translation>
@@ -9161,7 +8990,7 @@
     <message>
         <location filename="../src/debugger/dapprotocol.cpp" line="31"/>
         <source>Failed to parse json content: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось разобрать содержимое JSON: %1</translation>
     </message>
     <message>
         <location filename="../src/debugger/dapprotocol.cpp" line="39"/>
@@ -9170,7 +8999,7 @@
         <location filename="../src/debugger/dapprotocol.cpp" line="60"/>
         <location filename="../src/debugger/dapprotocol.cpp" line="67"/>
         <source>The request message don&apos;t have &apos;%1&apos; field!</source>
-        <translation type="unfinished"></translation>
+        <translation>В сообщении запроса нет поля &apos;%1&apos;!</translation>
     </message>
 </context>
 <context>
@@ -9411,7 +9240,7 @@
     <message>
         <location filename="../src/debugger/debuggermodels.cpp" line="1028"/>
         <source>Floating-point tag word</source>
-        <translation>Floating-point tag word</translation>
+        <translation>Слово тегов чисел с плавающей точкой</translation>
     </message>
     <message>
         <location filename="../src/debugger/debuggermodels.cpp" line="1029"/>
@@ -9643,11 +9472,7 @@
         <source>Origin:</source>
         <translation>Начало:</translation>
     </message>
-    <message>
-        <source>From cursor</source>
-        <translation type="vanished">От курсора</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/searchdialog.ui" line="203"/>
         <source>From caret</source>
         <translation>От курсора</translation>
@@ -9873,17 +9698,17 @@
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="188"/>
         <source>Calculating files for searching...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсчёт файлов для поиска...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="220"/>
         <source>Calculating files for searching (%1)...</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсчёт файлов для поиска (%1)...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="229"/>
         <source>Searching %1/%2...</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск %1/%2...</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="483"/>
@@ -9893,62 +9718,38 @@
 </context>
 <context>
     <name>SearchResultListModel</name>
-    <message>
-        <source>Current File:</source>
-        <translation type="vanished">Текущий файл:</translation>
-    </message>
-    <message>
-        <source>Files In Project:</source>
-        <translation type="vanished">Файлы в проекте:</translation>
-    </message>
-    <message>
-        <source>Open Files:</source>
-        <translation type="vanished">Открытые файлы:</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation type="vanished">&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
-    </message>
-    <message>
-        <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation type="vanished">Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation type="vanished">Поиск употреблений в проекте: &apos;%1&apos;</translation>
-    </message>
-</context>
+                        </context>
 <context>
     <name>SearchResultModel</name>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="400"/>
         <source>Current File:</source>
-        <translation type="unfinished">Текущий файл:</translation>
+        <translation>Текущий файл:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="402"/>
         <source>Files In Project:</source>
-        <translation type="unfinished">Файлы в проекте:</translation>
+        <translation>Файлы в проекте:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="404"/>
         <source>Open Files:</source>
-        <translation type="unfinished">Открытые файлы:</translation>
+        <translation>Открытые файлы:</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="406"/>
         <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation type="unfinished">&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
+        <translation>&quot;%1&quot; в каталоге &quot;%2&quot;</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="410"/>
         <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation type="unfinished">Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
+        <translation>Поиск употреблений в текущем файле: &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/widgets/searchresultview.cpp" line="413"/>
         <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation type="unfinished">Поиск употреблений в проекте: &apos;%1&apos;</translation>
+        <translation>Поиск употреблений в проекте: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
@@ -10076,7 +9877,7 @@
         <location filename="../src/mainwindow.cpp" line="10163"/>
         <location filename="../src/settingsdialog/settingsdialog.cpp" line="180"/>
         <source>NASM</source>
-        <translation></translation>
+        <translation>NASM</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="10169"/>
@@ -10381,11 +10182,7 @@
         <source>- Compiler Set Name: %1</source>
         <translation>- Имя набора компиляторов: %1</translation>
     </message>
-    <message>
-        <source>Can&apos;t find the compiler for file %1</source>
-        <translation type="vanished">Не удалось найти компилятор для файла %1</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/compiler/stdincompiler.cpp" line="82"/>
         <source>The Compiler &apos;%1&apos; doesn&apos;t exists!</source>
         <translation>Компилятор &apos;%1&apos; не существует!</translation>
@@ -10606,39 +10403,7 @@
 </context>
 <context>
     <name>ToolsGitWidget</name>
-    <message>
-        <source>Git</source>
-        <translation type="vanished">Git</translation>
-    </message>
-    <message>
-        <source>Test</source>
-        <translation type="vanished">Тест</translation>
-    </message>
-    <message>
-        <source>Browse</source>
-        <translation type="vanished">Обзор</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
-        <source>Path to Git Executable:</source>
-        <translation type="vanished">Путь к исполнимому файлу Git:</translation>
-    </message>
-    <message>
-        <source>TextLabel</source>
-        <translation type="vanished">TextLabel</translation>
-    </message>
-    <message>
-        <source>Git Executable</source>
-        <translation type="vanished">Исполнимый файл Git</translation>
-    </message>
-    <message>
-        <source>All files (%1)</source>
-        <translation type="vanished">Все файлы (%1)</translation>
-    </message>
-</context>
+                                </context>
 <context>
     <name>ToolsManager</name>
     <message>
@@ -10774,11 +10539,7 @@
         <source>Show Indent Lines</source>
         <translation>Показывать линии отступов</translation>
     </message>
-    <message>
-        <source>Indent Line Color</source>
-        <translation type="vanished">Цвет отступа строки</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/editorgeneralwidget.ui" line="113"/>
         <source>Fill Indents</source>
         <translation>Закрашивать отступы</translation>
@@ -10887,6 +10648,37 @@
         <location filename="../src/settingsdialog/editorgeneralwidget.ui" line="507"/>
         <source>Right edge line color</source>
         <translation>Цвет линии правой границы</translation>
+    </message>
+</context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>Тайм-аут: процесс не завершился за %1 мс!</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>Не удалось запустить процесс!</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>Процесс завершился аварийно!</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>Тайм-аут!</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>Ошибка чтения:</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>Ошибка записи:</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>Неизвестная ошибка:</translation>
     </message>
 </context>
 </TS>

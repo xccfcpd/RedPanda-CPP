@@ -63,6 +63,10 @@ bool NASMFileCompiler::prepareForCompile()
 
 
     if (!fileExists(mCompiler)) {
+        //try to auto detect nasm if the setting is empty or invalid
+        mCompiler = findProgramInPath(NASM_PROGRAM);
+    }
+    if (!fileExists(mCompiler)) {
         throw CompileError(
                     tr("The NASM '%1' doesn't exists!").arg(mCompiler)
                     +"<br />"

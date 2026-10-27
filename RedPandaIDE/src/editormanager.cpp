@@ -27,6 +27,8 @@
 #include "debugger/debugger.h"
 #include "utils/parser.h"
 #include <QApplication>
+#include <QMetaObject>
+#include <QPointer>
 
 EditorManager::EditorManager(QTabWidget* leftPageWidget,
       QTabWidget* rightPageWidget,
@@ -86,6 +88,39 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
 #endif
     e->setCodeSnippetsManager(pMainWindow->codeSnippetManager());
     e->setFileSystemWatcher(pMainWindow->fileSystemWatcher());
+    // The whole content of an editor can be replaced at once (a file reloaded
+    // from the disk, a reformat, the output of a tool): its breakpoints are then
+    // re-anchored on the code they were set on and its bookmarks follow their
+    // code, instead of being dropped by the incremental line bookkeeping of the
+    // models (see Editor::isReplacingContent()).
+    e->setContentReplacedFunc([this, e](const QString& filename, bool inProject,
+                                        const QStringList& content,
+                                        const QMap<int,int>& markerLineMap) {
+        // The deleted/replaced lines invalidate breakpoint toggles recorded on the
+        // old content (reload, format, tool output).
+        mLastBreakpointActionWasUnbound = false;
+        clearBreakpointHistory(e);
+        pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject);
+        pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
+                                                          e->isRestoringContentByUndoRedo());
+        // The carets follow the same map: their line bookkeeping is skipped while
+        // the content is replaced, like the one of the models above.
+        pMainWindow->caretList().remapLines(e, markerLineMap);
+        e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+        e->resetBookmarks(pMainWindow->bookmarkModel());
+    });
+    // The carets of the file follow the same line map (see CaretList::remapLines()):
+    // the editor anchors their lines like the markers, so they are moved by the
+    // replacement instead of being left on stale lines.
+    e->setAnchorLinesFunc([this, e]{ return pMainWindow->caretList().caretLines(e); });
+    // Breakpoint toggles are not QSynEdit text changes: give the editor the
+    // application-level history that Ctrl+Z/Ctrl+Y use while a toggle is the last
+    // action (see Editor::doUndo()).
+    e->setBreakpointHistoryFuncs(
+                [this](Editor* editor){ return undoBreakpointAction(editor); },
+                [this](Editor* editor){ return redoBreakpointAction(editor); },
+                [this](const Editor* editor){ return canUndoBreakpointAction(editor); },
+                [this](const Editor* editor){ return canRedoBreakpointAction(editor); });
     e->applySettings();
     e->setEditorEncoding(encoding);
     e->setFilename(filename);
@@ -114,7 +149,7 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
         case FileType::CppSource:
             fileTemplate = pMainWindow->codeSnippetManager()->newCppFileTemplate();
             break;
-        case FileType::ATTASM:
+        case FileType::GAS:
             fileTemplate = pMainWindow->codeSnippetManager()->newGASFileTemplate();
             break;
         default:
@@ -144,6 +179,8 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
     connect(e, &Editor::linesDeleted, this, &EditorManager::onEditorLinesRemoved);
     connect(e, &Editor::linesInserted, this, &EditorManager::onEditorLinesInserted);
     connect(e, &Editor::lineMoved, this, &EditorManager::onEditorLineMoved);
+    connect(e, &Editor::linesMerged, this, &EditorManager::onEditorLinesMerged);
+    connect(e, &Editor::linesSplit, this, &EditorManager::onEditorLinesSplit);
     connect(e, &Editor::statusChanged, this, &EditorManager::onEditorStatusChanged);
     connect(e, &Editor::fontSizeChangedByWheel, this, &EditorManager::onEditorFontSizeChangedByWheel);
     connect(e, &Editor::fileEncodingChanged, this, &EditorManager::onEditorFileEncodingChanged);
@@ -231,6 +268,7 @@ void EditorManager::showLayout(LayoutShowType layout)
 
 void EditorManager::doRemoveEditor(Editor *e)
 {
+    clearBreakpointHistory(e);
     QTabWidget* parentPage=findPageControlForEditor(e);
     if (parentPage) {
         int index = parentPage->indexOf(e);
@@ -274,19 +312,261 @@ void EditorManager::updateEditorTabCaption(Editor* e)
     parentWidget->setTabToolTip(index, e->filename());
 }
 
-void EditorManager::onBreakpointAdded(const Editor *e, int line)
+void EditorManager::onBreakpointAdded(const Editor *e, int line, const QString& fingerprint)
 {
-    pMainWindow->debugger()->addBreakpoint(line,e->filename(),e->inProject());
+    Debugger* debugger = pMainWindow->debugger();
+    bool forProject = e->inProject();
+    debugger->addBreakpoint(line, e->filename(), forProject, fingerprint);
+    if (mRestoringBreakpointAction)
+        return;
+    // The new breakpoint is the last matching one (a line can hold several
+    // conditional breakpoints). Remember the exact object, so that undoing the
+    // toggle removes the right one.
+    const QList<PBreakpoint>& list = debugger->breakpointModel()->breakpoints(forProject);
+    PBreakpoint added;
+    for (int i=list.count()-1;i>=0;i--) {
+        if (list[i]->filename==e->filename() && list[i]->line==line) {
+            added = list[i];
+            break;
+        }
+    }
+    if (added)
+        recordBreakpointAction(e, true, added, forProject);
+    pMainWindow->updateEditorActions(e);
 }
 
 void EditorManager::onBreakpointRemoved(const Editor *e, int line)
 {
-    pMainWindow->debugger()->removeBreakpoint(line,e->filename(), e->inProject());
+    Debugger* debugger = pMainWindow->debugger();
+    bool forProject = e->inProject();
+    // Capture the exact breakpoint before Debugger::removeBreakpoint() removes the
+    // last one on the line.
+    const QList<PBreakpoint>& list = debugger->breakpointModel()->breakpoints(forProject);
+    PBreakpoint removed;
+    for (int i=list.count()-1;i>=0;i--) {
+        if (list[i]->filename==e->filename() && list[i]->line==line) {
+            removed = list[i];
+            break;
+        }
+    }
+    debugger->removeBreakpoint(line,e->filename(),forProject);
+    // A line can hold several breakpoints (conditional ones): the editor must keep
+    // its marker while at least one of them is left.
+    const_cast<Editor*>(e)->resetBreakpoints(debugger->breakpointModel().get());
+    if (removed && !mRestoringBreakpointAction)
+        recordBreakpointAction(e, false, removed, forProject);
+    pMainWindow->updateEditorActions(e);
 }
 
 void EditorManager::onBreakpointsCleared(const Editor *e)
 {
-    pMainWindow->debugger()->deleteBreakpoints(e->filename(), e->inProject());
+    mLastBreakpointActionWasUnbound = false;
+    Debugger* debugger = pMainWindow->debugger();
+    bool forProject = e->inProject();
+    QList<PBreakpoint> cleared;
+    for (const PBreakpoint& breakpoint: debugger->breakpointModel()->breakpoints(forProject)) {
+        if (breakpoint->filename==e->filename())
+            cleared.append(breakpoint);
+    }
+    if (!cleared.isEmpty() && !mRestoringBreakpointAction) {
+        QList<BreakpointHistoryAction>& undo = mBreakpointUndo[e];
+        undo.append(BreakpointHistoryAction{BreakpointHistoryAction::ClearedAll,
+                                            PBreakpoint(), cleared, forProject});
+        if (undo.size()>100)
+            undo.removeFirst();
+        mBreakpointRedo[e].clear();
+    }
+    debugger->deleteBreakpoints(e->filename(), forProject);
+    pMainWindow->updateEditorActions(e);
+}
+
+namespace {
+int breakpointIndex(const QList<PBreakpoint>& list, const PBreakpoint& breakpoint)
+{
+    for (int i=0;i<list.count();i++) {
+        if (list[i]==breakpoint)
+            return i;
+    }
+    return -1;
+}
+}
+
+bool EditorManager::removeBreakpointFromTable(int index, bool forProject)
+{
+    Debugger* debugger = pMainWindow->debugger();
+    std::shared_ptr<BreakpointModel> model = debugger->breakpointModel();
+    const QList<PBreakpoint>& list = model->breakpoints(forProject);
+    if (index<0 || index>=list.count())
+        return false;
+    PBreakpoint breakpoint = list[index];
+    Editor* editor = getOpenedEditor(breakpoint->filename);
+    if (!mRestoringBreakpointAction)
+        recordBreakpointAction(editor, false, breakpoint, forProject);
+    debugger->removeBreakpoint(index, forProject);
+    if (editor)
+        editor->resetBreakpoints(model.get());
+    pMainWindow->updateEditorActions(editor);
+    return true;
+}
+
+bool EditorManager::canUndoUnboundBreakpoint() const
+{
+    return canUndoBreakpointAction(nullptr);
+}
+
+bool EditorManager::lastBreakpointActionWasUnbound() const
+{
+    return mLastBreakpointActionWasUnbound;
+}
+
+bool EditorManager::canRedoUnboundBreakpoint() const
+{
+    return canRedoBreakpointAction(nullptr);
+}
+
+bool EditorManager::undoUnboundBreakpoint()
+{
+    return undoBreakpointAction(nullptr);
+}
+
+bool EditorManager::redoUnboundBreakpoint()
+{
+    return redoBreakpointAction(nullptr);
+}
+
+void EditorManager::removeAllBreakpointsFromTable(bool forProject)
+{
+    Debugger* debugger = pMainWindow->debugger();
+    std::shared_ptr<BreakpointModel> model = debugger->breakpointModel();
+    QList<PBreakpoint> all = model->breakpoints(forProject);
+    mLastBreakpointActionWasUnbound = !all.isEmpty();
+    if (!all.isEmpty() && !mRestoringBreakpointAction) {
+        QList<BreakpointHistoryAction>& undo = mBreakpointUndo[nullptr];
+        undo.append(BreakpointHistoryAction{BreakpointHistoryAction::ClearedAll,
+                                            PBreakpoint(), all, forProject});
+        if (undo.size()>100)
+            undo.removeFirst();
+        mBreakpointRedo[nullptr].clear();
+    }
+    debugger->deleteBreakpoints(forProject);
+    updateEditorBreakpoints();
+    pMainWindow->updateEditorActions(nullptr);
+}
+
+void EditorManager::clearBreakpointHistories()
+{
+    mBreakpointUndo.clear();
+    mBreakpointRedo.clear();
+    mLastBreakpointActionWasUnbound = false;
+}
+
+void EditorManager::recordBreakpointAction(const Editor *e, bool added,
+                                           const PBreakpoint& breakpoint, bool forProject)
+{
+    if (mRestoringBreakpointAction || !breakpoint)
+        return;
+    mLastBreakpointActionWasUnbound = (e==nullptr);
+    QList<BreakpointHistoryAction>& undo = mBreakpointUndo[e];
+    undo.append(BreakpointHistoryAction{added ? BreakpointHistoryAction::Added
+                                                 : BreakpointHistoryAction::Removed,
+                                         breakpoint, {}, forProject});
+    // Keep the history bounded like the text undo stack.
+    if (undo.size()>100)
+        undo.removeFirst();
+    mBreakpointRedo[e].clear();
+}
+
+bool EditorManager::canUndoBreakpointAction(const Editor* e) const
+{
+    auto it=mBreakpointUndo.constFind(e);
+    return it!=mBreakpointUndo.constEnd() && !it.value().isEmpty();
+}
+
+bool EditorManager::canRedoBreakpointAction(const Editor* e) const
+{
+    auto it=mBreakpointRedo.constFind(e);
+    return it!=mBreakpointRedo.constEnd() && !it.value().isEmpty();
+}
+
+bool EditorManager::undoBreakpointAction(Editor* e)
+{
+    auto it=mBreakpointUndo.find(e);
+    if (it==mBreakpointUndo.end() || it.value().isEmpty())
+        return false;
+    BreakpointHistoryAction action = it.value().takeLast();
+    QScopedValueRollback<bool> guard(mRestoringBreakpointAction, true);
+    std::shared_ptr<BreakpointModel> model = pMainWindow->debugger()->breakpointModel();
+    bool applied = true;
+    if (action.kind==BreakpointHistoryAction::Added) {
+        int index = breakpointIndex(model->breakpoints(action.forProject), action.breakpoint);
+        if (index>=0)
+            model->removeBreakpoint(index, action.forProject);
+        else
+            applied = false;
+    } else if (action.kind==BreakpointHistoryAction::Removed) {
+        if (breakpointIndex(model->breakpoints(action.forProject), action.breakpoint)<0)
+            model->addBreakpoint(action.breakpoint, action.forProject);
+    } else {
+        for (const PBreakpoint& breakpoint: action.breakpoints) {
+            if (breakpointIndex(model->breakpoints(action.forProject), breakpoint)<0)
+                model->addBreakpoint(breakpoint, action.forProject);
+        }
+    }
+    if (e)
+        e->resetBreakpoints(model.get());
+    else
+        updateEditorBreakpoints();
+    if (applied)
+        mBreakpointRedo[e].append(action);
+    pMainWindow->updateEditorActions(e);
+    return applied;
+}
+
+bool EditorManager::redoBreakpointAction(Editor* e)
+{
+    auto it=mBreakpointRedo.find(e);
+    if (it==mBreakpointRedo.end() || it.value().isEmpty())
+        return false;
+    BreakpointHistoryAction action = it.value().takeLast();
+    QScopedValueRollback<bool> guard(mRestoringBreakpointAction, true);
+    std::shared_ptr<BreakpointModel> model = pMainWindow->debugger()->breakpointModel();
+    bool applied = true;
+    if (action.kind==BreakpointHistoryAction::Added) {
+        if (breakpointIndex(model->breakpoints(action.forProject), action.breakpoint)<0)
+            model->addBreakpoint(action.breakpoint, action.forProject);
+    } else if (action.kind==BreakpointHistoryAction::Removed) {
+        int index = breakpointIndex(model->breakpoints(action.forProject), action.breakpoint);
+        if (index>=0)
+            model->removeBreakpoint(index, action.forProject);
+        else
+            applied = false;
+    } else {
+        for (const PBreakpoint& breakpoint: action.breakpoints) {
+            int index = breakpointIndex(model->breakpoints(action.forProject), breakpoint);
+            if (index>=0)
+                model->removeBreakpoint(index, action.forProject);
+            else
+                applied = false;
+        }
+    }
+    if (e)
+        e->resetBreakpoints(model.get());
+    else
+        updateEditorBreakpoints();
+    if (applied) {
+        QList<BreakpointHistoryAction>& undo = mBreakpointUndo[e];
+        undo.append(action);
+        if (undo.size()>100)
+            undo.removeFirst();
+    }
+    pMainWindow->updateEditorActions(e);
+    return applied;
+}
+
+void EditorManager::clearBreakpointHistory(const Editor* e)
+{
+    mBreakpointUndo.remove(e);
+    mBreakpointRedo.remove(e);
 }
 
 void EditorManager::onEditorShown(Editor *e)
@@ -306,9 +586,22 @@ void EditorManager::onEditorShown(Editor *e)
                 e->reparseIfNeeded();
         }
     }
+    bool previousProjectMode = pMainWindow->debugger()->isForProject();
     pMainWindow->debugger()->setIsForProject(e->inProject());
     pMainWindow->bookmarkModel()->setIsForProject(e->inProject());
     pMainWindow->todoModel()->setIsForProject(e->inProject());
+    // Breakpoints stored by an older version (or by the table when no editor was
+    // open) can be on an empty line.  Move them to the nearest code line now that
+    // the content is available, before the gutter is refreshed.
+    if (!pMainWindow->debugger()->executing()) {
+        pMainWindow->debugger()->breakpointModel()->snapBreakpointsToCode(
+                    e->filename(), e->content(), e->inProject());
+        updateEditorBreakpoints();
+    }
+    // The breakpoint lists are different: a history recorded against the other
+    // model must not be used to restore a breakpoint after the switch.
+    if (previousProjectMode != e->inProject())
+        clearBreakpointHistories();
 
     if (!pMainWindow->isClosingAll()
                 && !pMainWindow->isQuitting()
@@ -337,6 +630,8 @@ void EditorManager::onFileSaved(Editor *e, const QString &filename)
 
 void EditorManager::onFileRenamed(Editor *e, const QString &oldFilename, const QString &newFilename)
 {
+    mLastBreakpointActionWasUnbound = false;
+    clearBreakpointHistory(e);
     pMainWindow->getOJProblemSetModel()->updateProblemAnswerFilename(oldFilename, newFilename);
     if (!e->inProject()) {
         pMainWindow->bookmarkModel()->renameBookmarkFile(oldFilename,newFilename,false);
@@ -347,6 +642,8 @@ void EditorManager::onFileRenamed(Editor *e, const QString &oldFilename, const Q
 
 void EditorManager::onFileSaveAsed(Editor *e, const QString &oldFilename, const QString &newFilename)
 {
+    mLastBreakpointActionWasUnbound = false;
+    clearBreakpointHistory(e);
     pMainWindow->getOJProblemSetModel()->updateProblemAnswerFilename(oldFilename, newFilename);
     if (!e->inProject()) {
         pMainWindow->bookmarkModel()->renameBookmarkFile(oldFilename,newFilename,false);
@@ -363,9 +660,19 @@ void EditorManager::onFileSaveError(Editor *e, const QString& filename, const QS
 
 void EditorManager::onEditorLinesInserted(int startLine, int count)
 {
+    mLastBreakpointActionWasUnbound = false;
     Editor * e = static_cast<Editor *>(sender());
+    if (e->isReplacingContent()) {
+        // The whole content of the editor is being replaced: this is not a line
+        // insertion of the user, and the editor remaps the markers of the file
+        // (its carets included) itself once the new content is in place (see
+        // onContentReplaced()).
+        return;
+    }
     pMainWindow->caretList().onLinesInserted(e,startLine,count);
-    pMainWindow->debugger()->breakpointModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
+    pMainWindow->debugger()->breakpointModel()->onFileInsertLines(
+                e->filename(), startLine, count, e->inProject(),
+                e->isUndoingOrRedoing());
     pMainWindow->bookmarkModel()->onFileInsertLines(e->filename(), startLine,count, e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
@@ -373,7 +680,12 @@ void EditorManager::onEditorLinesInserted(int startLine, int count)
 
 void EditorManager::onEditorLinesRemoved(int startLine, int count)
 {
+    mLastBreakpointActionWasUnbound = false;
     Editor * e = static_cast<Editor *>(sender());
+    if (e->isReplacingContent()) {
+        // see onEditorLinesInserted()
+        return;
+    }
     pMainWindow->caretList().onLinesDeleted(e,startLine,count);
     pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
@@ -381,12 +693,60 @@ void EditorManager::onEditorLinesRemoved(int startLine, int count)
     e->resetBookmarks(pMainWindow->bookmarkModel());
 }
 
+void EditorManager::onEditorLinesMerged(int removedLine, int intoLine)
+{
+    mLastBreakpointActionWasUnbound = false;
+    Editor * e = static_cast<Editor *>(sender());
+    // A merge is reported even while the whole content is being replaced (see
+    // isReplacingContent()): unlike a line insertion or removal, it is not a
+    // consequence of "every line is deleted and written back", but the only report
+    // of a single line whose text now lives on another one. The anchors the whole
+    // content replacement works with can't find that text again - it is not on a
+    // line of its own any more - so a marker that is left out of this bookkeeping
+    // is left on a stale line.
+    // The line disappears (onEditorLinesRemoved() is called right after and moves the
+    // lines below it up), but its text is appended to the line it is merged into: the
+    // markers set on it follow their code there instead of being dropped. A bookmark on
+    // that line may have to be pushed further down (see BookmarkModel::onFileMergeLines())
+    // and the content, already merged, says how far the file goes.
+    pMainWindow->caretList().onLinesMerged(e, removedLine, intoLine);
+    pMainWindow->debugger()->breakpointModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->inProject());
+    pMainWindow->bookmarkModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->content().count(), e->inProject());
+    e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    e->resetBookmarks(pMainWindow->bookmarkModel());
+}
+
+void EditorManager::onEditorLinesSplit(int mergedLine, int newLine)
+{
+    mLastBreakpointActionWasUnbound = false;
+    Editor * e = static_cast<Editor *>(sender());
+    // Report the split while the whole content is being replaced too - see
+    // onEditorLinesMerged(). This is the case that matters most: undoing an edit
+    // runs that way (see Editor::doUndo()), and this is the report that puts a
+    // bookmark back on the line it was set on.
+    // The merge is undone: the line is split back, and the text of the line that was
+    // merged is on `newLine` again. The breakpoints find it with their fingerprint
+    // (the merged line doesn't hold the code they were set on any more); the bookmarks
+    // have no fingerprint to do that with, so the model puts back the ones it moved
+    // onto the merged line when the merge was done.
+    pMainWindow->caretList().onLinesSplit(e, mergedLine, newLine);
+    pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(e->filename(), e->content(), e->inProject());
+    pMainWindow->bookmarkModel()->onFileSplitLines(e->filename(), mergedLine, newLine, e->inProject());
+    e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    e->resetBookmarks(pMainWindow->bookmarkModel());
+}
+
 void EditorManager::onEditorLineMoved(int fromLine, int toLine)
 {
+    mLastBreakpointActionWasUnbound = false;
     Editor * e = static_cast<Editor *>(sender());
+    if (e->isReplacingContent()) {
+        // see onEditorLinesInserted()
+        return;
+    }
     pMainWindow->caretList().onLinesMoved(e, fromLine, toLine);
     pMainWindow->debugger()->breakpointModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
-    pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),fromLine,toLine,e->inProject());
+    pMainWindow->bookmarkModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
 
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
@@ -395,6 +755,11 @@ void EditorManager::onEditorLineMoved(int fromLine, int toLine)
 void EditorManager::onEditorStatusChanged(QSynedit::StatusChanges changes)
 {
     Editor *e = static_cast<Editor *>(sender());
+    // A character edit inside a line does not emit linesInserted/Removed; it
+    // still makes a pending table-only breakpoint history stale.
+    if (changes.testFlag(QSynedit::StatusChange::Modified)
+            || changes.testFlag(QSynedit::StatusChange::ModifyChanged))
+        mLastBreakpointActionWasUnbound = false;
     if (changes.testFlag(QSynedit::StatusChange::CaretX)
             || changes.testFlag(QSynedit::StatusChange::CaretY)) {
         pMainWindow->updateStatusbarForLineCol(e);
@@ -521,12 +886,41 @@ PCppParser EditorManager::createParserForEditor(Editor *editor)
     return nullptr;
 }
 
-std::unique_ptr<BaseReformatter> EditorManager::createReformatterForEditor(Editor *)
+std::unique_ptr<BaseReformatter> EditorManager::createReformatterForEditor(Editor *editor)
 {
-    const QString &astyle = pSettings->environment().AStylePath();
+    // The formatter may run on a worker thread (see Editor::reformat), so marshal
+    // the log call back to the GUI thread; calling a widget method directly from
+    // the worker thread would be unsafe. Capture a QPointer so that, if the main
+    // window is destroyed while a format is still running on the detached thread,
+    // the queued invokeMethod targets a (now null) guarded pointer instead of a
+    // dangling one.
+    QPointer<MainWindow> mainWindowGuard(pMainWindow);
+    LoggerFunc logger = [mainWindowGuard](const QString& msg) {
+        QMetaObject::invokeMethod(mainWindowGuard, [mainWindowGuard, msg]() {
+            if (mainWindowGuard)
+                mainWindowGuard->logToolsOutput(msg);
+        }, Qt::QueuedConnection);
+    };
     QStringList args = pSettings->codeFormatter().getArguments();
+    // used for files that have no absolute path yet (unsaved files, or files
+    // opened with a relative name): it decides where the search for the nearest
+    // ".clang-format" configuration file starts, and it is the working directory
+    // used by both formatters when the file has no usable path
+    QString baseDirectory = pSettings->dirs().projectDir();
+    if (editor && editor->inProject() && pMainWindow->project())
+        baseDirectory = pMainWindow->project()->directory();
+    if (pSettings->codeFormatter().formatterEngine() == FormatterEngine::feClangFormat) {
+        const QString &clangFormat = pSettings->environment().clangFormatPath();
+        return std::make_unique<ClangFormatReformatter>(clangFormat,args,
+                                                        editor?editor->filename():QString(),
+                                                        baseDirectory,
+                                                        logger);
+    }
+    const QString &astyle = pSettings->environment().AStylePath();
     return std::make_unique<AStyleReformatter>(astyle,args,
-                                               std::bind(&MainWindow::logToolsOutput, pMainWindow, std::placeholders::_1));
+                                               editor?editor->filename():QString(),
+                                               baseDirectory,
+                                               logger);
 }
 
 QTabWidget *EditorManager::leftPageWidget() const
@@ -590,7 +984,10 @@ bool EditorManager::closeEditor(Editor* editor, bool transferFocus, bool force) 
         if (!editor->isNew() && pMainWindow->visitHistoryManager()->addFile(editor->filename())) {
             pMainWindow->rebuildOpenedFileHisotryMenu();
         }
-        editor->clearBreakpoints();
+        // Closing a tab must not drop the breakpoints of the file: they stay in
+        // the breakpoint view (and in the session, like VSCode does), and are
+        // shown again when the file is reopened. They can still be removed from
+        // the breakpoint view itself.
         doRemoveEditor(editor);
     }
     updateLayout();

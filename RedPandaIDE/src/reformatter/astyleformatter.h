@@ -22,12 +22,21 @@
 class AStyleReformatter : public BaseReformatter {
     Q_OBJECT
 public:
-    AStyleReformatter(const QString& astylePath, const QStringList& args, LoggerFunc newLoggerFunc, QObject* parent = nullptr);
-    QString refomat(const QString& content, QString &errorMessage, bool &isOk) override;
+    // fileName/baseDirectory are only used to pick a sensible working directory
+    // (mirroring ClangFormatReformatter); astyle itself is run as a filter.
+    AStyleReformatter(const QString& astylePath, const QStringList& args,
+                      const QString& fileName, const QString& baseDirectory,
+                      LoggerFunc newLoggerFunc, QObject* parent = nullptr,
+                      int timeoutMs = 30000);
+    QString reformat(const QString& content, QString &errorMessage, bool &isOk) override;
+    std::function<std::unique_ptr<BaseReformatter>()> workerFactory() const override;
 private:
     QString mAstylePath;
     QStringList mArgs;
+    QString mFileName;
+    QString mBaseDirectory;
     LoggerFunc mLoggerFunc;
+    int mTimeoutMs;
 };
 
 #endif

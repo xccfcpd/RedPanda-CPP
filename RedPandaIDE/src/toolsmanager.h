@@ -42,6 +42,10 @@ struct ToolItem {
     ToolItemInputOrigin inputOrigin;
     ToolItemOutputTarget outputTarget;
     bool isUTF8;
+    // Set for the tools the application creates itself: their title is localized
+    // again on load. A tool the user created keeps its own title, even if its
+    // command is the same as a built-in one.
+    bool isBuiltIn = false;
 };
 
 using PToolItem = std::shared_ptr<ToolItem>;

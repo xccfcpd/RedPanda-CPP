@@ -11,6 +11,7 @@ local nameMap: {string:string} = {
     pt_BR = "Estilo e Cor do Sistema",
     zh_CN = "跟随系统样式和颜色",
     zh_TW = "跟隨系統樣式和顏色",
+    ru_RU = "Системный стиль и цвет",
 }
 
 local nameMapNoStyle: {string:string} = {
@@ -18,6 +19,7 @@ local nameMapNoStyle: {string:string} = {
     pt_BR = "Cor do Sistema",
     zh_CN = "跟随系统颜色",
     zh_TW = "跟隨系統顏色",
+    ru_RU = "Системный цвет",
 }
 
 global function main(): Theme

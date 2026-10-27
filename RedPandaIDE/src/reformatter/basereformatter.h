@@ -16,13 +16,24 @@
  */
 #ifndef BASE_REFORMATTER_H
 #define BASE_REFORMATTER_H
+#include <functional>
+#include <memory>
 #include <QObject>
 
 class BaseReformatter : public QObject {
     Q_OBJECT
 public:
     BaseReformatter(QObject* parent = nullptr);
-    virtual QString refomat(const QString& content, QString &errorMessage, bool &isOk) = 0;
+    virtual QString reformat(const QString& content, QString &errorMessage, bool &isOk) = 0;
+    // A factory that builds an identical formatter from plain values, for the worker
+    // thread that runs it: a QObject must be created and destroyed in the thread that
+    // uses it, not in the GUI thread that starts the reformat. Empty when the
+    // formatter has no such factory (the tests' formatters), in which case the worker
+    // uses the formatter created on the GUI thread.
+    virtual std::function<std::unique_ptr<BaseReformatter>()> workerFactory() const
+    {
+        return {};
+    }
 };
 
 #endif

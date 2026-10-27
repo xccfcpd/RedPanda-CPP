@@ -1525,6 +1525,13 @@ PUndoItem UndoList::popItem()
     }
 }
 
+PUndoItem UndoList::itemAt(int index) const
+{
+    if (index<0 || index>=mItems.count())
+        return PUndoItem();
+    return mItems[index];
+}
+
 bool UndoList::canUndo()
 {
     return mItems.count()>0;
@@ -1695,6 +1702,13 @@ PUndoItem RedoList::popItem()
         mItems.removeLast();
         return item;
     }
+}
+
+PUndoItem RedoList::itemAt(int index) const
+{
+    if (index<0 || index>=mItems.count())
+        return PUndoItem();
+    return mItems[index];
 }
 
 bool RedoList::canRedo()

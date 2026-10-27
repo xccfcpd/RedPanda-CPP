@@ -26,6 +26,7 @@
 #include <QElapsedTimer>
 #include <QWidget>
 #include <QFile>
+#include <QSet>
 #include "gutter.h"
 #include "codefolding.h"
 #include "types.h"
@@ -513,6 +514,16 @@ signals:
     void linesDeleted(int firstLine, int count);
     void linesInserted(int firstLine, int count);
     void lineMoved(int from, int to);
+    // Sent just before the linesDeleted() that removes it: the text of the line is
+    // appended to the end of the previous one, which survives (the lines are merged,
+    // see doMergeWithNextLine()). The markers the application holds on that line
+    // (breakpoints, bookmarks...) follow their code instead of being dropped.
+    void linesMerged(int removedLine, int intoLine);
+    // Sent when such a merge is undone (Ctrl+Z): the line is split back, and the text
+    // of the line that was merged is put on the new one, right after the line it was
+    // merged into. The markers that followed their code onto the merged line (see
+    // linesMerged()) come back on the line they were set on.
+    void linesSplit(int mergedLine, int newLine);
     void changed();
     void gutterClicked(Qt::MouseButton button, int x, int y, int line);
     void statusChanged(QSynedit::StatusChanges changes);
@@ -619,6 +630,13 @@ private:
     void properDeleteLine(int line, bool parseToEnd) { properDeleteLines(line, 1, parseToEnd); }
     void properInsertLines(int line, int count, bool parseToEnd);
     void properMoveLine(int from, int to, bool parseToEnd);
+    // Same as properInsertLine() and properDeleteLines(), except that they do not
+    // emit linesInserted()/linesDeleted(): the caller reports the change to the
+    // application itself, naming the lines that really appear or disappear. Used
+    // when QSynEdit edits a line that the document does not lose (see
+    // doMergeWithNextLine()).
+    void insertLineWithoutReporting(int line, const QString& sLineText, bool parseToEnd);
+    void deleteLinesWithoutReporting(int line, int count, bool parseToEnd);
 
     //primitive edit operations
     void doDeleteText(CharPos startPos, CharPos endPos, SelectionMode mode);
@@ -677,9 +695,28 @@ private:
     void doCopyToClipboard();
     void internalDoCopyToClipboard(const QString& s);
     void doPasteFromClipboard();
-    void doUndo();
+protected:
+    // Virtual, so that a class deriving from QSynEdit (the IDE's Editor) can wrap
+    // the undo/redo of a change that covered the whole document: such a change
+    // must not be reported to the rest of the application as a plain line
+    // deletion (the models of the IDE keep their marker lines).
+    virtual void doUndo();
+    virtual void doRedo();
+    // Marks the undo items added from now until endWholeContentChange() as the
+    // replacement of the whole content of the document (replaceAll()). Undoing or
+    // redoing such a change is the only case where it must not be reported to the
+    // application as a plain line deletion: QSynEdit runs it as "every line is
+    // deleted, then the text is written back", which the line bookkeeping of the
+    // models would take for a deletion of all their markers.
+    void beginWholeContentChange();
+    void endWholeContentChange();
+    // Whether the change undo/redo would apply next is one of those replacements.
+    // Ordinary edits (a line inserted/removed/merged by the user) are not: their
+    // line reports must reach the application.
+    bool nextUndoIsWholeContent() const;
+    bool nextRedoIsWholeContent() const;
+private:
     void doUndoItem();
-    void doRedo();
     void doRedoItem();
     void doZoomIn();
     void doZoomOut();
@@ -764,6 +801,11 @@ private:
     QColor mActiveLineColor;
     PUndoList mUndoList;
     PRedoList mRedoList;
+    // The change numbers of the undo items that replaced the whole content (see
+    // beginWholeContentChange()).
+    QSet<size_t> mWholeContentChangeNumbers;
+    int mWholeContentChangeStart = 0;
+    bool mWholeContentChangeTracking = false;
     QPoint mMouseDownPos;
     EditCaretType mOverwriteCaret;
     EditCaretType  mInsertCaret;

@@ -1,14 +1,21 @@
 [Template]
 ver=2
 Name=std::thread
+Name[zh_CN]=std::thread
+Name[zh_TW]=std::thread
+Name[ru_RU]=std::thread
+Name[pt_BR]=std::thread
 Icon=Software.ico
 Description=A C++ multithreading example
 Description[zh_CN]=一个C++多线程示例
-Name[ru_RU]=std::thread
+Description[zh_TW]=一個C++多執行緒範例
 Description[ru_RU]=Пример многопоточной программы Си++
+Description[pt_BR]=Um exemplo de multithreading em C++
 Category=Console
 Category[zh_CN]=控制台
+Category[zh_TW]=主控台
 Category[ru_RU]=Консольные
+Category[pt_BR]=Console
 
 [Unit0]
 CName=main.c

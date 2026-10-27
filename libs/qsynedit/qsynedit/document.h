@@ -754,6 +754,8 @@ public:
     bool isEmpty();
     PUndoItem peekItem();
     PUndoItem popItem();
+    // The item "index" (0: bottom of the stack), without removing it.
+    PUndoItem itemAt(int index) const;
 
     bool canUndo();
     int itemCount();
@@ -807,6 +809,8 @@ public:
     bool isEmpty();
     PUndoItem peekItem();
     PUndoItem popItem();
+    // The item "index" (0: bottom of the stack), without removing it.
+    PUndoItem itemAt(int index) const;
 
     bool canRedo();
     int itemCount();

@@ -70,6 +70,34 @@ enum FormatterIndentType {
     fitTab
 };
 
+enum FormatterEngine {
+    feAStyle,
+    feClangFormat
+};
+
+// clang-format predefined styles
+// cfsNone is only valid for the fallback style; cfsFile is only valid
+// for the main style (it means "read the nearest .clang-format file")
+enum ClangFormatStyle {
+    cfsNone = 0,
+    cfsFile,
+    cfsLLVM,
+    cfsGoogle,
+    cfsChromium,
+    cfsMozilla,
+    cfsWebKit,
+    cfsMicrosoft,
+    cfsGNU
+};
+
+enum ClangFormatUseTab {
+    cfuNever = 0,
+    cfuForIndentation,
+    cfuForContinuationAndIndentation,
+    cfuAlignWithSpaces,
+    cfuAlways
+};
+
 enum class SplitProcessCommandQuoteType {
     None,
     Single,

@@ -17,49 +17,130 @@
 #include "astyleformatter.h"
 #include "../utils/escape.h"
 #include "../utils.h"
+#include "../utils/file.h"
 #include <QByteArray>
+#include <QDir>
+#include <QFileInfo>
 
-AStyleReformatter::AStyleReformatter(const QString& astylePath, const QStringList& args, LoggerFunc newLoggerFunc, QObject *parent):
+AStyleReformatter::AStyleReformatter(const QString& astylePath, const QStringList& args,
+                                     const QString& fileName, const QString& baseDirectory,
+                                     LoggerFunc newLoggerFunc, QObject *parent,
+                                     int timeoutMs):
     BaseReformatter{parent},
     mAstylePath{astylePath},
     mArgs{args},
-    mLoggerFunc{newLoggerFunc}
+    mFileName{fileName},
+    mBaseDirectory{baseDirectory},
+    mLoggerFunc{newLoggerFunc},
+    mTimeoutMs{timeoutMs}
 {
 
 }
 
-QString AStyleReformatter::refomat(const QString &content, QString &errorMessage, bool &isOk)
+QString AStyleReformatter::reformat(const QString &content, QString &errorMessage, bool &isOk)
 {
     isOk = false;
     if (!fileExists(mAstylePath)) {
         errorMessage = tr("Can't find astyle in \"%1\".").arg(mAstylePath);
         return QString();
     }
+    if (content.isEmpty()) {
+        // astyle doesn't output anything for empty input
+        isOk = true;
+        return QString();
+    }
+    if (!mFileName.isEmpty() && !isFormattableCppFileName(mFileName)) {
+        // astyle doesn't know the language of that file and would treat it as
+        // c++ source; reformatting it would silently destroy its content.
+        errorMessage = tr("astyle can't format \"%1\".").arg(extractFileName(mFileName));
+        return QString();
+    }
     QByteArray byteContent = content.toUtf8();
+    if (QString::fromUtf8(byteContent) != content) {
+        errorMessage = tr("The content of \"%1\" can't be converted to utf-8.").arg(mFileName);
+        return QString();
+    }
+
+    // astyle runs as a filter, so the working directory only matters for the
+    // (rare) options that resolve a path, e.g. "--options=<file>". Resolve it the
+    // same way ClangFormatReformatter does, so both formatters behave alike.
+    QString baseDirectory = mBaseDirectory;
+    if (baseDirectory.isEmpty() || !fileExists(baseDirectory))
+        baseDirectory = QDir::currentPath();
+    QString workingDir = baseDirectory;
+    if (!mFileName.isEmpty()) {
+        QFileInfo fileInfo(mFileName);
+        QString fileName = fileInfo.isAbsolute()? fileInfo.absoluteFilePath()
+                                                : QDir(baseDirectory).absoluteFilePath(mFileName);
+        QString fileDir = extractFileDir(fileName);
+        if (fileExists(fileDir))
+            workingDir = fileDir;
+    }
+
     QString command = escapeCommandForPlatformShell(extractFileName(mAstylePath), mArgs);
     if (mLoggerFunc) {
         mLoggerFunc(tr("Reformatting content using astyle..."));
         mLoggerFunc("------------------");
         mLoggerFunc(tr("- Astyle: %1").arg(mAstylePath));
+        mLoggerFunc(tr("- Working dir: %1").arg(workingDir));
         mLoggerFunc(tr("- Command: %1").arg(command));
     }
+    int exitCode = -1;
     auto [newContent, astyleError, processError] =
-        runAndGetOutput(mAstylePath, extractFileDir(mAstylePath), mArgs, byteContent, true);
-    if (!astyleError.isEmpty()) {
+        runAndGetOutput(mAstylePath, workingDir, mArgs, byteContent,
+                        true, /*separateStderr*/
+                        true, /*inheritEnvironment: astyle needs a sane env */
+                        QProcessEnvironment(),
+                        mTimeoutMs,
+                        &exitCode);
+    if (!processError.isEmpty()) {
+        if (mLoggerFunc)
+            mLoggerFunc(processError);
+        errorMessage = processError;
+        return QString();
+    }
+    QString errorOutput;
 #ifdef Q_OS_WIN
-        errorMessage = QString::fromLocal8Bit(astyleError);
+    errorOutput = QString::fromLocal8Bit(astyleError);
 #else
-        errorMessage = QString::fromUtf8(astyleError);
+    errorOutput = QString::fromUtf8(astyleError);
 #endif
+    if (exitCode != 0) {
+        // e.g. an invalid command line option
+        if (errorOutput.isEmpty())
+            errorMessage = tr("astyle exits with code %1.").arg(exitCode);
+        else
+            errorMessage = errorOutput;
         if (mLoggerFunc)
             mLoggerFunc(errorMessage);
         return QString();
     }
-    if (!processError.isEmpty()) {
+    if (newContent.isEmpty()) {
+        // astyle writes nothing to the standard output if it fails
+        if (!errorOutput.isEmpty())
+            errorMessage = errorOutput;
+        else
+            errorMessage = tr("astyle doesn't generate any output.");
         if (mLoggerFunc)
-            mLoggerFunc(processError);
+            mLoggerFunc(errorMessage);
         return QString();
+    }
+    if (!errorOutput.isEmpty() && mLoggerFunc) {
+        // astyle also writes warnings to the standard error
+        mLoggerFunc(errorOutput);
     }
     isOk = true;
     return QString::fromUtf8(newContent);
+}
+
+std::function<std::unique_ptr<BaseReformatter>()> AStyleReformatter::workerFactory() const
+{
+    // Only plain values are captured: the formatter is created in the worker thread
+    // that runs it, so it belongs to that thread.
+    return [path = mAstylePath, args = mArgs, fileName = mFileName,
+            baseDirectory = mBaseDirectory, logger = mLoggerFunc,
+            timeout = mTimeoutMs]() -> std::unique_ptr<BaseReformatter> {
+        return std::make_unique<AStyleReformatter>(
+                    path, args, fileName, baseDirectory, logger, nullptr, timeout);
+    };
 }

@@ -18,6 +18,9 @@
 #define EDITOR_H
 
 #include <QObject>
+#include <QMap>
+#include <QThreadPool>
+#include "editoranchors.h"
 #include "utils/file.h"
 #include "utils/types.h"
 #include "utils/parsemacros.h"
@@ -63,6 +66,25 @@ using EvalTipReadyCallback = std::function<void (Editor *)>;
 using GetCompilerTypeForEditorFunc = std::function<CompilerType (const Editor *)>;
 using GetReformatterFunc = std::function<std::unique_ptr<BaseReformatter>(Editor *)>;
 using GetCppParserFunc = std::function<PCppParser (Editor *)>;
+// Called after the whole content of the document has been replaced (reloaded
+// from the disk, reformatted, replaced by a tool output). "content" is the new
+// content of the document and "markerLineMap" maps the old lines of the
+// breakpoints/bookmarks to their new ones; the implementation re-anchors the
+// markers of this file in the models and syncs the marker sets back.
+using ContentReplacedFunc = std::function<void (const QString& filename, bool inProject,
+                                                const QStringList& content,
+                                                const QMap<int,int>& markerLineMap)>;
+// Lines hold by the application outside of the breakpoint/bookmark models (the
+// history of the caret positions of the file, see CaretList). The editor anchors
+// them with the markers, so that they follow their code when the whole content is
+// replaced. Set by EditorManager.
+using GetAnchorLinesFunc = std::function<QList<int> ()>;
+
+// Application-level undo/redo of the breakpoint toggles of an editor. The text
+// undo stack of QSynEdit does not contain them, so Editor::doUndo()/doRedo()
+// route to these callbacks when the last action was a breakpoint toggle.
+using BreakpointHistoryFunc = std::function<bool(Editor*)>;
+using BreakpointHistoryStateFunc = std::function<bool(const Editor*)>;
 
 class Editor : public QSynedit::QSynEdit
 {
@@ -162,10 +184,27 @@ public:
 
     bool inProject() const noexcept;
     bool isNew() const noexcept;
+    // True while the whole content of the document is being replaced (reloaded
+    // from the disk, reformatted, replaced by a tool output). The line
+    // bookkeeping of the breakpoint/bookmark models is incremental and would
+    // treat such a replacement as "every line was deleted", dropping and
+    // mangling the markers of the file, so EditorManager skips it while this is
+    // true - the editor itself tells the models where the markers went (see
+    // ContentReplacedFunc).
+    bool isReplacingContent() const noexcept;
+    // True while the whole content of the document is being restored by the undo/redo
+    // of a previous change (see runWholeContentChange()). The bookmark model keeps
+    // what it remembered of the merges of the file while it is, because the split such
+    // an undo runs reports the line a merge gave back (see BookmarkModel::moveBookmarksInFile()).
+    bool isRestoringContentByUndoRedo() const noexcept;
+    // True for the whole duration of any undo/redo, not only a whole-content one.
+    // The breakpoint model uses it to restore the breakpoints a line deletion
+    // removed when that deletion itself is undone.
+    bool isUndoingOrRedoing() const noexcept;
 
     void loadFile(QString filename = "", bool parse = true);
     void saveFile(QString filename);
-    bool save(bool force=false, bool doRreparse=true);
+    bool save(bool force=false, bool doReparse=true);
     bool saveAs(const QString& name="", bool doCheckSyntax = true);
     void rename(const QString& newName);
     void setFilename(const QString& newName);
@@ -191,6 +230,12 @@ public:
     PSyntaxIssueList getSyntaxIssuesAtLine(int line);
     PSyntaxIssue getSyntaxIssueAtPosition(const QSynedit::CharPos& pos);
     void toggleBreakpoint(int line);
+    // Adds a breakpoint without toggling: a line can hold several breakpoints (with
+    // different conditions), and the new one is not removed when one already exists.
+    void addBreakpoint(int line);
+    // Empty lines have no executable code: a breakpoint set there is put on the
+    // next non-empty line (or, at the end of the file, the previous one).
+    int snappedBreakpointLine(int line);
     void clearBreakpoints();
     bool hasBreakpoint(int line);
     void toggleBookmark(int line);
@@ -203,7 +248,7 @@ public:
     QString getPreviousWordAtPositionForSuggestion(const QSynedit::CharPos& p,
                                                    QSynedit::TokenType &tokenType);
     QString getPreviousWordAtPositionForCompleteFunctionDefinition(const QSynedit::CharPos& p) const;
-    void reformat(bool doReparse=true);
+    void reformat(bool doReparse=true, bool notify=true, bool asynchronous=true);
     void replaceContent(const QString &newContent, bool doReparse=true);
     void checkSyntaxInBack();
     void gotoDeclaration(const QSynedit::CharPos& pos);
@@ -335,13 +380,25 @@ public:
     const GetMacroVarsFunc &getMacroVarsFunc() const;
     void setGetMacroVarsFunc(const GetMacroVarsFunc &newGetMacroVarsFunc);
 
+    void setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc);
+
+    void setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc);
+
+    void setBreakpointHistoryFuncs(const BreakpointHistoryFunc &undoFunc,
+                                   const BreakpointHistoryFunc &redoFunc,
+                                   const BreakpointHistoryStateFunc &canUndoFunc = {},
+                                   const BreakpointHistoryStateFunc &canRedoFunc = {});
+    // Whether Ctrl+Z/Ctrl+Y would undo/redo a breakpoint toggle rather than text.
+    bool canUndoBreakpoint() const;
+    bool canRedoBreakpoint() const;
+
 signals:
     void fileSaving(Editor *e, const QString& filename);
     void fileSaveError(Editor *e, const QString& filename, const QString& reason);
     void fileSaved(Editor *e, const QString& filename);
     void fileRenamed(Editor *e, const QString& oldFilename, const QString& newFilename);
     void fileSaveAsed(Editor *e, const QString& oldFilename, const QString& newFilename);
-    void breakpointAdded(const Editor *e, int line);
+    void breakpointAdded(const Editor *e, int line, const QString& fingerprint);
     void breakpointRemoved(const Editor *e, int line);
     void breakpointsCleared(const Editor *e);
     void syntaxCheckRequested(Editor *e);
@@ -439,8 +496,62 @@ private:
 
     int previousIdChars(const QSynedit::CharPos &pos);
 
+    // After the content has been reformatted or replaced, line numbers can't be
+    // used to locate the caret/breakpoints/bookmarks any more: formatters merge
+    // and split lines. These helpers find those lines back by their text; the
+    // anchoring itself is in EditorAnchors (see editoranchors.h), so that it can be
+    // tested without a document. Line numbers are 0-based here, like everywhere
+    // else in the editor.
+    QString lineNonWhitespace(int line) const;
+    ReformatAnchor lineAnchor(int line) const;
+    QMap<int,int> remapLinesByAnchor(const QMap<int,ReformatAnchor>& anchors) const;
+    // Replaces the whole content of the document: remaps the caret, the first
+    // displayed line and the markers of the file in a single pass (they follow the
+    // code they are on), tells the models that the content has been replaced, and
+    // hands the resulting old line -> new line map back to the caller.
+    QMap<int,int> replaceContentAndRemap(const QString& newContent, bool doReparse);
+    // Applies the result of an asynchronous reformat on the GUI thread (see
+    // reformat()). "generation" is the reformat the result belongs to: a result
+    // of a reformat that a newer one has replaced (the synchronous one a save
+    // starts, see reformat()) is stale and is ignored.
+    void finishReformat(const QString& newContent, const QString& errorMessage, bool isOk,
+                        const QString& sourceText, bool doReparse, bool notify,
+                        quint64 generation);
+    // Anchors of the breakpoints and the bookmarks that the models hold for this
+    // file, so they can be found back after the whole content has been replaced.
+    QMap<int,ReformatAnchor> markerAnchors() const;
+    // The same, plus the lines the application holds outside of the models (the
+    // history of the caret positions of the file): everything that has to follow
+    // the code it is on when the whole content is replaced.
+    QMap<int,ReformatAnchor> anchorLines() const;
+    // Tells the models that the whole content of this file has been replaced (see
+    // ContentReplacedFunc), so that they move / re-anchor the markers of the file
+    // on the code they were set on.
+    void onContentReplaced(const QMap<int,int>& markerLineMap);
+    // Runs "action" (a change of the whole content of the document: the undo/redo
+    // of a code formatting or of a tool output replacement) with the markers of
+    // the file kept on their code, instead of letting the models do their
+    // incremental line bookkeeping on it (see isReplacingContent()).
+    void runWholeContentChange(const std::function<void()>& action);
+
 private:
     bool mInited;
+    // set while a reformat is running, to ignore re-entrant calls. A save that
+    // needs the formatted content abandons the running one (see reformat()).
+    bool mIsReformatting = false;
+    // Identifies the reformat the editor is waiting for: a result of an older
+    // reformat must not be applied once a newer one has replaced it.
+    quint64 mReformatGeneration = 0;
+    // Depth of the whole-content replacements that are running (see
+    // isReplacingContent()): a counter, so that a replacement started while
+    // another one runs doesn't clear the flag the other one relies on.
+    int mReplacingContentDepth = 0;
+    // Set while the replacement that is running is the undo/redo of a previous
+    // change (see isRestoringContentByUndoRedo()).
+    bool mContentRestoredByUndoRedo = false;
+    // Set for the whole duration of doUndo()/doRedo(), including the ordinary
+    // line-by-line ones (see isUndoingOrRedoing()).
+    bool mUndoingOrRedoing = false;
     QDateTime mBackupTime;
     QFile* mBackupFile;
     QByteArray mEditorEncoding; // the encoding type set by the user
@@ -465,6 +576,13 @@ private:
     int mSyntaxErrorLine;
     int mLineCount;
     QSet<int> mBreakpointLines;
+    BreakpointHistoryFunc mBreakpointUndoFunc;
+    BreakpointHistoryFunc mBreakpointRedoFunc;
+    BreakpointHistoryStateFunc mBreakpointCanUndoFunc;
+    BreakpointHistoryStateFunc mBreakpointCanRedoFunc;
+    // True while the last user action was a breakpoint toggle: Ctrl+Z/Ctrl+Y
+    // must then be routed to the breakpoint history, not to the text undo stack.
+    bool mLastActionWasBreakpoint = false;
     QSet<int> mBookmarkLines;
     int mActiveBreakpointLine;
     PCppParser mParser;
@@ -513,6 +631,8 @@ private:
     EvalTipReadyCallback mEvalTipReadyCallback;
     GetReformatterFunc mGetReformatterFunc;
     GetMacroVarsFunc mGetMacroVarsFunc;
+    ContentReplacedFunc mContentReplacedFunc;
+    GetAnchorLinesFunc mGetAnchorLinesFunc;
     GetCppParserFunc mGetCppParserFunc;
 #ifdef ENABLE_SDCC
     GetCompilerTypeForEditorFunc mGetCompilerTypeForEditorFunc;
@@ -530,6 +650,12 @@ protected:
     void onGetEditingAreas(int Line, QSynedit::EditingAreaList &areaList) override;
     bool onGetSpecialLineColors(int Line, QColor &foreground, QColor &backgroundColor) override;
     void onPreparePaintHighlightToken(int line, int aChar, const QString &token, QSynedit::PTokenAttribute attr, QSynedit::FontStyles &style, QColor &foreground, QColor &background) override;
+    // An undo/redo of a change that covered the whole content of the document (a
+    // code formatting, a tool output replacement) must not be reported to the
+    // models as a plain line deletion: the markers are put back on their code, see
+    // runWholeContentChange().
+    void doUndo() override;
+    void doRedo() override;
 
     // QObject interface
 public:

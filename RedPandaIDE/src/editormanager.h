@@ -21,9 +21,13 @@
 #include <QSplitter>
 #include <QWidget>
 #include <QRecursiveMutex>
+#include <QHash>
+#include <QScopedValueRollback>
 #include "utils.h"
 #include "editor.h"
 #include "reformatter/astyleformatter.h"
+#include "reformatter/clangformatreformatter.h"
+#include "debugger/debuggermodels.h"
 
 class MainWindow;
 class Project;
@@ -61,6 +65,28 @@ public:
     bool projectEditorsModified();
     void clearProjectEditorsModified();
 
+    // Application-level undo/redo of the breakpoint toggles (see
+    // Editor::setBreakpointHistoryFuncs()).
+    struct BreakpointHistoryAction {
+        enum Kind { Added, Removed, ClearedAll };
+        Kind kind = Added;
+        PBreakpoint breakpoint;
+        QList<PBreakpoint> breakpoints;
+        bool forProject = false;
+    };
+    QHash<const Editor*, QList<BreakpointHistoryAction>> mBreakpointUndo;
+    QHash<const Editor*, QList<BreakpointHistoryAction>> mBreakpointRedo;
+    bool mRestoringBreakpointAction = false;
+    // The last breakpoint history action belongs to the table (no open editor).
+    bool mLastBreakpointActionWasUnbound = false;
+    bool undoBreakpointAction(Editor* e);
+    bool redoBreakpointAction(Editor* e);
+    bool canUndoBreakpointAction(const Editor* e) const;
+    bool canRedoBreakpointAction(const Editor* e) const;
+    void recordBreakpointAction(const Editor* e, bool added,
+                                const PBreakpoint& breakpoint, bool forProject);
+    void clearBreakpointHistory(const Editor* e);
+
     bool closeAll(bool force = false);
     bool closeOthers(Editor* editor);
 
@@ -80,6 +106,21 @@ public:
 
     void updateEditorBookmarks();
     void updateEditorBreakpoints();
+    // Remove the breakpoint selected in the breakpoint view and keep it in the
+    // application-level undo history of its editor (if that file is open).
+    bool removeBreakpointFromTable(int index, bool forProject);
+    // Remove all the breakpoints shown in the table as one undoable action.
+    void removeAllBreakpointsFromTable(bool forProject);
+    // Undo/redo of the breakpoints removed from the breakpoint table while their
+    // file has no open editor. There is no Editor to hold the command, so they
+    // use the null key of the same history.
+    bool canUndoUnboundBreakpoint() const;
+    bool canRedoUnboundBreakpoint() const;
+    bool lastBreakpointActionWasUnbound() const;
+    bool undoUnboundBreakpoint();
+    bool redoUnboundBreakpoint();
+    // Drop the application-level breakpoint histories (project switch, clear all).
+    void clearBreakpointHistories();
 
     bool debuggerReadyForEvalTip();
     bool requestEvalTip(Editor *e, const QString& s);
@@ -125,7 +166,7 @@ private:
 #endif
 private slots:
     void updateEditorTabCaption(Editor* e);
-    void onBreakpointAdded(const Editor* e, int line);
+    void onBreakpointAdded(const Editor* e, int line, const QString& fingerprint);
     void onBreakpointRemoved(const Editor* e, int line);
     void onBreakpointsCleared(const Editor* e);
     void onEditorShown(Editor *e);
@@ -137,6 +178,8 @@ private slots:
     void onEditorLinesInserted(int startLine, int count);
     void onEditorLinesRemoved(int startLine, int count);
     void onEditorLineMoved(int fromLine, int toLine);
+    void onEditorLinesMerged(int removedLine, int intoLine);
+    void onEditorLinesSplit(int mergedLine, int newLine);
     void onEditorStatusChanged(QSynedit::StatusChanges changes);
     void onEditorFontSizeChangedByWheel(int newSize);
     void onEditorFileEncodingChanged(Editor *e);

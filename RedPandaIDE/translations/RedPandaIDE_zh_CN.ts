@@ -9,6 +9,14 @@
         <translation>找不到astyle程序&quot;%1&quot;.</translation>
     </message>
     <message>
+        <source>astyle can&apos;t format &quot;%1&quot;.</source>
+        <translation>astyle无法格式化&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的内容无法转换为UTF-8编码。</translation>
+    </message>
+    <message>
         <location line="+6"/>
         <source>Reformatting content using astyle...</source>
         <translation>使用astyle重新排版代码...</translation>
@@ -19,9 +27,21 @@
         <translation>- Astyle: %1</translation>
     </message>
     <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作目录: %1</translation>
+    </message>
+    <message>
         <location line="+1"/>
         <source>- Command: %1</source>
         <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>astyle exits with code %1.</source>
+        <translation>astyle以退出码%1结束。</translation>
+    </message>
+    <message>
+        <source>astyle doesn&apos;t generate any output.</source>
+        <translation>astyle没有产生任何输出。</translation>
     </message>
 </context>
 <context>
@@ -31,11 +51,7 @@
         <source>About</source>
         <translation>关于</translation>
     </message>
-    <message>
-        <source>&lt;h1&gt;Red-Panda Dev-Cpp 7&lt;/h1&gt;</source>
-        <translation type="vanished">&lt;h1&gt;小熊猫Dev-Cpp 7&lt;/h1&gt;</translation>
-    </message>
-    <message>
+        <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -73,11 +89,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Microsoft YaHei UI&apos;;&quot;&gt;Copyright (c) 2011-2015 orwell devcpp &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;Microsoft YaHei UI&apos;;&quot;&gt;Copyright (c) 2020-2021 royqh1979@gmail.com&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Based on Qt %1 (%2)&lt;/p&gt;&lt;p&gt;Build time: %3 %4&lt;/p&gt;&lt;p&gt;Copyright 2020-2021 royqh1979@gmail.com&lt;/p&gt;&lt;p&gt;Homepage: &lt;a href=&quot;https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;基于 Qt %1 (%2)&lt;/p&gt;&lt;p&gt;构建时间： %3 %4&lt;/p&gt;&lt;p&gt;Copyright 2020-2021 royqh1979@gmail.com&lt;/p&gt;&lt;p&gt;主页： &lt;a href=&quot;https://royqh.net/devcpp/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;https://royqh.net/devcpp/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
+        <message>
         <location line="+11"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Red Panda C++&lt;/span&gt;&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Red-Panda C++&lt;/span&gt;&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
@@ -93,29 +105,12 @@ p, li { white-space: pre-wrap; }
         <source>Build time: %1 %2</source>
         <translation>构建时间：%1 %2</translation>
     </message>
-    <message>
-        <source>Copyright(C) 2021-2024 瞿华(royqh1979@gmail.com)</source>
-        <translation type="vanished">Copyright(C) 2021-2025 瞿华(royqh1979@gmail.com)</translation>
-    </message>
-    <message>
-        <source>Copyright(C) 2021-2022 瞿华(royqh1979@gmail.com)</source>
-        <translation type="vanished">Copyright(C) 2021-2022 瞿华(royqh1979@gmail.com)</translation>
-    </message>
-    <message>
+            <message>
         <location line="+26"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;官方网站: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;主页: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://sourceforge.net/projects/dev-cpp-2020/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Red Panda Dev-C++ (&lt;=6.7.5):</source>
-        <oldsource>Red Panda Dev-C++:</oldsource>
-        <translation type="vanished">小熊猫Dev-C++ (&lt;=6.7.5):</translation>
-    </message>
-    <message>
+            <message>
         <location line="+16"/>
         <source>GNU General Public License</source>
         <translation>GNU通用公共许可</translation>
@@ -198,11 +193,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t open the theme file &apos;%1&apos; for read.</source>
         <translation>无法读取主题文件&quot;%1&quot;!</translation>
     </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for read.</source>
-        <translation type="vanished">无法读取文件&apos;%1&apos;.</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>AutolinkModel</name>
     <message>
@@ -304,23 +295,7 @@ p, li { white-space: pre-wrap; }
         <source>Condition</source>
         <translation>条件</translation>
     </message>
-    <message>
-        <source>Save file &apos;%1&apos; failed.</source>
-        <translation type="vanished">保存文件&apos;%1&apos;失败。</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for write.</source>
-        <translation type="vanished">无法写入文件&apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>Error in json file &apos;%1&apos;:%2 : %3</source>
-        <translation type="vanished">JSON文件&apos;%1&apos;:%2中存在错误：%3</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for read.</source>
-        <translation type="vanished">无法读取文件&apos;%1&apos;.</translation>
-    </message>
-</context>
+                </context>
 <context>
     <name>CPUDialog</name>
     <message>
@@ -328,11 +303,7 @@ p, li { white-space: pre-wrap; }
         <source>CPU Info</source>
         <translation>CPU信息</translation>
     </message>
-    <message>
-        <source>Disassemble</source>
-        <translation type="vanished">反汇编</translation>
-    </message>
-    <message>
+        <message>
         <location line="+58"/>
         <location line="+3"/>
         <source>Step over one machine instruction</source>
@@ -367,71 +338,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>CharsetInfoManager</name>
-    <message>
-        <source>Arabic</source>
-        <translation type="vanished">阿拉伯语系</translation>
-    </message>
-    <message>
-        <source>Greek</source>
-        <translation type="vanished">希腊语系</translation>
-    </message>
-    <message>
-        <source>Baltic</source>
-        <translation type="vanished">巴尔干语系</translation>
-    </message>
-    <message>
-        <source>Western Europe</source>
-        <translation type="vanished">西欧语言</translation>
-    </message>
-    <message>
-        <source>Central Europe</source>
-        <translation type="vanished">中欧语言</translation>
-    </message>
-    <message>
-        <source>Cyrillic</source>
-        <translation type="vanished">西里尔语系</translation>
-    </message>
-    <message>
-        <source>Turkish</source>
-        <translation type="vanished">土耳其语系</translation>
-    </message>
-    <message>
-        <source>Northern Europe</source>
-        <translation type="vanished">北欧语系</translation>
-    </message>
-    <message>
-        <source>Hebrew</source>
-        <translation type="vanished">希伯来语</translation>
-    </message>
-    <message>
-        <source>Thai</source>
-        <translation type="vanished">泰语</translation>
-    </message>
-    <message>
-        <source>Japanese</source>
-        <translation type="vanished">日语</translation>
-    </message>
-    <message>
-        <source>Chinese</source>
-        <translation type="vanished">中文</translation>
-    </message>
-    <message>
-        <source>Korean</source>
-        <translation type="vanished">韩语</translation>
-    </message>
-    <message>
-        <source>Vietnamese</source>
-        <translation type="vanished">越南语</translation>
-    </message>
-    <message>
-        <source>Eastern Europe</source>
-        <translation type="vanished">东欧语系</translation>
-    </message>
-    <message>
-        <source>Celtic</source>
-        <translation type="vanished">凯尔特语系</translation>
-    </message>
-</context>
+                                                                </context>
 <context>
     <name>ChooseThemeDialog</name>
     <message>
@@ -534,7 +441,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-18"/>
         <source>Can&apos;t open code snippet file &apos;%1&apos; for write.</source>
-        <translation></translation>
+        <translation>无法以写入方式打开代码片段文件 &apos;%1&apos;。</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -614,15 +521,7 @@ p, li { white-space: pre-wrap; }
         <source>Clean before rebuild failed.</source>
         <translation>重编译前的清理准备工作失败！</translation>
     </message>
-    <message>
-        <source> - Command: %1 %2</source>
-        <translation type="vanished">- 命令: %1 %2</translation>
-    </message>
-    <message>
-        <source> - Command: %1 %2 &gt; &quot;%3&quot;</source>
-        <translation type="vanished">- 命令: %1 %2 &gt; &quot;%3&quot;</translation>
-    </message>
-    <message>
+            <message>
         <location line="+12"/>
         <source> - Command: %1</source>
         <translation>- 命令: %1</translation>
@@ -630,7 +529,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+2"/>
         <source> - Command: %1 &gt; %2</source>
-        <translation></translation>
+        <translation> - 命令: %1 &gt; %2</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -662,19 +561,7 @@ p, li { white-space: pre-wrap; }
         <source>- Compilation Time: %1 secs</source>
         <translation>- 编译时间: %1 秒</translation>
     </message>
-    <message>
-        <source>error</source>
-        <translation type="vanished">错误</translation>
-    </message>
-    <message>
-        <source>fatal error</source>
-        <translation type="vanished">致命错误</translation>
-    </message>
-    <message>
-        <source>syntax error</source>
-        <translation type="vanished">语法错误</translation>
-    </message>
-    <message>
+                <message>
         <location line="+93"/>
         <location line="+13"/>
         <source>[Error] </source>
@@ -718,17 +605,7 @@ p, li { white-space: pre-wrap; }
         <translatorcomment>错误：</translatorcomment>
         <translation>错误：</translation>
     </message>
-    <message>
-        <source>fatal error:</source>
-        <translatorcomment>致命错误：</translatorcomment>
-        <translation type="vanished">致命错误：</translation>
-    </message>
-    <message>
-        <source>syntax error:</source>
-        <translatorcomment>语法错误：</translatorcomment>
-        <translation type="vanished">语法错误：</translation>
-    </message>
-    <message>
+            <message>
         <location line="+2"/>
         <location line="+2"/>
         <source>warning:</source>
@@ -745,11 +622,7 @@ p, li { white-space: pre-wrap; }
         <source>The compiler process for &apos;%1&apos; failed to start.</source>
         <translation>无法启动编译器进程&apos;%1&apos;。</translation>
     </message>
-    <message>
-        <source>The compiler process failed to start.</source>
-        <translation type="vanished">无法启动编译进程。</translation>
-    </message>
-    <message>
+        <message>
         <location line="+4"/>
         <source>The compiler process crashed after starting successfully.</source>
         <translation>编译进程启动后崩溃。</translation>
@@ -774,11 +647,7 @@ p, li { white-space: pre-wrap; }
         <source>An unknown error occurred.</source>
         <translation>发生了未知错误。</translation>
     </message>
-    <message>
-        <source>- Time Elasped: %1 secs</source>
-        <translation type="vanished">- 编译时间: %1 秒</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>CompilerAutolinkWidget</name>
     <message>
@@ -803,11 +672,7 @@ p, li { white-space: pre-wrap; }
         <source>Remove</source>
         <translation>删除</translation>
     </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/compilerautolinkwidget.cpp" line="-92"/>
         <source>Save failed.</source>
         <translation>保存失败。</translation>
@@ -884,19 +749,7 @@ p, li { white-space: pre-wrap; }
         <source>Memory</source>
         <translation>内存</translation>
     </message>
-    <message>
-        <source>Encoding not support</source>
-        <translation type="vanished">不支持字符编码</translation>
-    </message>
-    <message>
-        <source>Clang only support utf-8 encoding.</source>
-        <translation type="vanished">Clang只支持UTF-8编码</translation>
-    </message>
-    <message>
-        <source>Strings in the program might be wrongly processed.</source>
-        <translation type="vanished">程序中的文字内容可能无法被正确处理和显示。</translation>
-    </message>
-    <message>
+                <message>
         <location line="-12"/>
         <source>Can&apos;t find Console Pauser</source>
         <translation>找不到Console Pauser程序</translation>
@@ -936,7 +789,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -957,120 +810,11 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>CompilerSet</name>
-    <message>
-        <source>Support all ANSI standard C programs (-ansi)</source>
-        <translation type="vanished">支持所有ANSI标准C程序(-ansi)</translation>
-    </message>
-    <message>
-        <source>Do not recognize asm,inline or typeof as a keyword (-fno-asm)</source>
-        <translation type="vanished">不支持将asm、inline和typeof作为关键字(-fno-asm)</translation>
-    </message>
-    <message>
-        <source>Imitate traditional C preprocessors (-traditional-cpp)</source>
-        <translation type="vanished">模仿传统C预处理器行为(-traditional-cpp)</translation>
-    </message>
-    <message>
-        <source>Optimize for the following machine (-march)</source>
-        <translation type="vanished">生成特定机器的专用指令(-march)</translation>
-    </message>
-    <message>
-        <source>Optimize less, while maintaining full compatibility (-tune)</source>
-        <translation type="vanished">完整兼容特定机器，较少优化(-tune)</translation>
-    </message>
-    <message>
-        <source>Enable use of specific instructions (-mx)</source>
-        <translation type="vanished">启用特定指令集(-mx)</translation>
-    </message>
-    <message>
-        <source>Optimization level (-Ox)</source>
-        <translation type="vanished">优化级别(-Ox)</translation>
-    </message>
-    <message>
-        <source>Compile with the following pointer size (-mx)</source>
-        <translation type="vanished">使用下列指针大小编译(-mx)</translation>
-    </message>
-    <message>
-        <source>Language standard (-std)</source>
-        <translation type="vanished">语言标准(-std)</translation>
-    </message>
-    <message>
-        <source>Generate debugging information (-g3)</source>
-        <translation type="vanished">生成调试信息(-g3)</translation>
-    </message>
-    <message>
-        <source>Generate profiling info for analysis (-pg)</source>
-        <translation type="vanished">生成性能分析信息(-pg)</translation>
-    </message>
-    <message>
-        <source>Warnings</source>
-        <translation type="vanished">代码警告</translation>
-    </message>
-    <message>
-        <source>Inhibit all warning messages (-w)</source>
-        <translation type="vanished">忽略所有警告信息(-w)</translation>
-    </message>
-    <message>
-        <source>Show most warnings (-Wall)</source>
-        <translation type="vanished">启用常见问题警告(-Wall)</translation>
-    </message>
-    <message>
-        <source>Show some more warnings (-Wextra)</source>
-        <translation type="vanished">启用更多问题警告(-Wextra)</translation>
-    </message>
-    <message>
-        <source>Check ISO C/C++/C++0x conformance (-pedantic)</source>
-        <translation type="vanished">检查ISO C/C++/C++0x语法一致性(-pedantic)</translation>
-    </message>
-    <message>
-        <source>Only check the code for syntax errors (-fsyntax-only)</source>
-        <translation type="vanished">只进行语法检查（不编译）(-fsyntax-only)</translation>
-    </message>
-    <message>
-        <source>Make all warnings into errors (-Werror)</source>
-        <translation type="vanished">将警告作为错误处理(-Werror)</translation>
-    </message>
-    <message>
-        <source>Abort compilation on first error (-Wfatal-errors)</source>
-        <translation type="vanished">遇到第一个错误后立即中止编译(-Wfatal-errors)</translation>
-    </message>
-    <message>
-        <source>Linker</source>
-        <translation type="vanished">链接器</translation>
-    </message>
-    <message>
-        <source>Link libraries statically (-static)</source>
-        <oldsource>Link an Objective C program (-lobjc)</oldsource>
-        <translation type="vanished">链接Ojbective C程序(-lobjc)</translation>
-    </message>
-    <message>
-        <source>Do not use standard system libraries (-nostdlib)</source>
-        <translation type="vanished">不使用标准库和系统启动文件(-nostdlib)</translation>
-    </message>
-    <message>
-        <source>Do not create a console window (-mwindows)</source>
-        <translation type="vanished">不产生控制台窗口(-mwindows)</translation>
-    </message>
-    <message>
-        <source>Strip executable (-s)</source>
-        <translation type="vanished">剥除附加信息(-s)</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="vanished">输出</translation>
-    </message>
-    <message>
+                                                                                                        <message>
         <source>-fverbose-asm</source>
         <translation type="obsolete">-fverbose-asm</translation>
     </message>
-    <message>
-        <source>Use pipes instead of temporary files during compilation (-pipe)</source>
-        <translation type="vanished">编译时使用管道而不是临时文件(-pipe)</translation>
-    </message>
-    <message>
-        <source>Do not assemble, compile and generate the assemble code (-S)</source>
-        <translation type="vanished">只生成汇编代码(-S)</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>CompilerSetDirectoriesWidget</name>
     <message>
@@ -1090,11 +834,7 @@ p, li { white-space: pre-wrap; }
         <source>Remove</source>
         <translation>删除</translation>
     </message>
-    <message>
-        <source>Delete</source>
-        <translation type="vanished">删除</translation>
-    </message>
-    <message>
+        <message>
         <location line="+10"/>
         <location line="+3"/>
         <source>Remove Invalid</source>
@@ -1118,11 +858,7 @@ p, li { white-space: pre-wrap; }
         <source>Compiler set to config</source>
         <translation>编译器配置方案</translation>
     </message>
-    <message>
-        <source>Syntax error for objects larger than</source>
-        <translation type="vanished">当变量占用栈空间大于此值时报错</translation>
-    </message>
-    <message>
+        <message>
         <location line="+260"/>
         <location line="+7"/>
         <location line="+23"/>
@@ -1147,11 +883,7 @@ p, li { white-space: pre-wrap; }
         <source>Add the following arguments when calling the linker</source>
         <translation>链接时加入下列选项</translation>
     </message>
-    <message>
-        <source>Add Charset arguments when calling the compiler</source>
-        <translation type="vanished">编译时自动加入字符编码选项</translation>
-    </message>
-    <message>
+        <message>
         <location line="-161"/>
         <location line="+3"/>
         <source>Auto Find Compilers</source>
@@ -1222,15 +954,7 @@ p, li { white-space: pre-wrap; }
         <source>Binary suffix</source>
         <translation>二进制文件类型</translation>
     </message>
-    <message>
-        <source>Syntax error for stack frame larger than</source>
-        <translation type="vanished">单个函数栈大小超过指定值时报错：</translation>
-    </message>
-    <message>
-        <source>MB</source>
-        <translation type="vanished">MB</translation>
-    </message>
-    <message>
+            <message>
         <location line="-213"/>
         <source>Settings</source>
         <translation>编译/链接选项</translation>
@@ -1245,45 +969,17 @@ p, li { white-space: pre-wrap; }
         <source>Programs</source>
         <translation>程序</translation>
     </message>
-    <message>
-        <source>Assembler</source>
-        <translation type="vanished">汇编器(NASM)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+149"/>
         <source>Output</source>
         <translation>输出</translation>
     </message>
-    <message>
-        <source>Compilation Stages</source>
-        <translation type="vanished">编译阶段</translation>
-    </message>
-    <message>
-        <source>Stop after the preprocessing stage</source>
-        <translation type="vanished">在完成预处理后停止编译</translation>
-    </message>
-    <message>
-        <source>Stop after the compilation proper stage</source>
-        <translation type="vanished">在生成汇编代码后停止。</translation>
-    </message>
-    <message>
-        <source>Stop after the assembling stage</source>
-        <translation type="vanished">在完成汇编后停止。</translation>
-    </message>
-    <message>
-        <source>Link and generate the executable </source>
-        <translation type="vanished">链接得到可执行文件。</translation>
-    </message>
-    <message>
+                        <message>
         <location line="+58"/>
         <source>Preprocessing output suffix</source>
         <translation>预处理输出后缀</translation>
     </message>
-    <message>
-        <source>Assembling output suffix</source>
-        <translation type="vanished">编译输出后缀</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Compiling output suffix</source>
         <translation>编译（汇编代码）输出后缀</translation>
@@ -1293,11 +989,7 @@ p, li { white-space: pre-wrap; }
         <source>Executable suffix</source>
         <translation>可执行文件后缀</translation>
     </message>
-    <message>
-        <source>TextLabel</source>
-        <translation type="vanished">选项</translation>
-    </message>
-    <message>
+        <message>
         <location line="-43"/>
         <source>gdb</source>
         <translation>gdb</translation>
@@ -1332,18 +1024,10 @@ p, li { white-space: pre-wrap; }
         <source>C Compiler(gcc)</source>
         <translation>C编译器(gcc)</translation>
     </message>
-    <message>
-        <source>Debugger(gdb)</source>
-        <translation type="vanished">调试器(gdb)</translation>
-    </message>
-    <message>
-        <source>Profiler(gprof)</source>
-        <translation type="vanished">性能分析器(gprof)</translation>
-    </message>
-    <message>
+            <message>
         <location line="+7"/>
         <source>make</source>
-        <translation></translation>
+        <translation>make</translation>
     </message>
     <message>
         <location line="-17"/>
@@ -1360,11 +1044,7 @@ p, li { white-space: pre-wrap; }
         <source>Choose Resource Compiler</source>
         <translation>选择资源编译器</translation>
     </message>
-    <message>
-        <source>Choose Profiler</source>
-        <translation type="vanished">选择性能分析器</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/compilersetoptionwidget.cpp" line="+320"/>
         <source>Confirm</source>
         <translation>确认</translation>
@@ -1374,11 +1054,7 @@ p, li { white-space: pre-wrap; }
         <source>Red Panda C++ will clear previously found compiler list and search for compilers in the following locations:&lt;br /&gt; &apos;%1&apos;&lt;br /&gt; &apos;%2&apos;&lt;br /&gt;Do you really want to continue?</source>
         <translation>小熊猫C++ 将会清除以前搜索到的编译器配置列表，然后在下列文件夹中搜索编译器:&lt;br/&gt; &apos;%1&apos;&lt;br/&gt; &apos;%2&apos;&lt;br /&gt;你确定要继续吗？</translation>
     </message>
-    <message>
-        <source>ANSI</source>
-        <translation type="vanished">ANSI</translation>
-    </message>
-    <message>
+        <message>
         <location line="-245"/>
         <source>System Default(%1)</source>
         <translation>系统默认(%1)</translation>
@@ -1398,19 +1074,7 @@ p, li { white-space: pre-wrap; }
         <source>Red Panda C++ will clear previously found compiler list and search for compilers in the the PATH. &lt;br /&gt;Do you really want to continue?</source>
         <translation>小熊猫C++ 将会清除以前搜索到的编译器配置列表，然后在PATH路径中搜索gcc编译器.&lt;br /&gt;你确定要继续吗？</translation>
     </message>
-    <message>
-        <source>Searching for compilers...</source>
-        <translation type="vanished">正在搜索编译器……</translation>
-    </message>
-    <message>
-        <source>Abort</source>
-        <translation type="vanished">中止</translation>
-    </message>
-    <message>
-        <source>Searching...</source>
-        <translation type="vanished">正在查找...</translation>
-    </message>
-    <message>
+                <message>
         <location line="+11"/>
         <location line="+28"/>
         <source>Failed</source>
@@ -1449,11 +1113,7 @@ p, li { white-space: pre-wrap; }
         <source>Compiler</source>
         <translation>编译器</translation>
     </message>
-    <message>
-        <source>Compiler Set Folder</source>
-        <translation type="vanished">编译器所在文件夹</translation>
-    </message>
-    <message>
+        <message>
         <location line="-164"/>
         <location line="+17"/>
         <source>New name</source>
@@ -1464,11 +1124,7 @@ p, li { white-space: pre-wrap; }
         <source>Locate C Compiler</source>
         <translation>定位C编译器</translation>
     </message>
-    <message>
-        <source>Executable files (*.exe)</source>
-        <translation type="vanished">可执行文件 (*.exe)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+12"/>
         <source>Locate C++ Compiler</source>
         <translation>定位C++编译器</translation>
@@ -1493,15 +1149,7 @@ p, li { white-space: pre-wrap; }
         <source>Locate windres</source>
         <translation>定位windres程序</translation>
     </message>
-    <message>
-        <source>Locate gprof</source>
-        <translation type="vanished">定位gprof程序</translation>
-    </message>
-    <message>
-        <source>Locate nasm</source>
-        <translation type="vanished">定位nasm程序</translation>
-    </message>
-    <message>
+            <message>
         <location filename="../src/settingsdialog/compilersetoptionwidget.ui" line="-191"/>
         <source>Survive auto-finds</source>
         <translation>自动搜索时保留此项</translation>
@@ -1509,11 +1157,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>CompilerSets</name>
-    <message>
-        <source>Confirm</source>
-        <translation type="vanished">确认</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>CppRefacter</name>
     <message>
@@ -1587,19 +1231,7 @@ p, li { white-space: pre-wrap; }
         <source>GDB Server Port</source>
         <translation>gdb server TCP端口号</translation>
     </message>
-    <message>
-        <source>Skip system header and library files when step into</source>
-        <translation type="vanished">单步进入时，跳过系统头文件和库文件</translation>
-    </message>
-    <message>
-        <source>Skip project header and library files when step into</source>
-        <translation type="vanished">单步进入时，跳过项目头文件和库文件</translation>
-    </message>
-    <message>
-        <source>Skip custom header and library files when step into</source>
-        <translation type="vanished">单步进入时，跳过自定义头文件和库文件</translation>
-    </message>
-    <message>
+                <message>
         <location line="+88"/>
         <source>Debug Console</source>
         <translation>调试主控台</translation>
@@ -1630,45 +1262,17 @@ p, li { white-space: pre-wrap; }
         <source>Memory View</source>
         <translation>内存视图</translation>
     </message>
-    <message>
-        <source>Memory View Rows</source>
-        <translation type="vanished">内存视图行数</translation>
-    </message>
-    <message>
-        <source>Memory View Columns</source>
-        <translation type="vanished">内存视图列数</translation>
-    </message>
-    <message>
-        <source>Autosave breakpoints and watches</source>
-        <translation type="vanished">自动保存断点和监视表达式</translation>
-    </message>
-    <message>
+                <message>
         <location line="+89"/>
         <source>Show CPU Window when signal received</source>
         <translation>程序收到信号停止时打开CPU窗口</translation>
     </message>
-    <message>
-        <source>Show full gdb annotations</source>
-        <translation type="vanished">在调试主控台中显示gdb输出注解</translation>
-    </message>
-    <message>
-        <source>Autosave</source>
-        <translation type="vanished">自动保存</translation>
-    </message>
-    <message>
-        <source>Autosave breakpoints</source>
-        <translation type="vanished">自动保存断点</translation>
-    </message>
-    <message>
+                <message>
         <location line="-419"/>
         <source>Autosave watches</source>
         <translation>自动保存监视</translation>
     </message>
-    <message>
-        <source>Disassembly Coding Style</source>
-        <translation type="vanished">反汇编代码样式</translation>
-    </message>
-    <message>
+        <message>
         <location line="+401"/>
         <source>CPU Window</source>
         <translation>CPU信息窗口</translation>
@@ -1731,23 +1335,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>DebugReader</name>
-    <message>
-        <source>Debug Failed</source>
-        <translation type="vanished">调试失败</translation>
-    </message>
-    <message>
-        <source>The executable doesn&apos;t have symbol table, and can&apos;t be debugged.</source>
-        <translation type="vanished">可执行文件中没有符号表信息，无法调试。</translation>
-    </message>
-    <message>
-        <source>Please turn off your compiler set&apos;s &quot;Strip executable (-s)&quot; option, recompile and retry debug.</source>
-        <translation type="vanished">请在选项对话框的编译器配置集页中取消“剥除附加信息(-s)”选项，重新编译后再调试。</translation>
-    </message>
-    <message>
-        <source>&lt;repeats \1 times&gt;</source>
-        <translation type="vanished">&lt;重复\1次&gt;</translation>
-    </message>
-</context>
+                </context>
 <context>
     <name>Debugger</name>
     <message>
@@ -1765,15 +1353,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t start debugging.</source>
         <translation>无法启动调试器</translation>
     </message>
-    <message>
-        <source>Debugger path error</source>
-        <translation type="vanished">调试路径器错误</translation>
-    </message>
-    <message>
-        <source>Debugger&apos;s path &quot;%1&quot; contains non-ascii characters.</source>
-        <translation type="vanished">调试器路径&quot;%1&quot;中包含非ASCII字符（如，中文字符）</translation>
-    </message>
-    <message>
+            <message>
         <location line="+38"/>
         <source>This prevents it from executing.</source>
         <translation>这会导致调试器无法启动。</translation>
@@ -1783,11 +1363,7 @@ p, li { white-space: pre-wrap; }
         <source>Debugger not exists</source>
         <translation>找不到调试器</translation>
     </message>
-    <message>
-        <source>Can&apos;&apos;t find debugger in : &quot;%1&quot;</source>
-        <translation type="vanished">找不到调试器程序&quot;%1&quot;</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1"/>
         <source>Can&apos;&apos;t find debugger (gdb) in : &quot;%1&quot;</source>
         <translation>找不到gdb程序“%1”</translation>
@@ -1842,11 +1418,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t open file &apos;%1&apos; for read.</source>
         <translation>无法读取文件&apos;%1&apos;.</translation>
     </message>
-    <message>
-        <source>Not found in current context</source>
-        <translation type="vanished">不在当前语境中</translation>
-    </message>
-    <message>
+        <message>
         <location line="+29"/>
         <source>Compile</source>
         <translation>编译</translation>
@@ -1869,57 +1441,17 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>Editor</name>
-    <message>
-        <source>untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
-        <source>untitled%1</source>
-        <translation type="vanished">无标题%1</translation>
-    </message>
-    <message>
-        <source>Fail</source>
-        <translation type="vanished">失败</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/editor.cpp" line="+366"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
-    <message>
-        <source>File %1 is not writable!</source>
-        <translation type="vanished">无法写入文件&quot;%1&quot;</translation>
-    </message>
-    <message>
+        <message>
         <location line="+123"/>
         <source>Error Load File</source>
         <translation>载入文件错误</translation>
     </message>
-    <message>
-        <source>Restore backup</source>
-        <translation type="vanished">恢复备份文件</translation>
-    </message>
-    <message>
-        <source>Backup file &apos;%1&apos; detected.</source>
-        <translation type="vanished">检测到临时备份文件&apos;%1&apos;。</translation>
-    </message>
-    <message>
-        <source>Error occurred at last save.</source>
-        <translation type="vanished">上次保存时出错。</translation>
-    </message>
-    <message>
-        <source>Do you want to load the backup file?</source>
-        <translation type="vanished">是否载入备份文件？</translation>
-    </message>
-    <message>
-        <source>Can&apos;t generate temporary backup file &apos;%1&apos;.</source>
-        <translation type="vanished">无法生成临时备份文件&quot;%1&quot;。</translation>
-    </message>
-    <message>
-        <source>Continue to save?</source>
-        <translation type="vanished">继续保存？</translation>
-    </message>
-    <message>
+                            <message>
         <location line="-158"/>
         <source>Save As</source>
         <translation>另存为</translation>
@@ -1929,23 +1461,7 @@ p, li { white-space: pre-wrap; }
         <source>File %1 already opened!</source>
         <translation>文件%1已经被打开！</translation>
     </message>
-    <message>
-        <source>The text to be copied exceeds count limit!</source>
-        <translation type="vanished">要复制的内容超过了行数限制！</translation>
-    </message>
-    <message>
-        <source>The text to be copied exceeds character limit!</source>
-        <translation type="vanished">要复制的内容超过了字符数限制！</translation>
-    </message>
-    <message>
-        <source>The text to be cut exceeds count limit!</source>
-        <translation type="vanished">要剪切的内容超过了行数限制！</translation>
-    </message>
-    <message>
-        <source>The text to be cut exceeds character limit!</source>
-        <translation type="vanished">要剪切的内容超过了字符数限制！</translation>
-    </message>
-    <message>
+                    <message>
         <location line="-69"/>
         <location line="+120"/>
         <source>Save Error</source>
@@ -1995,10 +1511,31 @@ p, li { white-space: pre-wrap; }
         <translation>代码重新排版失败</translation>
     </message>
     <message>
-        <source>Symbol &apos;%1&apos; not found!</source>
-        <translation type="vanished">未找到符号&apos;%1&apos;!</translation>
+        <source>The formatter crashed: %1</source>
+        <translation>排版工具崩溃：%1</translation>
     </message>
     <message>
+        <source>The formatter crashed with an unknown error.</source>
+        <translation>排版工具因未知错误而崩溃。</translation>
+    </message>
+
+    <message>
+        <source>The formatter can&apos;t be started.</source>
+        <translation>无法启动排版工具。</translation>
+    </message>
+    <message>
+        <source>Failed to start the formatter: %1</source>
+        <translation>无法启动排版工具：%1</translation>
+    </message>
+    <message>
+        <source>Reformat</source>
+        <translation>重新排版</translation>
+    </message>
+    <message>
+        <source>The document was modified during formatting; the result was not applied.</source>
+        <translation>排版过程中文档已被修改，排版结果未应用。</translation>
+    </message>
+        <message>
         <location line="-4671"/>
         <source>Confirm Reload File</source>
         <translation>确认重新读取文件</translation>
@@ -2008,36 +1545,12 @@ p, li { white-space: pre-wrap; }
         <source>The editing file will be reloaded. &lt;br /&gt;All unsaved modifications will be lost. &lt;br /&gt;Are you sure to continue?</source>
         <translation>编辑器将重新读取当前的文件。&lt;br /&gt;所有未保存的修改都会丢失。&lt;br /&gt;您确定要继续吗？</translation>
     </message>
-    <message>
-        <source>astyle not found</source>
-        <translation type="vanished">找不到astyle程序</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/formattergeneralwidget.cpp" line="+335"/>
         <source>Can&apos;t find astyle in &quot;%1&quot;.</source>
         <translation>找不到astyle程序&quot;%1&quot;.</translation>
     </message>
-    <message>
-        <source>Reformatting content using astyle...</source>
-        <translation type="vanished">astyle 重新排版代码...</translation>
-    </message>
-    <message>
-        <source>- Astyle: %1</source>
-        <translation type="vanished">- Astyle: %1</translation>
-    </message>
-    <message>
-        <source>- Command: %1</source>
-        <translation type="vanished">- 命令: %1</translation>
-    </message>
-    <message>
-        <source>Break point condition</source>
-        <translation type="vanished">断点条件</translation>
-    </message>
-    <message>
-        <source>Enter the condition of the breakpoint:</source>
-        <translation type="vanished">输入当前断点的生效条件:</translation>
-    </message>
-    <message>
+                        <message>
         <location filename="../src/editor.cpp" line="+5077"/>
         <source>Readonly</source>
         <translation>只读</translation>
@@ -2130,23 +1643,7 @@ p, li { white-space: pre-wrap; }
         <source>Form</source>
         <translation>表单</translation>
     </message>
-    <message>
-        <source>Copy Size Limit</source>
-        <translation type="vanished">复制限制</translation>
-    </message>
-    <message>
-        <source>Don&apos;t copy text larger than</source>
-        <translation type="vanished">不要复制超过下列限制的内容</translation>
-    </message>
-    <message>
-        <source>Lines</source>
-        <translation type="vanished">行数</translation>
-    </message>
-    <message>
-        <source>Size(kilo characters):</source>
-        <translation type="vanished">千字符数</translation>
-    </message>
-    <message>
+                    <message>
         <location line="+21"/>
         <source>Copy with format as</source>
         <translation>带格式复制为</translation>
@@ -2156,11 +1653,7 @@ p, li { white-space: pre-wrap; }
         <source>Copy &amp;&amp; Export As HTML</source>
         <translation>复制/导出为HTML</translation>
     </message>
-    <message>
-        <source>Use background color</source>
-        <translation type="vanished">使用背景色</translation>
-    </message>
-    <message>
+        <message>
         <location line="+23"/>
         <location line="+94"/>
         <source>Use editor&apos;s color scheme</source>
@@ -2223,28 +1716,12 @@ p, li { white-space: pre-wrap; }
         <source>Editors share one code parser</source>
         <translation>编辑器共享同一个代码分析器</translation>
     </message>
-    <message>
-        <source>Clear all parsed symbols when editor is hidden</source>
-        <translation type="vanished">清除不活动编辑器中的符号表（大幅减少内存占用）</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Show completion suggestions while typing</source>
         <translation>输入时显示补全提示</translation>
     </message>
-    <message>
-        <source>Engine options</source>
-        <translation type="vanished">引擎选项</translation>
-    </message>
-    <message>
-        <source>Scan local header files</source>
-        <translation type="vanished">扫描本地头文件</translation>
-    </message>
-    <message>
-        <source>Scan system header files</source>
-        <translation type="vanished">扫描系统头文件</translation>
-    </message>
-    <message>
+                <message>
         <location line="+7"/>
         <source>Show keywords in suggestions</source>
         <translation>提示C/C++关键字</translation>
@@ -2317,7 +1794,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>...</source>
-        <translation></translation>
+        <translation>...</translation>
     </message>
     <message>
         <source>TextLabel</source>
@@ -2477,11 +1954,7 @@ p, li { white-space: pre-wrap; }
         <source>Form</source>
         <translation>表单</translation>
     </message>
-    <message>
-        <source>*Needs restart</source>
-        <translation type="vanished">*需要重启之后生效</translation>
-    </message>
-    <message>
+        <message>
         <location line="+176"/>
         <location line="+352"/>
         <source>Size:</source>
@@ -2550,19 +2023,7 @@ p, li { white-space: pre-wrap; }
         <source>Show only monospaced fonts</source>
         <translation>只显示等宽字体</translation>
     </message>
-    <message>
-        <source>Enable Ligatures Support</source>
-        <translation type="vanished">启用合字显示支持（需要Fira Code等字体）</translation>
-    </message>
-    <message>
-        <source>Font for non-ascii Text:</source>
-        <translation type="vanished">非英文字体:</translation>
-    </message>
-    <message>
-        <source>Show special chars</source>
-        <translation type="vanished">显示特殊字符</translation>
-    </message>
-    <message>
+                <message>
         <location line="-477"/>
         <source>Enable ligatures support</source>
         <translation>启用连字(ligratures)功能</translation>
@@ -2572,19 +2033,7 @@ p, li { white-space: pre-wrap; }
         <source>Line Spacing:</source>
         <translation>行高：</translation>
     </message>
-    <message>
-        <source>Fallback Font:</source>
-        <translation type="vanished">备选字体:</translation>
-    </message>
-    <message>
-        <source>Fallback Font 2:</source>
-        <translation type="vanished">备选字体2:</translation>
-    </message>
-    <message>
-        <source>Fallback Font 3:</source>
-        <translation type="vanished">备选字体3:</translation>
-    </message>
-    <message>
+                <message>
         <location line="-23"/>
         <source>Force fixed width</source>
         <translation>强制等宽显示</translation>
@@ -2705,32 +2154,12 @@ p, li { white-space: pre-wrap; }
         <source>Auto load files being open when Red Panda C++ last exited.</source>
         <translation>自动打开上次退出时打开的文件</translation>
     </message>
-    <message>
-        <source>Limits for Undo</source>
-        <translation type="vanished">撤销操作限制</translation>
-    </message>
-    <message>
-        <source>Memory Usage</source>
-        <translation type="vanished">内存使用</translation>
-    </message>
-    <message>
-        <source>Steps</source>
-        <translation type="vanished">最大步数</translation>
-    </message>
-    <message>
+                <message>
         <location line="+50"/>
         <source>Action before saving files</source>
         <translation>保存前动作</translation>
     </message>
-    <message>
-        <source>Reformat Code</source>
-        <translation type="vanished">对代码重新排版</translation>
-    </message>
-    <message>
-        <source>Remove Trailing Spaces</source>
-        <translation type="vanished">移除行尾的空格</translation>
-    </message>
-    <message>
+            <message>
         <location line="+20"/>
         <source>None</source>
         <translation>无</translation>
@@ -2741,28 +2170,12 @@ p, li { white-space: pre-wrap; }
         <oldsource>Use UTF-8 as the default encoding for new file</oldsource>
         <translation>在打开文件时自动探测文件编码</translation>
     </message>
-    <message>
-        <source>Auto reformat code before saving files</source>
-        <translation type="vanished">在保存文件时自动重新排版</translation>
-    </message>
-    <message>
+        <message>
         <location line="-86"/>
         <source>Parse TODOs</source>
         <translation>查找代码中的TODO注释（含todo或者fixme的注释）</translation>
     </message>
-    <message>
-        <source>Max Undo Steps</source>
-        <translation type="vanished">最大可撤销编辑操作数量</translation>
-    </message>
-    <message>
-        <source>Max Undo Memory Usage</source>
-        <translation type="vanished">最大可撤销编辑操作占用内存</translation>
-    </message>
-    <message>
-        <source>MB</source>
-        <translation type="vanished">MB</translation>
-    </message>
-    <message>
+                <message>
         <location line="+49"/>
         <source>Reformat</source>
         <translation>重新排版</translation>
@@ -2792,11 +2205,7 @@ p, li { white-space: pre-wrap; }
         <source>C files</source>
         <translation>C语言文件</translation>
     </message>
-    <message>
-        <source>ANSI</source>
-        <translation type="vanished">ANSI</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/editormiscwidget.cpp" line="+103"/>
         <source>System Default(%1)</source>
         <translation>系统默认(%1)</translation>
@@ -2849,11 +2258,7 @@ p, li { white-space: pre-wrap; }
         <source>New GAS File Template</source>
         <translation>GNU汇编文件模板</translation>
     </message>
-    <message>
-        <source>New File Template</source>
-        <translation type="vanished">新文件模板</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>EditorSymbolCompletionWidget</name>
     <message>
@@ -3000,11 +2405,7 @@ p, li { white-space: pre-wrap; }
         <source>Theme:</source>
         <translation>主题:</translation>
     </message>
-    <message>
-        <source>Use custom theme</source>
-        <translation type="vanished">使用自定义主题</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Icon Set:</source>
         <translation>图标集：</translation>
@@ -3059,27 +2460,7 @@ p, li { white-space: pre-wrap; }
         <source>Change combobox&apos;s current selection by turning mouse wheel on it</source>
         <translation>可通过转动鼠标滚轮来切换下拉框的当前选项</translation>
     </message>
-    <message>
-        <source>OpenType font variation</source>
-        <translation type="vanished">OpenType字体变形</translation>
-    </message>
-    <message>
-        <source>Italic [ital]</source>
-        <translation type="vanished">斜体[ital]</translation>
-    </message>
-    <message>
-        <source>Width [wdth]</source>
-        <translation type="vanished">宽度[wdth]</translation>
-    </message>
-    <message>
-        <source>Weight [wght]</source>
-        <translation type="vanished">粗细[wght]</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">重置</translation>
-    </message>
-    <message>
+                        <message>
         <location line="-207"/>
         <location line="+3"/>
         <source>Remove custom theme</source>
@@ -3125,11 +2506,7 @@ p, li { white-space: pre-wrap; }
         <source>Russian</source>
         <translation>俄语</translation>
     </message>
-    <message>
-        <source>Confirm Overwrite</source>
-        <translation type="vanished">确认覆盖</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>EnvironmentFileAssociationWidget</name>
     <message>
@@ -3249,15 +2626,7 @@ p, li { white-space: pre-wrap; }
         <source>Included files only parse once</source>
         <translation>不再分析之前分析过的头文件</translation>
     </message>
-    <message>
-        <source>Max undo memory for each editor:</source>
-        <translation type="vanished">每个编辑窗口的撤销功能内存上限</translation>
-    </message>
-    <message>
-        <source>MB</source>
-        <translation type="vanished">MB</translation>
-    </message>
-    <message>
+            <message>
         <location line="-17"/>
         <source>Editors share one code parser</source>
         <translation>编辑器共享同一个代码分析器</translation>
@@ -3317,11 +2686,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (%1)</source>
         <translation>所有文件 (%1)</translation>
     </message>
-    <message>
-        <source>All files (*.*)</source>
-        <translation type="vanished">所有文件 (*.*)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>EnvironmentShortcutModel</name>
     <message>
@@ -3344,11 +2709,7 @@ p, li { white-space: pre-wrap; }
         <source>Action</source>
         <translation>功能</translation>
     </message>
-    <message>
-        <source>Function</source>
-        <translation type="vanished">功能</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2"/>
         <source>Shortcut</source>
         <translation>快捷键</translation>
@@ -3370,11 +2731,7 @@ p, li { white-space: pre-wrap; }
         <source>Search Actions</source>
         <translation type="obsolete">搜索功能</translation>
     </message>
-    <message>
-        <source>Keyword</source>
-        <translation type="vanished">关键字</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ExecutableRunner</name>
     <message>
@@ -3383,11 +2740,7 @@ p, li { white-space: pre-wrap; }
         <oldsource>The runner process failed to start.</oldsource>
         <translation>无法启动程序运行进程&apos;%1&apos;。</translation>
     </message>
-    <message>
-        <source>The runner process crashed after starting successfully.</source>
-        <translation type="vanished">程序运行进程启动后崩溃。</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>The last waitFor...() function timed out.</source>
         <translation>waitFor()函数等待超时。</translation>
@@ -3402,11 +2755,7 @@ p, li { white-space: pre-wrap; }
         <source>An error occurred when attempting to read from the runner process.</source>
         <translation>在从程序运行进程读取内容时出错。</translation>
     </message>
-    <message>
-        <source>An unknown error occurred.</source>
-        <translation type="vanished">发生了未知错误。</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ExecutorGeneralWidget</name>
     <message>
@@ -3419,11 +2768,7 @@ p, li { white-space: pre-wrap; }
         <source>Pause console programs after return</source>
         <translation>程序返回时暂停</translation>
     </message>
-    <message>
-        <source>Enable Virtual Terminal Sequence Support</source>
-        <translation type="vanished">启用虚拟终端序列支持</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Enable ANSI Escape Sequences Support</source>
         <translation>启用ANSI转义序列支持</translation>
@@ -3469,11 +2814,7 @@ p, li { white-space: pre-wrap; }
         <source>Browse</source>
         <translation>浏览</translation>
     </message>
-    <message>
-        <source>Note: Debugger doesn&apos;t support this feature.</source>
-        <translation type="vanished">注意:由于gdb的bug，调试时不支持该功能</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/executorgeneralwidget.cpp" line="+80"/>
         <source>Choose input file</source>
         <translation>选择输入文件</translation>
@@ -3483,11 +2824,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (%1)</source>
         <translation>所有文件 (%1)</translation>
     </message>
-    <message>
-        <source>All files (*.*)</source>
-        <translation type="vanished">所有文件 (*.*)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ExecutorProblemSetWidget</name>
     <message>
@@ -3545,11 +2882,7 @@ p, li { white-space: pre-wrap; }
         <source>MB</source>
         <translation>MB</translation>
     </message>
-    <message>
-        <source>Ignore spaces when validating problem cases</source>
-        <translation type="vanished">在验证测试案例时忽略结果中的空格</translation>
-    </message>
-    <message>
+        <message>
         <location line="-78"/>
         <source>Case Validation Limit</source>
         <translation>测试案例验证的资源限制</translation>
@@ -3569,20 +2902,12 @@ p, li { white-space: pre-wrap; }
         <source>kb</source>
         <translation>kb</translation>
     </message>
-    <message>
-        <source>Timeout for Case Valdation</source>
-        <translation type="vanished">试题案例超时时间</translation>
-    </message>
-    <message>
+        <message>
         <location line="-36"/>
         <source>ms</source>
         <translation>毫秒</translation>
     </message>
-    <message>
-        <source>Sec</source>
-        <translation type="vanished">秒</translation>
-    </message>
-    <message>
+        <message>
         <location line="+88"/>
         <source>Case Editor Font</source>
         <translation>试题案例数据编辑字体</translation>
@@ -3702,11 +3027,7 @@ p, li { white-space: pre-wrap; }
         <source>Command: %1</source>
         <translation>命令: %1</translation>
     </message>
-    <message>
-        <source>Command: %1 %2</source>
-        <translation type="vanished">命令: %1 %2</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>FilePropertiesDialog</name>
     <message>
@@ -3779,23 +3100,7 @@ p, li { white-space: pre-wrap; }
         <source>OK</source>
         <translation>确定</translation>
     </message>
-    <message>
-        <source>bytes</source>
-        <translation type="vanished">字节</translation>
-    </message>
-    <message>
-        <source>KB</source>
-        <translation type="vanished">KB</translation>
-    </message>
-    <message>
-        <source>MB</source>
-        <translation type="vanished">MB</translation>
-    </message>
-    <message>
-        <source>GB</source>
-        <translation type="vanished">GB</translation>
-    </message>
-</context>
+                </context>
 <context>
     <name>FilenameEditDelegate</name>
     <message>
@@ -4072,11 +3377,7 @@ p, li { white-space: pre-wrap; }
         <source>Attach a pointer operator to its :</source>
         <translation>将指针运算符(&apos;*&apos;)放在：</translation>
     </message>
-    <message>
-        <source>Remove all consecutive empty lines. It will NOT delete lines added by the padding options.</source>
-        <translation type="vanished">将连续的多个空行合并成一个。不影响填充选项自动插入的空行。</translation>
-    </message>
-    <message>
+        <message>
         <location line="-30"/>
         <location line="+37"/>
         <source>type(left)</source>
@@ -4180,11 +3481,7 @@ p, li { white-space: pre-wrap; }
         <source>Attach return type to the function name in its definition</source>
         <translation>将函数定义中的函数名和返回值类型放在同一行</translation>
     </message>
-    <message>
-        <source>Remove superfluous continuous empty lines exceeding</source>
-        <translation type="vanished">删除超过指定数量的多余空行</translation>
-    </message>
-    <message>
+        <message>
         <location line="-224"/>
         <source>Remove superfluous whitespace</source>
         <translation>删除多余的空格</translation>
@@ -4249,6 +3546,169 @@ p, li { white-space: pre-wrap; }
         <source>Indent at least one-half an additional indent.</source>
         <translation>至少额外缩进一个半缩进量</translation>
     </message>
+    <message>
+        <source>Formatter</source>
+        <translation>格式化工具</translation>
+    </message>
+    <message>
+        <source>Artistic Style (astyle)</source>
+        <translation>Artistic Style (astyle)</translation>
+    </message>
+    <message>
+        <source>clang-format</source>
+        <translation>clang-format</translation>
+    </message>
+    <message>
+        <source>File (.clang-format)</source>
+        <translation>文件 (.clang-format)</translation>
+    </message>
+    <message>
+        <source>None (don&apos;t format)</source>
+        <translation>无 (不做格式化)</translation>
+    </message>
+    <message>
+        <source>Style options</source>
+        <translation>样式选项</translation>
+    </message>
+    <message>
+        <source>Use the fallback style if no .clang-format config file is found:</source>
+        <translation>找不到 .clang-format 配置文件时使用的备用样式：</translation>
+    </message>
+    <message>
+        <source>Override the following options of the predefined style</source>
+        <translation>覆盖预定义样式的下列选项</translation>
+    </message>
+    <message>
+        <source>Indent width:</source>
+        <translation>缩进宽度：</translation>
+    </message>
+    <message>
+        <source>Use tab:</source>
+        <translation>制表符使用方式：</translation>
+    </message>
+    <message>
+        <source>Tab width:</source>
+        <translation>制表符宽度：</translation>
+    </message>
+    <message>
+        <source>Column limit:</source>
+        <translation>列宽限制：</translation>
+    </message>
+    <message>
+        <source>no limit</source>
+        <translation>无限制</translation>
+    </message>
+    <message>
+        <source>Sort #include directives</source>
+        <translation>对 #include 指令排序</translation>
+    </message>
+    <message>
+        <source>Align consecutive assignments</source>
+        <translation>对齐连续的赋值语句</translation>
+    </message>
+    <message>
+        <source>Additional command line options:</source>
+        <translation>附加命令行参数：</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>从不</translation>
+    </message>
+    <message>
+        <source>For indentation</source>
+        <translation>仅用于缩进</translation>
+    </message>
+    <message>
+        <source>For continuation and indentation</source>
+        <translation>用于续行和缩进</translation>
+    </message>
+    <message>
+        <source>Align with spaces</source>
+        <translation>对齐时使用空格</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>总是</translation>
+    </message>
+    <message>
+        <source>Read the nearest .clang-format config file. If no config file is found, the fallback style is used.</source>
+        <translation>读取距离源文件最近的 .clang-format 配置文件。如果找不到配置文件，则使用备用样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the LLVM coding standards.</source>
+        <translation>符合 LLVM 编码规范的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with Google&apos;s C++ style guide.</source>
+        <translation>符合 Google C++ 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Chromium style guide.</source>
+        <translation>符合 Chromium 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Mozilla style guide.</source>
+        <translation>符合 Mozilla 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the WebKit style guide.</source>
+        <translation>符合 WebKit 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the Microsoft style guide.</source>
+        <translation>符合 Microsoft 风格指南的样式。</translation>
+    </message>
+    <message>
+        <source>A style complying with the GNU coding standards.</source>
+        <translation>符合 GNU 编码规范的样式。</translation>
+    </message>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程序&quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Note: reformatting can change the whole file, for example it converts tab indentation to spaces. Put a .clang-format file in the project to control the result precisely.</source>
+        <translation>注意：重新排版可能改动整个文件，例如把制表符缩进转换为空格。可以在项目中放置 .clang-format 文件以精确控制排版结果。</translation>
+    </message>
+</context>
+<context>
+    <name>ClangFormatReformatter</name>
+    <message>
+        <source>Can&apos;t find clang-format in &quot;%1&quot;.</source>
+        <translation>找不到clang-format程序&quot;%1&quot;.</translation>
+    </message>
+    <message>
+        <source>Reformatting content using clang-format...</source>
+        <translation>使用clang-format重新排版代码...</translation>
+    </message>
+    <message>
+        <source>- clang-format: %1</source>
+        <translation>- clang-format: %1</translation>
+    </message>
+    <message>
+        <source>- Command: %1</source>
+        <translation>- 命令: %1</translation>
+    </message>
+    <message>
+        <source>clang-format doesn&apos;t generate any output.</source>
+        <translation>clang-format没有产生任何输出。</translation>
+    </message>
+    <message>
+        <source>clang-format can&apos;t format &quot;%1&quot;.</source>
+        <translation>clang-format无法格式化&quot;%1&quot;。</translation>
+    </message>
+    <message>
+        <source>The content of &quot;%1&quot; can&apos;t be converted to utf-8.</source>
+        <translation>&quot;%1&quot;的内容无法转换为UTF-8编码。</translation>
+    </message>
+    <message>
+        <source>clang-format exits with code %1.</source>
+        <translation>clang-format以退出码%1结束。</translation>
+    </message>
+    <message>
+        <source>- Working dir: %1</source>
+        <translation>- 工作目录: %1</translation>
+    </message>
 </context>
 <context>
     <name>FormatterPathWidget</name>
@@ -4262,6 +3722,10 @@ p, li { white-space: pre-wrap; }
         <location filename="../src/settingsdialog/formatterpathwidget.cpp" line="+40"/>
         <source>Path to astyle</source>
         <translation>astyle程序</translation>
+    </message>
+    <message>
+        <source>Path to clang-format</source>
+        <translation>clang-format程序</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -4468,353 +3932,43 @@ p, li { white-space: pre-wrap; }
         <source>Dialog</source>
         <translation type="obsolete">对话框</translation>
     </message>
-    <message>
-        <source>Branch/Switch</source>
-        <translation type="vanished">分支切换</translation>
-    </message>
-    <message>
-        <source>Switch To</source>
-        <translation type="vanished">切换到</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">分支</translation>
-    </message>
-    <message>
-        <source>Options</source>
-        <translation type="vanished">选项</translation>
-    </message>
-    <message>
-        <source>Overwrite working tree changed(force)</source>
-        <translation type="vanished">强制覆盖工作树（working tree）变化（--force）</translation>
-    </message>
-    <message>
-        <source>Track</source>
-        <translation type="vanished">跟踪（Track）</translation>
-    </message>
-    <message>
-        <source>Pass --track to git</source>
-        <translation type="vanished">指定--track选项</translation>
-    </message>
-    <message>
-        <source>Force Track</source>
-        <translation type="vanished">强制跟踪</translation>
-    </message>
-    <message>
-        <source>Pass --no-track to git</source>
-        <translation type="vanished">指定--no-track选项</translation>
-    </message>
-    <message>
-        <source>Force No Track</source>
-        <translation type="vanished">强制不跟踪</translation>
-    </message>
-    <message>
-        <source>Neither --track nor --no-track is passed to git</source>
-        <translation type="vanished">不指定--track和--no-track选项</translation>
-    </message>
-    <message>
-        <source>Not Specifiied</source>
-        <translation type="vanished">不指定</translation>
-    </message>
-    <message>
-        <source>Create New Branch</source>
-        <translation type="vanished">创建新分支</translation>
-    </message>
-    <message>
-        <source>Merge between original branch, working tree contents and the branch to switch to</source>
-        <translation type="vanished">合并源分支、要切换的分支和当前工作树内容</translation>
-    </message>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">合并（--merge）</translation>
-    </message>
-    <message>
-        <source>Force Creation (Reset branch if exists)</source>
-        <translation type="vanished">强制创建，如果指定分支已存在则将其重置（Reset）（--force-creation）</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-</context>
+                                                                        </context>
 <context>
     <name>GitFetchDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitLogDialog</name>
-    <message>
-        <source>Git Log</source>
-        <oldsource>Dialog</oldsource>
-        <translation type="vanished">Git版本日志</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">关闭</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">回滚(Reset)</translation>
-    </message>
-    <message>
-        <source>Revert</source>
-        <translation type="vanished">撤销(Revert)</translation>
-    </message>
-    <message>
-        <source>branch</source>
-        <translation type="vanished">分支(branch)</translation>
-    </message>
-    <message>
-        <source>Tag</source>
-        <translation type="vanished">标签(Tag)</translation>
-    </message>
-    <message>
-        <source>Reset &quot;%1&quot; to this...</source>
-        <translation type="vanished">将&quot;%1&quot;回滚(Reset)到这里...</translation>
-    </message>
-    <message>
-        <source>Revert &quot;%1&quot; to this...</source>
-        <translation type="vanished">将&quot;%1&quot;撤销(Revert)到这里...</translation>
-    </message>
-    <message>
-        <source>Create Branch at this version...</source>
-        <translation type="vanished">在此版本创建分支(Branch)...</translation>
-    </message>
-    <message>
-        <source>Create Tag at this version...</source>
-        <translation type="vanished">在此版本创建标签(Tag)...</translation>
-    </message>
-</context>
+                                        </context>
 <context>
     <name>GitLogModel</name>
-    <message>
-        <source>Date</source>
-        <translation type="vanished">日期</translation>
-    </message>
-    <message>
-        <source>Author</source>
-        <translation type="vanished">作者</translation>
-    </message>
-    <message>
-        <source>Title</source>
-        <oldsource>title</oldsource>
-        <translation type="vanished">标题</translation>
-    </message>
-</context>
+            </context>
 <context>
     <name>GitManager</name>
-    <message>
-        <source>Folder &quot;%1&quot; already has a repository!</source>
-        <translation type="vanished">文件夹&quot;%1&quot;中已存在仓库！</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitMergeDialog</name>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">合并</translation>
-    </message>
-    <message>
-        <source>From</source>
-        <translation type="vanished">从</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">分支</translation>
-    </message>
-    <message>
-        <source>Option</source>
-        <translation type="vanished">选项</translation>
-    </message>
-    <message>
-        <source>No Commit</source>
-        <translation type="vanished">不提交(--no-commit)</translation>
-    </message>
-    <message>
-        <source>Squash</source>
-        <translation type="vanished">粉碎(--squash)</translation>
-    </message>
-    <message>
-        <source>No Fast Forward</source>
-        <translation type="vanished">不快速前进(--no-fast-forward)</translation>
-    </message>
-    <message>
-        <source>Fast Forward Only</source>
-        <translation type="vanished">只快速前进(--fast-forward-only)</translation>
-    </message>
-    <message>
-        <source>Merge Message</source>
-        <translation type="vanished">合并信息</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-</context>
+                                            </context>
 <context>
     <name>GitPullDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitPushDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>GitRemoteDialog</name>
-    <message>
-        <source>Git Remote</source>
-        <translation type="vanished">Git远程仓库</translation>
-    </message>
-    <message>
-        <source>Add Remote</source>
-        <translation type="vanished">添加远程仓库</translation>
-    </message>
-    <message>
-        <source>Add</source>
-        <translation type="vanished">添加</translation>
-    </message>
-    <message>
-        <source>Remove Remote</source>
-        <translation type="vanished">删除远程仓库</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="vanished">删除</translation>
-    </message>
-    <message>
-        <source>Detail</source>
-        <translation type="vanished">远程仓库详情</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="vanished">名称</translation>
-    </message>
-    <message>
-        <source>URL</source>
-        <translation type="vanished">URL</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">关闭</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>Update</source>
-        <translation type="vanished">更新</translation>
-    </message>
-</context>
+                                            </context>
 <context>
     <name>GitResetDialog</name>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">回滚(Reset)</translation>
-    </message>
-    <message>
-        <source>Reset current branch &quot;%1&quot; to</source>
-        <translation type="vanished">将当前分支&quot;%1&quot;回滚到</translation>
-    </message>
-    <message>
-        <source>Branch</source>
-        <translation type="vanished">分支(Branch)</translation>
-    </message>
-    <message>
-        <source>Tag</source>
-        <translation type="vanished">标签(Tag)</translation>
-    </message>
-    <message>
-        <source>Commit</source>
-        <translation type="vanished">提交(Commit)</translation>
-    </message>
-    <message>
-        <source>Reset Type</source>
-        <translation type="vanished">回滚操作类型</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Leave working tree and index untouched&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;保持当前工作区内容和索引不变&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset working tree and index (discarding local changes)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;回滚工作区内容和索引(丢弃所有本地修改)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Soft</source>
-        <translation type="vanished">Soft</translation>
-    </message>
-    <message>
-        <source>Hard</source>
-        <translation type="vanished">Hard</translation>
-    </message>
-    <message>
-        <source>Leave working tree untouched, reset index</source>
-        <translation type="vanished">保持工作区内容不变，回滚索引</translation>
-    </message>
-    <message>
-        <source>Mixed</source>
-        <translation type="vanished">Mixed</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-</context>
+                                                        </context>
 <context>
     <name>GitUserConfigDialog</name>
-    <message>
-        <source>Fill User Info</source>
-        <translation type="vanished">填写用户信息</translation>
-    </message>
-    <message>
-        <source>User Email:</source>
-        <translation type="vanished">用户邮箱</translation>
-    </message>
-    <message>
-        <source>Ok</source>
-        <translation type="vanished">确定</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-    <message>
-        <source>User Name:</source>
-        <translation type="vanished">用户姓名</translation>
-    </message>
-    <message>
-        <source>Git needs the following info to commit：</source>
-        <translation type="vanished">Git需要下列信息进行提交：</translation>
-    </message>
-</context>
+                        </context>
 <context>
     <name>InfoMessageBox</name>
     <message>
         <location filename="../src/widgets/infomessagebox.ui" line="+14"/>
         <source>Message</source>
-        <translation></translation>
+        <translation>消息</translation>
     </message>
     <message>
         <location line="+47"/>
@@ -4824,30 +3978,10 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>InitChooseLanguageWidget</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>InitWizardDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-    <message>
-        <source>Previous</source>
-        <translation type="vanished">前一步</translation>
-    </message>
-    <message>
-        <source>Next</source>
-        <translation type="vanished">下一步</translation>
-    </message>
-    <message>
-        <source>Finish</source>
-        <translation type="vanished">完成</translation>
-    </message>
-</context>
+                </context>
 <context>
     <name>IssuesModel</name>
     <message>
@@ -5044,11 +4178,7 @@ p, li { white-space: pre-wrap; }
         <source>Issues</source>
         <translation>编译器</translation>
     </message>
-    <message>
-        <source>Compile Log</source>
-        <translation type="vanished">编译日志</translation>
-    </message>
-    <message>
+        <message>
         <location line="-2675"/>
         <location filename="../src/mainwindow.cpp" line="-496"/>
         <location line="+1"/>
@@ -5098,11 +4228,7 @@ p, li { white-space: pre-wrap; }
         <source>Files</source>
         <translation>文件</translation>
     </message>
-    <message>
-        <source>Resource</source>
-        <translation type="vanished">资源</translation>
-    </message>
-    <message>
+        <message>
         <location line="-2337"/>
         <location line="+606"/>
         <location line="+1258"/>
@@ -5197,15 +4323,7 @@ p, li { white-space: pre-wrap; }
         <source>Window</source>
         <translation>窗口</translation>
     </message>
-    <message>
-        <source>toolBar</source>
-        <translation type="vanished">工具栏</translation>
-    </message>
-    <message>
-        <source>toolBar_2</source>
-        <translation type="vanished">工具栏2</translation>
-    </message>
-    <message>
+            <message>
         <location filename="../src/mainwindow.cpp" line="-7805"/>
         <source>New</source>
         <translation>新建</translation>
@@ -5279,20 +4397,12 @@ p, li { white-space: pre-wrap; }
         <source>Choose Input File</source>
         <translation>选择输入文件</translation>
     </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
+        <message>
         <location line="-1512"/>
         <source>Tool Panels</source>
         <translation>工具面板</translation>
     </message>
-    <message>
-        <source>Git</source>
-        <translation type="vanished">Git</translation>
-    </message>
-    <message>
+        <message>
         <location line="+25"/>
         <source>Selection</source>
         <translation>选择</translation>
@@ -5302,11 +4412,7 @@ p, li { white-space: pre-wrap; }
         <source>F9</source>
         <translation>F9</translation>
     </message>
-    <message>
-        <source>F10</source>
-        <translation type="vanished">F10</translation>
-    </message>
-    <message>
+        <message>
         <location line="+24"/>
         <source>Undo</source>
         <translation>撤销</translation>
@@ -5427,11 +4533,7 @@ p, li { white-space: pre-wrap; }
         <source>Convert to UTF-8</source>
         <translation>转换为UTF-8编码</translation>
     </message>
-    <message>
-        <source>Compile &amp; Run</source>
-        <translation type="vanished">编译运行</translation>
-    </message>
-    <message>
+        <message>
         <location line="-138"/>
         <source>F11</source>
         <translation>F11</translation>
@@ -5630,11 +4732,7 @@ p, li { white-space: pre-wrap; }
         <source>View</source>
         <translation>视图</translation>
     </message>
-    <message>
-        <source>Tool Windows</source>
-        <translation type="vanished">工具窗口</translation>
-    </message>
-    <message>
+        <message>
         <location line="+62"/>
         <source>Main</source>
         <translation>主工具栏</translation>
@@ -5676,11 +4774,7 @@ p, li { white-space: pre-wrap; }
         <source>Choose Expected Output File</source>
         <translation>选择期望输出文件</translation>
     </message>
-    <message>
-        <source>Ignore Spaces</source>
-        <translation type="vanished">忽略空格</translation>
-    </message>
-    <message>
+        <message>
         <location line="+80"/>
         <source>New C/C++ File</source>
         <translation>新建C/C++文件</translation>
@@ -5693,7 +4787,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+54"/>
         <source>Ctrl+K, Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+K, Ctrl+S</translation>
     </message>
     <message>
         <location line="+119"/>
@@ -5952,11 +5046,7 @@ p, li { white-space: pre-wrap; }
         <source>Reparse Code</source>
         <translation>重新解析代码</translation>
     </message>
-    <message>
-        <source>AT&amp;&amp;T ASM</source>
-        <translation type="vanished">AT&amp;&amp;T汇编</translation>
-    </message>
-    <message>
+        <message>
         <location line="-60"/>
         <source>Text File</source>
         <translation>文本文件</translation>
@@ -5971,11 +5061,7 @@ p, li { white-space: pre-wrap; }
         <source>C++ File</source>
         <translation>C++文件</translation>
     </message>
-    <message>
-        <source>Intel ASM</source>
-        <translation type="vanished">Intel汇编</translation>
-    </message>
-    <message>
+        <message>
         <location line="+5"/>
         <source>Generate GIMPLE</source>
         <translation>生成GIMPLE表示</translation>
@@ -6000,11 +5086,7 @@ p, li { white-space: pre-wrap; }
         <source>NASM</source>
         <translation>NASM</translation>
     </message>
-    <message>
-        <source>Ctrl+Shift+G</source>
-        <translation type="vanished">Ctrl+Shift+G</translation>
-    </message>
-    <message>
+        <message>
         <location line="-791"/>
         <source>Goto Definition</source>
         <translation>跳转到定义处</translation>
@@ -6265,20 +5347,12 @@ p, li { white-space: pre-wrap; }
         <source>Turtle Graphics Tutorial</source>
         <translation>海龟作图教程</translation>
     </message>
-    <message>
-        <source>Close others</source>
-        <translation type="vanished">关闭其他窗口</translation>
-    </message>
-    <message>
+        <message>
         <location line="-312"/>
         <source>Move Selection Up</source>
         <translation>向上移动选中的行</translation>
     </message>
-    <message>
-        <source>Move Cursor</source>
-        <translation type="vanished">移动光标</translation>
-    </message>
-    <message>
+        <message>
         <location line="+3"/>
         <source>Ctrl+Shift+Up</source>
         <translation>Ctrl+Shift+Up</translation>
@@ -6408,11 +5482,7 @@ p, li { white-space: pre-wrap; }
         <source>Document</source>
         <translation>使用说明</translation>
     </message>
-    <message>
-        <source>Save As Template...</source>
-        <translation type="vanished">保存为模板...</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/mainwindow.cpp" line="-3853"/>
         <source>New File</source>
         <translation>新建文件</translation>
@@ -6511,66 +5581,12 @@ p, li { white-space: pre-wrap; }
         <source>Show Tool Panels</source>
         <translation>显示全部工具面板</translation>
     </message>
-    <message>
-        <source>Create Git Repository</source>
-        <oldsource>Create Repository</oldsource>
-        <translation type="vanished">创建Git仓库</translation>
-    </message>
-    <message>
-        <source>Commit</source>
-        <translation type="vanished">提交(Commit)</translation>
-    </message>
-    <message>
-        <source>Revert</source>
-        <translation type="vanished">撤销(Revert)</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation type="vanished">回滚(Reset)</translation>
-    </message>
-    <message>
-        <source>Add Files</source>
-        <translation type="vanished">添加文件</translation>
-    </message>
-    <message>
-        <source>Restore</source>
-        <translation type="vanished">还原(Restore)</translation>
-    </message>
-    <message>
+                            <message>
         <location line="+190"/>
         <source>Website</source>
         <translation>官方网站</translation>
     </message>
-    <message>
-        <source>Branch/Switch</source>
-        <translation type="vanished">分支切换（Switch）</translation>
-    </message>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">合并（Merge）</translation>
-    </message>
-    <message>
-        <source>Show Log</source>
-        <oldsource>Log</oldsource>
-        <translation type="vanished">显示日志(Log)</translation>
-    </message>
-    <message>
-        <source>Remotes...</source>
-        <translation type="vanished">远程仓库...</translation>
-    </message>
-    <message>
-        <source>Fetch</source>
-        <translation type="vanished">取回(Fetch)</translation>
-    </message>
-    <message>
-        <source>Pull</source>
-        <translation type="vanished">拉取(Pull)</translation>
-    </message>
-    <message>
-        <source>Push</source>
-        <translation type="vanished">推送(Push)</translation>
-    </message>
-    <message>
+                                <message>
         <location line="+8"/>
         <source>Hide Non Support Files</source>
         <translation>隐藏不支持的文件</translation>
@@ -6595,11 +5611,7 @@ p, li { white-space: pre-wrap; }
         <source>Ctrl+]</source>
         <translation>Ctrl+]</translation>
     </message>
-    <message>
-        <source>Tool Window Bars</source>
-        <translation type="vanished">工具窗口栏</translation>
-    </message>
-    <message>
+        <message>
         <location line="-206"/>
         <source>Status Bar</source>
         <translation>状态栏</translation>
@@ -6648,11 +5660,7 @@ p, li { white-space: pre-wrap; }
         <oldsource>New Header</oldsource>
         <translation>新建头文件...</translation>
     </message>
-    <message>
-        <source>Insert Line</source>
-        <translation type="vanished">插入行</translation>
-    </message>
-    <message>
+        <message>
         <location line="-76"/>
         <source>Delete Line</source>
         <translation>删除当前行</translation>
@@ -6697,24 +5705,16 @@ p, li { white-space: pre-wrap; }
         <source>Delete to BOL</source>
         <translation>删除到行首</translation>
     </message>
-    <message>
-        <source>C/C++ Reference</source>
-        <translation type="vanished">C/C++参考</translation>
-    </message>
-    <message>
+        <message>
         <location line="-181"/>
         <source>EGE Manual</source>
         <translation>EGE图形库手册</translation>
     </message>
-    <message>
-        <source>Add Bookmark</source>
-        <translation type="vanished">添加书签</translation>
+        <message>
+        <source>Add Bookmark...</source>
+        <translation>添加书签...</translation>
     </message>
-    <message>
-        <source>Remove Bookmark</source>
-        <translation type="vanished">删除书签</translation>
-    </message>
-    <message>
+        <message>
         <location line="+5"/>
         <source>Modify Bookmark Description</source>
         <translation>修改书签说明</translation>
@@ -6724,11 +5724,7 @@ p, li { white-space: pre-wrap; }
         <source>Locate in Files View</source>
         <translation>在文件视图中定位</translation>
     </message>
-    <message>
-        <source>Open Folder</source>
-        <translation type="vanished">打开文件夹</translation>
-    </message>
-    <message>
+        <message>
         <location line="+17"/>
         <source>Running Parameters...</source>
         <translation>运行参数...</translation>
@@ -6773,16 +5769,7 @@ p, li { white-space: pre-wrap; }
         <source>Compiling</source>
         <translation>正在编译</translation>
     </message>
-    <message>
-        <source>Line:%1    Col:%2    Selected:%3    Lines:%4    Length:%5</source>
-        <translation type="vanished">行:%1    列:%2    已选择:%3    总行数:%4    总长度:%5</translation>
-    </message>
-    <message>
-        <source>Line:%1 Col:%2 Selected:%3 Lines:%4 Length:%5</source>
-        <oldsource>Line: %1 Col: %2 Selected: %3 Lines: %4 Length: %5</oldsource>
-        <translation type="vanished">行: %1 列: %2 已选择 :%3 总行数: %4 总长度: %5</translation>
-    </message>
-    <message>
+            <message>
         <location line="+221"/>
         <source>Read Only</source>
         <translation>只读</translation>
@@ -6797,36 +5784,12 @@ p, li { white-space: pre-wrap; }
         <source>Overwrite</source>
         <translation>覆写</translation>
     </message>
-    <message>
-        <source>Close project</source>
-        <translation type="vanished">关闭项目</translation>
-    </message>
-    <message>
-        <source>Are you sure you want to close %1?</source>
-        <translation type="vanished">你确定要关闭&apos;%1&apos;吗？</translation>
-    </message>
-    <message>
-        <source>Confirm</source>
-        <translation type="vanished">确认</translation>
-    </message>
-    <message>
+                <message>
         <location line="+701"/>
         <source>Source file is not compiled.</source>
         <translation>源文件尚未编译。</translation>
     </message>
-    <message>
-        <source>Compile now?</source>
-        <translation type="vanished">现在编译？</translation>
-    </message>
-    <message>
-        <source>Source file is more recent than executable.</source>
-        <translation type="vanished">源文件比可执行程序新。</translation>
-    </message>
-    <message>
-        <source>Recompile now?</source>
-        <translation type="vanished">重新编译？</translation>
-    </message>
-    <message>
+                <message>
         <location line="+102"/>
         <location line="+207"/>
         <location line="+3477"/>
@@ -6863,23 +5826,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t start debugging.</source>
         <translation>无法启动调试器</translation>
     </message>
-    <message>
-        <source>Enable debugging</source>
-        <translation type="vanished">启用调试参数</translation>
-    </message>
-    <message>
-        <source>You have not enabled debugging info (-g3) and/or stripped it from the executable (-s) in Compiler Options.&lt;BR /&gt;&lt;BR /&gt;Do you want to correct this now?</source>
-        <translation type="vanished">当前编译设置中未启用调试选项(-g3)，或启用了信息剥除选项(-s)&lt;br /&gt;&lt;br/&gt;是否纠正这一问题？</translation>
-    </message>
-    <message>
-        <source>Project not built</source>
-        <translation type="vanished">项目尚未构建</translation>
-    </message>
-    <message>
-        <source>Project hasn&apos;t been built. Build it now?</source>
-        <translation type="vanished">项目尚未构建。是否构建？</translation>
-    </message>
-    <message>
+                    <message>
         <location line="+85"/>
         <source>Host applcation missing</source>
         <translation>宿主程序不存在</translation>
@@ -6910,21 +5857,13 @@ p, li { white-space: pre-wrap; }
         <source>Please correct this before start debugging</source>
         <translation>请在调试前改正设置。</translation>
     </message>
-    <message>
-        <source>Recompile?</source>
-        <translation type="vanished">重新编译？</translation>
-    </message>
-    <message>
+        <message>
         <location line="-2730"/>
         <location line="+8"/>
         <source>Save last open info error</source>
         <translation>保存上次打开信息失败</translation>
     </message>
-    <message>
-        <source>Can&apos;t remove old last open information file &apos;%1&apos;</source>
-        <translation type="vanished">无法删除旧上次打开信息文件&apos;%1&apos;</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1"/>
         <source>Can&apos;t save last open info file &apos;%1&apos;</source>
         <translation>无法保存上次打开信息文件&apos;%1&apos;</translation>
@@ -6946,15 +5885,7 @@ p, li { white-space: pre-wrap; }
         <source>Open Source File</source>
         <translation>打开源代码文件</translation>
     </message>
-    <message>
-        <source>%1 Version</source>
-        <translation type="vanished">%1版</translation>
-    </message>
-    <message>
-        <source>Line: %1/%2 Char: %3/%4 Sel:%5</source>
-        <translation type="vanished">行: %1/%2 字符: %3/%4 选中:%5</translation>
-    </message>
-    <message>
+            <message>
         <location line="-1260"/>
         <source>Line: %1/%2 Char: %3/%4</source>
         <translation>行: %1/%2 字符: %3/%4</translation>
@@ -6972,11 +5903,7 @@ p, li { white-space: pre-wrap; }
         <source>The generated executable won&apos;t have debug symbol infos, and can&apos;t be debugged.</source>
         <translation>生成的可执行文件中会缺少调试符号信息，因此无法编译。</translation>
     </message>
-    <message>
-        <source>If you are using the Release compiler set, please use the Debug compiler set instead.</source>
-        <translation type="vanished">如果你正在使用Release版的编译器设置集，请在工具栏中将其改为Debug版本。</translation>
-    </message>
-    <message>
+        <message>
         <location line="-119"/>
         <location line="+123"/>
         <location line="+2685"/>
@@ -7101,31 +6028,7 @@ p, li { white-space: pre-wrap; }
         <source>Problem Set %1</source>
         <translation>试题集%1</translation>
     </message>
-    <message>
-        <source>Listen failed</source>
-        <translation type="vanished">监听失败</translation>
-    </message>
-    <message>
-        <source>Can&apos;t listen to port %1 form Competitve Companion.</source>
-        <translation type="vanished">无法在网络端口&quot;%1&quot;监听Competitive Companion连接。</translation>
-    </message>
-    <message>
-        <source>You can turn off competitive companion support in the Problem Set options.</source>
-        <translation type="vanished">您可以在“试题集”选项卡中关闭监听Competitive Companion选项。</translation>
-    </message>
-    <message>
-        <source>Or You can choose a different port number and try again.</source>
-        <translation type="vanished">或者选择使用其他的网络端口。</translation>
-    </message>
-    <message>
-        <source>Rebuild Project</source>
-        <translation type="vanished">重新构建项目</translation>
-    </message>
-    <message>
-        <source>Project has been modified, do you want to rebuild it?</source>
-        <translation type="vanished">项目已经被修改过，是否需要重新构建？</translation>
-    </message>
-    <message>
+                            <message>
         <location line="-6040"/>
         <source>Auto Save Error</source>
         <translation>自动保存出错</translation>
@@ -7204,11 +6107,7 @@ p, li { white-space: pre-wrap; }
         <source>Description:</source>
         <translation>描述：</translation>
     </message>
-    <message>
-        <source>Show debug logs in the debug console</source>
-        <translation type="vanished">在调试主控台中显示调试器输出</translation>
-    </message>
-    <message>
+        <message>
         <location line="-7534"/>
         <source>Remove this search</source>
         <translation>清除这次搜索</translation>
@@ -7241,14 +6140,23 @@ p, li { white-space: pre-wrap; }
         <oldsource>Remove all breakpoints</oldsource>
         <translation>删除所有断点</translation>
     </message>
-    <message>
-        <source>Line: %1 Col: %2 Sel:%3 Lines: %4</source>
-        <translation type="vanished">行: %1 列: %2 选中:%3 总行数: %4</translation>
-    </message>
-    <message>
+        <message>
         <location line="+5"/>
         <source>Remove Breakpoint</source>
         <translation>删除当前断点</translation>
+    </message>
+    <message>
+        <source>Add Breakpoint...</source>
+        <translation>添加断点...</translation>
+    </message>
+
+    <message>
+        <source>Add Breakpoint</source>
+        <translation>添加断点</translation>
+    </message>
+    <message>
+        <source>Condition of the new breakpoint (leave empty for none):</source>
+        <translation>新断点的条件（留空表示无条件）：</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -7277,15 +6185,7 @@ p, li { white-space: pre-wrap; }
         <source>Rename Folder</source>
         <translation>重命名</translation>
     </message>
-    <message>
-        <source>You are not using a DEBUG compiler setting.</source>
-        <translation type="vanished">您没有使用DEBUG编译配置。</translation>
-    </message>
-    <message>
-        <source>Do you want to set it now?</source>
-        <translation type="vanished">要现在去修改设置吗？</translation>
-    </message>
-    <message>
+            <message>
         <location line="-239"/>
         <source>Rename Problem Set</source>
         <translation>修改试题集名称</translation>
@@ -7300,31 +6200,7 @@ p, li { white-space: pre-wrap; }
         <source>Rename Problem</source>
         <translation>修改试题名称</translation>
     </message>
-    <message>
-        <source>Line: %1 Col: %2 Lines: %3</source>
-        <translation type="vanished">行: %1 列: %2 总行数: %3</translation>
-    </message>
-    <message>
-        <source>Correct compiler setting</source>
-        <translation type="vanished">改正编译器设置</translation>
-    </message>
-    <message>
-        <source>You are using a Debug compiler set with wrong compile/link settings: </source>
-        <translation type="vanished">您使用的Debug编译器配置集中存在错误的“编译/链接”选项设置：</translation>
-    </message>
-    <message>
-        <source> - &quot;Generate debug info (-g3)&quot; should be turned on</source>
-        <translation type="vanished"> - 应勾选&quot;生成调试信息(-g3)&quot;选项</translation>
-    </message>
-    <message>
-        <source> - &quot;Strip executable (-s)&quot; should be turned off</source>
-        <translation type="vanished"> - 应取消&quot;剥除附加信息(-s)&quot;选项</translation>
-    </message>
-    <message>
-        <source>Do you want to correct it now?</source>
-        <translation type="vanished">是否现在去改正?</translation>
-    </message>
-    <message>
+                            <message>
         <location line="-633"/>
         <source>Missing Project Files</source>
         <translation>项目文件缺失</translation>
@@ -7334,23 +6210,7 @@ p, li { white-space: pre-wrap; }
         <source>The following files is missing, can&apos;t build the project:</source>
         <translation>下列项目文件缺失，无法构建项目:</translation>
     </message>
-    <message>
-        <source>Can&apos;t Debug</source>
-        <translation type="vanished">无法调试</translation>
-    </message>
-    <message>
-        <source>Your compiler set&apos;s &quot;Strip executable (-s)&quot; options is turnned on</source>
-        <translation type="vanished">您的编译器配置集中的“剥除附加信息(-s)”选项被勾选了。</translation>
-    </message>
-    <message>
-        <source>Please correct it, recompile and retry debug.</source>
-        <translation type="vanished">请取消该设置，重新编译然后重新启动调试。</translation>
-    </message>
-    <message>
-        <source>Line: %1/%2 Col: %3 Sel:%4</source>
-        <translation type="vanished">行: %1/%2 字符: %3 选中:%4</translation>
-    </message>
-    <message>
+                    <message>
         <location line="+638"/>
         <source>Goto Url</source>
         <translation>跳转到试题网址</translation>
@@ -7490,11 +6350,7 @@ p, li { white-space: pre-wrap; }
         <source>Select Answer Source File</source>
         <translation>选择答案源代码文件</translation>
     </message>
-    <message>
-        <source>Problem &apos;%1&apos; received.</source>
-        <translation type="vanished">收到试题&quot;%1&quot;.</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1082"/>
         <source>Watchpoint hitted</source>
         <translation>变量断点被触发</translation>
@@ -7554,11 +6410,7 @@ p, li { white-space: pre-wrap; }
         <source>Stop execution when the following variable is modified (it must be visible from the currect scope):</source>
         <translation>当下面的变量被修改时暂停执行（该变量必须可以从当前程序处访问）：</translation>
     </message>
-    <message>
-        <source>Abort</source>
-        <translation type="vanished">中止</translation>
-    </message>
-    <message>
+        <message>
         <location line="-145"/>
         <source>FPS Problem Set Files (*.fps;*.xml)</source>
         <translation>FPS试题集文件(*.fps;*.xml)</translation>
@@ -7573,25 +6425,12 @@ p, li { white-space: pre-wrap; }
         <source>Export Error</source>
         <translation>导出时出错</translation>
     </message>
-    <message>
-        <source>C/C++Source Files (*.c *.cpp *.cc *.cxx)</source>
-        <oldsource>C/C++Source Files (*.c *.cpp *.cc *.cxx</oldsource>
-        <translation type="vanished">C/C++源代码文件 (*.c *.cpp *.cc *.cxx)</translation>
-    </message>
-    <message>
+        <message>
         <location line="-5639"/>
         <source>New Folder %1</source>
         <translation>新建文件夹%1</translation>
     </message>
-    <message>
-        <source>Untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
-        <source>Untitled %1</source>
-        <translation type="vanished">无标题%1</translation>
-    </message>
-    <message>
+            <message>
         <location line="+61"/>
         <location line="+7"/>
         <source>Do you really want to delete %1?</source>
@@ -7602,24 +6441,12 @@ p, li { white-space: pre-wrap; }
         <source>Do you really want to delete %1 files?</source>
         <translation>你真的要删除%1个文件吗？</translation>
     </message>
-    <message>
-        <source>Watchpoint triggered</source>
-        <translation type="vanished">变量断点被触发</translation>
-    </message>
-    <message>
-        <source>Watchpoint of &quot;%1&quot; is triggered:</source>
-        <translation type="vanished">变量&quot;%1&quot;有改动：</translation>
-    </message>
-    <message>
+            <message>
         <location line="+684"/>
         <source>Old value: %1</source>
         <translation>旧值: %1</translation>
     </message>
-    <message>
-        <source>New value: %2</source>
-        <translation type="vanished">新值: %1</translation>
-    </message>
-    <message>
+        <message>
         <location line="+49"/>
         <source>Save project</source>
         <translation>保存项目</translation>
@@ -7682,11 +6509,7 @@ p, li { white-space: pre-wrap; }
         <source>Do you really want to do that?</source>
         <translation>你真的想要那么做吗？</translation>
     </message>
-    <message>
-        <source>Batch set cases</source>
-        <translation type="vanished">批量设置案例</translation>
-    </message>
-    <message>
+        <message>
         <location line="-1497"/>
         <source>Choose input files</source>
         <translation>选择输入数据文件</translation>
@@ -7696,11 +6519,7 @@ p, li { white-space: pre-wrap; }
         <source>Input data files (*.in)</source>
         <translation>输入数据文件 (*.in)</translation>
     </message>
-    <message>
-        <source>untitled%1</source>
-        <translation type="vanished">无标题%1</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2433"/>
         <source>Modify Watch</source>
         <translation>修改监视表达式</translation>
@@ -7748,7 +6567,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+26"/>
         <source>Save new project as</source>
-        <translation></translation>
+        <translation>项目另存为</translation>
     </message>
     <message>
         <location line="+534"/>
@@ -7776,11 +6595,7 @@ p, li { white-space: pre-wrap; }
         <source>Do you want to change working folder to &apos;%1&apos;?</source>
         <translation>是否将工作文件夹改设为&apos;%1&apos;?</translation>
     </message>
-    <message>
-        <source>Removing Problems...</source>
-        <translation type="vanished">正在删除试题...</translation>
-    </message>
-    <message>
+        <message>
         <location line="+834"/>
         <source>Can&apos;t Commit</source>
         <translation>无法提交</translation>
@@ -7807,11 +6622,7 @@ p, li { white-space: pre-wrap; }
         <oldsource>Choose Expected Input Data File</oldsource>
         <translation>选择期望输出文件</translation>
     </message>
-    <message>
-        <source>Line %1</source>
-        <translation type="vanished">第%1行</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/mainwindow.ui" line="+765"/>
         <location line="+3"/>
         <location filename="../src/mainwindow.cpp" line="-1106"/>
@@ -7870,11 +6681,7 @@ p, li { white-space: pre-wrap; }
         <source>Commit message shouldn&apos;t be empty!</source>
         <translation>提交信息不能为空！</translation>
     </message>
-    <message>
-        <source>Red panda Dev-C++ project file (*.dev)</source>
-        <translation type="vanished">小熊猫Dev-C++项目文件 (*.dev)</translation>
-    </message>
-    <message>
+        <message>
         <location line="-2326"/>
         <source>New project fail</source>
         <translation>新建项目失败</translation>
@@ -7894,11 +6701,7 @@ p, li { white-space: pre-wrap; }
         <source>Remove the file from disk?</source>
         <translation>同时从硬盘上删除文件？</translation>
     </message>
-    <message>
-        <source>untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
+        <message>
         <location line="+317"/>
         <source>New Project File Name</source>
         <translation>新的项目文件名</translation>
@@ -7923,19 +6726,7 @@ p, li { white-space: pre-wrap; }
         <source>Add to project</source>
         <translation>添加到项目</translation>
     </message>
-    <message>
-        <source>You are not using a Debug compiler setting.</source>
-        <translation type="vanished">您没有使用Debug编译器设置。</translation>
-    </message>
-    <message>
-        <source>Please use a Debug compiler set, or enable the &quot;generate debugging info (-g3)&quot; and disable the &quot;strip additional info (-s)&quot; options in the compiler settings.</source>
-        <translation type="vanished">请在工具栏中选择Debug编译器配置集，或者在编译器配置集设置中启用“生成调试信息(-g3)”并禁用“剥除附加信息(-s)”选项。</translation>
-    </message>
-    <message>
-        <source>Please choose a Debug compiler set in the toolbar, or enable the &quot;generate debugging info (-g3)&quot; and disable the &quot;strip additional info (-s)&quot; options in the compiler set settings&apos;s &quot;settings&quot; page.</source>
-        <translation type="vanished">请在工具栏中选择Debug编译器配置集，或者在“编译器配置集”设置的“编译/链接选项”页中&lt;b&gt;启用&lt;/b&gt;“生成调试信息(-g3)”、&lt;b&gt;禁用&lt;/b&gt;“剥除附件信息(-3)”。</translation>
-    </message>
-    <message>
+                <message>
         <location line="-3059"/>
         <source>C/C++ Source Files (*.c *.cpp *.cc *.cxx)</source>
         <translation>C/C++源代码文件 (*.c *.cpp *.cc *.cxx)</translation>
@@ -7945,36 +6736,12 @@ p, li { white-space: pre-wrap; }
         <source>This operation will remove all cases for the current problem.</source>
         <translation>本操作会删除此试题的所有案例。</translation>
     </message>
-    <message>
-        <source>Debug Failed</source>
-        <translation type="vanished">调试失败</translation>
-    </message>
-    <message>
+        <message>
         <location line="+867"/>
         <source>The executable doesn&apos;t have symbol table, and can&apos;t be debugged.</source>
         <translation>可执行文件中没有符号表信息，无法调试。</translation>
     </message>
-    <message>
-        <source>Please turn off your compiler set&apos;s &quot;Strip executable (-s)&quot; option, recompile and retry debug.</source>
-        <translation type="vanished">请在选项对话框的编译器配置集页中取消“剥除附加信息(-s)”选项，重新编译后再调试。</translation>
-    </message>
-    <message>
-        <source>The executable doesn&apos;t have enough debug info to set breakpoint.</source>
-        <translation type="vanished">可执行文件中缺少必要的调试信息来设置断点。</translation>
-    </message>
-    <message>
-        <source>Please choose a Debug compiler set in the toolbar, or turn on your compiler set&apos;s &quot;Generate debug info (-g)&quot; option in the options dialog.</source>
-        <translation type="vanished">请在工具栏中选用Debug编译器配置集，或者在选项对话框的编辑器配置集页中勾选“生成调试信息(-g3)选项。</translation>
-    </message>
-    <message>
-        <source>Then recompile and retry debug.</source>
-        <translation type="vanished">重新编译后再调试。</translation>
-    </message>
-    <message>
-        <source>Or you can remove all breakpoints, open cpu info dialog, and try debug machine codes.</source>
-        <translation type="vanished">您也可以删除所有断点，打开“CPU信息窗口”，然后调试汇编代码。</translation>
-    </message>
-    <message>
+                        <message>
         <location line="+798"/>
         <source>Failed to generate the executable.</source>
         <translation>未能生成可执行文件。</translation>
@@ -8119,21 +6886,13 @@ p, li { white-space: pre-wrap; }
         <source>Clear History</source>
         <translation>清除历史</translation>
     </message>
-    <message>
-        <source>The generated executable doesn&apos;t have symbol table, and can&apos;t be debugged.</source>
-        <translation type="vanished">编译生成的可执行文件中没有符号表，无法被调试。</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2508"/>
         <location line="+161"/>
         <source>Version Control</source>
         <translation>版本控制</translation>
     </message>
-    <message>
-        <source>Please choose a Debug compiler set in the toolbar, or turn on your compiler set&apos;s &quot;Generate debug info (-g3)&quot; option in the options dialog.</source>
-        <translation type="vanished">请在工具栏中选用Debug编译器配置集，或者在选项对话框的编辑器配置集页中勾选“生成调试信息(-g3)&quot;选项。</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1347"/>
         <source>File &apos;%1&apos; was changed.</source>
         <translation>磁盘文件&apos;%1&apos;已被修改。</translation>
@@ -8192,11 +6951,7 @@ p, li { white-space: pre-wrap; }
         <source>Ignore spaces</source>
         <translation>忽略多余空格</translation>
     </message>
-    <message>
-        <source>Line: %1 Col: %2 (%3 chars) Lines: %4</source>
-        <translation type="vanished">行: %1 列: %2 (%3个字符) 总行数: %4</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2468"/>
         <location line="+123"/>
         <location line="+2685"/>
@@ -8255,11 +7010,7 @@ p, li { white-space: pre-wrap; }
         <source>oct: %1</source>
         <translation>八进制: %1</translation>
     </message>
-    <message>
-        <source>hex: %1</source>
-        <translation type="vanished">16进制: %1</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2"/>
         <source>bin: %1</source>
         <translation>二进制: %1</translation>
@@ -8327,11 +7078,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>NewClassDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/newclassdialog.ui" line="+14"/>
         <source>New Class</source>
         <translation>新建类</translation>
@@ -8452,11 +7199,7 @@ p, li { white-space: pre-wrap; }
         <source>Icon Info:</source>
         <translation>图标信息:</translation>
     </message>
-    <message>
-        <source>TextLabel</source>
-        <translation type="vanished">文字标签</translation>
-    </message>
-    <message>
+        <message>
         <location line="+44"/>
         <source>Name:</source>
         <translation>项目名称：</translation>
@@ -8471,20 +7214,12 @@ p, li { white-space: pre-wrap; }
         <source>Use as the default project location</source>
         <translation>设为默认项目位置</translation>
     </message>
-    <message>
-        <source>Location:</source>
-        <translation type="vanished">文件夹：</translation>
-    </message>
-    <message>
+        <message>
         <location line="-14"/>
         <source>...</source>
         <translation>...</translation>
     </message>
-    <message>
-        <source>Project%1</source>
-        <translation type="vanished">项目%1</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/newprojectdialog.cpp" line="+180"/>
         <location line="+21"/>
         <source>Default</source>
@@ -8533,11 +7268,7 @@ p, li { white-space: pre-wrap; }
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
-    <message>
-        <source>untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/newprojectunitdialog.cpp" line="+97"/>
         <source>Choose directory</source>
         <translation>选择文件夹</translation>
@@ -8582,11 +7313,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>OJProblemCasesRunner</name>
-    <message>
-        <source>Case Timeout</source>
-        <translation type="vanished">案例运行超时</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/compiler/ojproblemcasesrunner.cpp" line="+87"/>
         <source>--- stderr from %1 ---</source>
         <translation>--- 来自“%1”的stderr ---</translation>
@@ -8656,7 +7383,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -8719,39 +7446,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>Project</name>
-    <message>
-        <source>File Not Found</source>
-        <translation type="vanished">未找到文件</translation>
-    </message>
-    <message>
-        <source>Project file &apos;%1&apos; can&apos;t be found!</source>
-        <translation type="vanished">找不到项目文件&apos;%1&apos;!</translation>
-    </message>
-    <message>
-        <source>untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
-        <source>Can&apos;t save file</source>
-        <translation type="vanished">无法保存文件</translation>
-    </message>
-    <message>
-        <source>Can&apos;t save file &apos;%1&apos;</source>
-        <translation type="vanished">无法保存文件&apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>Folder Not Empty</source>
-        <translation type="vanished">文件夹非空</translation>
-    </message>
-    <message>
-        <source>The project folder is not empty, existing files may be overwritten.</source>
-        <translation type="vanished">项目文件夹不是空的，已有的文件可能会被覆盖。</translation>
-    </message>
-    <message>
-        <source>Do you want to proceed?</source>
-        <translation type="vanished">您确定要继续吗？</translation>
-    </message>
-    <message>
+                                    <message>
         <location filename="../src/project.cpp" line="+1017"/>
         <source>Error Load File</source>
         <translation>载入文件错误</translation>
@@ -8858,11 +7553,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>ProjectAlreadyOpenDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/projectalreadyopendialog.ui" line="+14"/>
         <source>Open Project</source>
         <translation>打开项目</translation>
@@ -8895,16 +7586,7 @@ p, li { white-space: pre-wrap; }
         <source>Form</source>
         <translation>表单</translation>
     </message>
-    <message>
-        <source>Additional build options:</source>
-        <oldsource>Add encoding options to compiler</oldsource>
-        <translation type="vanished">更多编译选项：</translation>
-    </message>
-    <message>
-        <source>Statically link libraries</source>
-        <translation type="vanished">静态链接所有库</translation>
-    </message>
-    <message>
+            <message>
         <location line="+6"/>
         <source>Parallel Build</source>
         <translation>并行构建</translation>
@@ -8940,11 +7622,7 @@ p, li { white-space: pre-wrap; }
         <source>Resource</source>
         <translation>资源</translation>
     </message>
-    <message>
-        <source>Assembler</source>
-        <translation type="vanished">汇编器</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/projectcompileparamaterswidget.cpp" line="-7"/>
         <location line="+2"/>
         <source>Library Files</source>
@@ -9013,11 +7691,7 @@ p, li { white-space: pre-wrap; }
         <source>- Command: %1</source>
         <translation>- 命令: %1</translation>
     </message>
-    <message>
-        <source>- Command: %1 %2</source>
-        <translation type="vanished">- 命令: %1 %2</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ProjectCompilerWidget</name>
     <message>
@@ -9036,15 +7710,7 @@ p, li { white-space: pre-wrap; }
         <oldsource>Add encoding options to compiler:</oldsource>
         <translation>设定可执行文件的字符集为：</translation>
     </message>
-    <message>
-        <source>Tab 1</source>
-        <translation type="vanished">标签1</translation>
-    </message>
-    <message>
-        <source>Tab 2</source>
-        <translation type="vanished">标签2</translation>
-    </message>
-    <message>
+            <message>
         <location line="-29"/>
         <source>Customize (apply to this project only):</source>
         <translation>自定义设置(仅对本项目生效)</translation>
@@ -9054,15 +7720,7 @@ p, li { white-space: pre-wrap; }
         <source>Statically link libraries</source>
         <translation>静态链接所有库</translation>
     </message>
-    <message>
-        <source>Add encoding options to compiler</source>
-        <translation type="vanished">在编译时加入字符集选项</translation>
-    </message>
-    <message>
-        <source>ANSI</source>
-        <translation type="vanished">ANSI</translation>
-    </message>
-    <message>
+            <message>
         <location filename="../src/settingsdialog/projectcompilerwidget.cpp" line="+121"/>
         <source>System Default(%1)</source>
         <translation>系统默认(%1)</translation>
@@ -9137,11 +7795,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (%1)</source>
         <translation>所有文件 (%1)</translation>
     </message>
-    <message>
-        <source>All files (*.*)</source>
-        <translation type="vanished">所有文件 (*.*)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ProjectDirectoriesWidget</name>
     <message>
@@ -9212,11 +7866,7 @@ p, li { white-space: pre-wrap; }
         <source>Override build command:</source>
         <translation>自定义构建命令</translation>
     </message>
-    <message>
-        <source>Auto detect</source>
-        <translation type="vanished">自动检测</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settingsdialog/projectfileswidget.cpp" line="+39"/>
         <location line="+2"/>
         <location line="+227"/>
@@ -9239,14 +7889,10 @@ p, li { white-space: pre-wrap; }
         <source>System Default(%1)</source>
         <translation>系统默认(%1)</translation>
     </message>
-    <message>
-        <source>ANSI(System default)</source>
-        <translation type="vanished">ANSI</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1"/>
         <source>UTF-8</source>
-        <translation></translation>
+        <translation>UTF-8</translation>
     </message>
 </context>
 <context>
@@ -9301,27 +7947,7 @@ p, li { white-space: pre-wrap; }
         <source>Browse</source>
         <translation>浏览</translation>
     </message>
-    <message>
-        <source>Type</source>
-        <translation type="vanished">类型</translation>
-    </message>
-    <message>
-        <source>Win32 GUI</source>
-        <translation type="vanished">Win32图形界面程序（GUI）</translation>
-    </message>
-    <message>
-        <source>Win32 Console</source>
-        <translation type="vanished">Win32主控台程序（Console）</translation>
-    </message>
-    <message>
-        <source>Win32 Static Library</source>
-        <translation type="vanished">Win32静态链接库</translation>
-    </message>
-    <message>
-        <source>Win32 DLL</source>
-        <translation type="vanished">Win32动态链接库（DLL）</translation>
-    </message>
-    <message>
+                        <message>
         <location line="-80"/>
         <source>Default to C++ when creating new files</source>
         <translation>新文件默认为C++文件</translation>
@@ -9366,11 +7992,7 @@ p, li { white-space: pre-wrap; }
         <source>System Default(%1)</source>
         <translation>系统默认(%1)</translation>
     </message>
-    <message>
-        <source>ANSI</source>
-        <translation type="vanished">ANSI</translation>
-    </message>
-    <message>
+        <message>
         <location line="+1"/>
         <source>UTF-8</source>
         <translation>UTF-8</translation>
@@ -9419,11 +8041,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (%1)</source>
         <translation>所有文件 (%1)</translation>
     </message>
-    <message>
-        <source>All files (*.*)</source>
-        <translation type="vanished">所有文件 (*.*)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ProjectModel</name>
     <message>
@@ -9476,11 +8094,7 @@ p, li { white-space: pre-wrap; }
         <source>browse</source>
         <translation>浏览</translation>
     </message>
-    <message>
-        <source>Object file output directory</source>
-        <translation type="vanished">目标文件输出文件夹</translation>
-    </message>
-    <message>
+        <message>
         <location line="-53"/>
         <source>Directory for output</source>
         <translation>输出文件夹</translation>
@@ -9515,11 +8129,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (%1)</source>
         <translation>所有文件 (%1)</translation>
     </message>
-    <message>
-        <source>All files (*.*)</source>
-        <translation type="vanished">所有文件 (*.*)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ProjectPreCompileWidget</name>
     <message>
@@ -9548,20 +8158,7 @@ p, li { white-space: pre-wrap; }
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For more information about gcc precompiled header, see:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;请问访问下面网站以了解有关gcc预定义头文件的信息:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
-    <message>
-        <source>Precompiled header</source>
-        <translation type="vanished">预定义头文件</translation>
-    </message>
-    <message>
-        <source>precompiled header files (*.pch)</source>
-        <translation type="vanished">预定义头文件 (*.pch)</translation>
-    </message>
-    <message>
-        <source>header files (*.h)</source>
-        <oldsource>header files (*.h</oldsource>
-        <translation type="vanished">文件夹 (*.h)</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/settingsdialog/projectprecompilewidget.cpp" line="+61"/>
         <source>Select the header file to be precompiled</source>
         <translation>选择要预编译的头文件</translation>
@@ -9594,15 +8191,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t open template file &apos;%1&apos; for read.</source>
         <translation>无法读取模板文件&quot;%1&quot;</translation>
     </message>
-    <message>
-        <source>Template not exist</source>
-        <translation type="vanished">模板不存在</translation>
-    </message>
-    <message>
-        <source>Template file &apos;%1&apos; doesn&apos;t exist.</source>
-        <translation type="vanished">模板文件&apos;%1&apos;不存在.</translation>
-    </message>
-    <message>
+            <message>
         <location line="+8"/>
         <source>Old version template</source>
         <translation>旧版本模板</translation>
@@ -9741,11 +8330,7 @@ p, li { white-space: pre-wrap; }
         <source>Save changes to %1?</source>
         <translation>将修改保存到&quot;%1&quot;？</translation>
     </message>
-    <message>
-        <source>Save changes to %s?</source>
-        <translation type="vanished">保存修改后的内容到&quot;%s&quot;？</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/systemconsts.cpp" line="+33"/>
         <source>Dev C++ Project files</source>
         <translation>Dev C++项目文件</translation>
@@ -9780,11 +8365,7 @@ p, li { white-space: pre-wrap; }
         <source>All files (*.*)</source>
         <translation>所有文件 (*.*)</translation>
     </message>
-    <message>
-        <source>ASM files</source>
-        <translation type="vanished">ASM文件</translation>
-    </message>
-    <message>
+        <message>
         <location line="-58"/>
         <source>Lua files</source>
         <translation>Lua文件</translation>
@@ -9823,77 +8404,13 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t load autolink settings</source>
         <translation>无法载入自动链接设置</translation>
     </message>
-    <message>
-        <source>The following %1 directories don&apos;t exist:</source>
-        <translation type="vanished">下列%1文件夹不存在：</translation>
-    </message>
-    <message>
-        <source>binary</source>
-        <translation type="vanished">二进制</translation>
-    </message>
-    <message>
-        <source>No %1 directories have been specified.</source>
-        <translation type="vanished">未指定%1文件夹</translation>
-    </message>
-    <message>
-        <source>C include</source>
-        <translation type="vanished">C包含</translation>
-    </message>
-    <message>
-        <source>C++ include</source>
-        <translation type="vanished">C++包含</translation>
-    </message>
-    <message>
-        <source>Cannot find the %1 &quot;%2&quot;</source>
-        <translation type="vanished">无法找到%1程序&quot;%2&quot;</translation>
-    </message>
-    <message>
-        <source>C Compiler</source>
-        <translation type="vanished">C编译器</translation>
-    </message>
-    <message>
-        <source>C++ Compiler</source>
-        <translation type="vanished">C++编译器</translation>
-    </message>
-    <message>
-        <source>Maker</source>
-        <translation type="vanished">构建程序(Make)</translation>
-    </message>
-    <message>
-        <source>Debugger</source>
-        <translation type="vanished">调试器</translation>
-    </message>
-    <message>
-        <source>C options</source>
-        <translation type="vanished">C语言选项</translation>
-    </message>
-    <message>
-        <source>Support all ANSI standard C programs (-ansi)</source>
-        <translation type="vanished">支持所有ANSI标准C程序(-ansi)</translation>
-    </message>
-    <message>
-        <source>Do not recognize asm,inline or typeof as a keyword (-fno-asm)</source>
-        <translation type="vanished">不支持将asm、inline和typeof作为关键字(-fno-asm)</translation>
-    </message>
-    <message>
-        <source>Imitate traditional C preprocessors (-traditional-cpp)</source>
-        <translation type="vanished">模仿传统C预处理器行为(-traditional-cpp)</translation>
-    </message>
-    <message>
+                                                            <message>
         <location filename="../src/compiler/compilerinfo.cpp" line="+92"/>
         <location line="+277"/>
         <source>Code Generation</source>
         <translation>代码生成</translation>
     </message>
-    <message>
-        <source>Optimize for the following machine (-march)</source>
-        <translation type="vanished">生成特定机器的专用指令(-march)</translation>
-    </message>
-    <message>
-        <source>Optimize less, while maintaining full compatibility (-tune)</source>
-        <translation type="vanished">完整兼容特定机器，较少优化(-tune)</translation>
-    </message>
-    <message>
+            <message>
         <location line="-183"/>
         <source>Enable use of specific instructions (-mx)</source>
         <translation>启用特定指令集(-mx)</translation>
@@ -9912,15 +8429,7 @@ p, li { white-space: pre-wrap; }
         <source>Processor (-m)</source>
         <translation>处理器类型(-m)</translation>
     </message>
-    <message>
-        <source>Language standard (-std)</source>
-        <translation type="vanished">语言标准(-std)</translation>
-    </message>
-    <message>
-        <source>Profile</source>
-        <translation type="vanished">性能分析</translation>
-    </message>
-    <message>
+            <message>
         <location line="-193"/>
         <source>Generate debugging information (-g3)</source>
         <translation>生成调试信息(-g3)</translation>
@@ -9940,11 +8449,7 @@ p, li { white-space: pre-wrap; }
         <source>Warnings</source>
         <translation>代码警告</translation>
     </message>
-    <message>
-        <source>This CPU</source>
-        <translation type="vanished">当前CPU</translation>
-    </message>
-    <message>
+        <message>
         <location line="-80"/>
         <source>C++ Language standard (-std)</source>
         <translation>C++语言标准 (-std)</translation>
@@ -9991,7 +8496,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>x86 multilib (-mx)</source>
-        <translation>x86 multilib (-mx)</translation>
+        <translation>x86 多库编译 (-mx)</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -10013,11 +8518,7 @@ p, li { white-space: pre-wrap; }
         <source>Check ISO C/C++ conformance (-pedantic)</source>
         <translation>检查是否严格遵守ISO C/C++标准(-pedantic)</translation>
     </message>
-    <message>
-        <source>Don&apos;t accept non-standard constructs used in Microsoft header files (-fno-ms-extentions)</source>
-        <translation type="vanished">禁止兼容MSVC头文件中使用的非标准语法(-fno-ms-extentions)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+20"/>
         <source>No return statement in non-void function (return-type)</source>
         <translation>非void函数中没有return语句(return-type)</translation>
@@ -10055,7 +8556,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+1"/>
         <source>Don&apos;t memcpy initialized xram from code</source>
-        <translation>Don&apos;t memcpy initialized xram from code</translation>
+        <translation>不从代码区复制已初始化的 xram</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -10107,11 +8608,7 @@ p, li { white-space: pre-wrap; }
         <source>Code segment size</source>
         <translation>代码段大小</translation>
     </message>
-    <message>
-        <source>Check ISO C/C++/C++0x conformance (-pedantic)</source>
-        <translation type="vanished">检查ISO C/C++/C++0x语法一致性(-pedantic)</translation>
-    </message>
-    <message>
+        <message>
         <location line="-230"/>
         <source>Only check the code for syntax errors (-fsyntax-only)</source>
         <translation>只进行语法检查（不编译）(-fsyntax-only)</translation>
@@ -10136,11 +8633,7 @@ p, li { white-space: pre-wrap; }
         <source>Errors</source>
         <translation>错误</translation>
     </message>
-    <message>
-        <source>Function without return type (return-type)</source>
-        <translation type="vanished">无返回值类型的函数(return-type)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2"/>
         <source>Declaration does not specify a type (implicit-int)</source>
         <translation>没有指定声明的类型(implicit-int)</translation>
@@ -10155,20 +8648,12 @@ p, li { white-space: pre-wrap; }
         <source>Variable lenght array (vla)</source>
         <translation>变长数组(vla)</translation>
     </message>
-    <message>
-        <source>Function parameter without type specifier (missing-parameter-type)</source>
-        <translation type="vanished">未指定函数参数类型(missing-parameter-type)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+9"/>
         <source>Linker</source>
         <translation>链接器</translation>
     </message>
-    <message>
-        <source>Link an Objective C program (-lobjc)</source>
-        <translation type="vanished">链接Objective-C程序 (-lobjc)</translation>
-    </message>
-    <message>
+        <message>
         <location line="+5"/>
         <source>Do not use standard system libraries (-nostdlib)</source>
         <translation>不使用标准库和系统启动文件(-nostdlib)</translation>
@@ -10183,53 +8668,17 @@ p, li { white-space: pre-wrap; }
         <source>Strip executable (-s)</source>
         <translation>剥除附加信息(-s)</translation>
     </message>
-    <message>
-        <source>Link libraries statically (-static)</source>
-        <translation type="vanished">链接Ojbective C程序(-lobjc)</translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="vanished">输出</translation>
-    </message>
-    <message>
-        <source>Put comments in generated assembly code (-fverbose-asm)</source>
-        <translation type="vanished">在生成的汇编代码中加入注释(-fverbose-asm)</translation>
-    </message>
-    <message>
-        <source>Do not compile, stop after the preprocessing stage (-E)</source>
-        <translation type="vanished">仅预处理（-E)</translation>
-    </message>
-    <message>
+                    <message>
         <location line="-4"/>
         <source>Use pipes instead of temporary files during compilation (-pipe)</source>
         <translation>编译时使用管道而不是临时文件(-pipe)</translation>
     </message>
-    <message>
-        <source>Do not assemble, compile and generate the assemble code (-S)</source>
-        <translation type="vanished">只生成汇编代码(-S)</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/settings/compilersetsettings.cpp" line="+2"/>
         <source>Confirm</source>
         <translation>确认</translation>
     </message>
-    <message>
-        <source>The following problems were found during validation of compiler set &quot;%1&quot;:</source>
-        <translation type="vanished">在验证编译器设置&quot;%1&quot;时遇到了下列问题：</translation>
-    </message>
-    <message>
-        <source>Leaving those directories will lead to problems during compilation.</source>
-        <translation type="vanished">在配置中保留这些文件夹可能会导致编译出错。</translation>
-    </message>
-    <message>
-        <source>Would you like Red Panda C++ to remove them for you and add the default paths to the valid paths?</source>
-        <translation type="vanished">是否让小熊猫C++删除这些配置，并尝试重新建立配置？</translation>
-    </message>
-    <message>
-        <source>Leaving those directories will lead to problems during compilation.&lt;br /&gt;&lt;br /&gt;Unless you know exactly what you&apos;re doing, it is recommended that you click Yes.</source>
-        <translation type="vanished">如果仍然保留这些设置，可能会导致编译错误。&lt;br /&gt;&lt;br /&gt;请选择“是”，除非您清楚的知道选择“否”的后果，</translation>
-    </message>
-    <message>
+                    <message>
         <location line="-465"/>
         <source>C Compiler &quot;%1&quot; is missing!</source>
         <translation>缺少C编译器程序%1</translation>
@@ -10325,23 +8774,7 @@ p, li { white-space: pre-wrap; }
         <source>Do you really want to remove &quot;%1&quot;?</source>
         <translation>您确定要删除&quot;%1&quot;吗？</translation>
     </message>
-    <message>
-        <source>No</source>
-        <translation type="vanished">否</translation>
-    </message>
-    <message>
-        <source>Yes</source>
-        <translation type="vanished">是</translation>
-    </message>
-    <message>
-        <source>untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
-        <source>Index %1 out of range</source>
-        <translation type="vanished">下标&quot;%1&quot;越界</translation>
-    </message>
-    <message>
+                    <message>
         <location filename="../src/utils.cpp" line="+133"/>
         <source>bytes</source>
         <translation>字节</translation>
@@ -10371,14 +8804,10 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t parse json file &apos;%1&apos; at offset %2! Error Code: %3</source>
         <translation>JSON文件&quot;%1&quot;在位置&quot;%2&quot;处无法解析！错误码：%3</translation>
     </message>
-    <message>
-        <source>Can&apos;t parse json file &apos;%1&apos; is not a color schema config file!</source>
-        <translation type="vanished">&quot;%1&quot;不是一个合法的颜色配置文件，无法解析！</translation>
-    </message>
-    <message>
+        <message>
         <location line="+4"/>
         <source>Can&apos;t parse json file &apos;%1&apos; is not a color scheme config file!</source>
-        <translation></translation>
+        <translation>无法解析 json 文件 &apos;%1&apos;，它不是配色方案配置文件！</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -10397,11 +8826,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t remove the color scheme file %1!</source>
         <translation>删不掉颜色配置文件%1!</translation>
     </message>
-    <message>
-        <source>Assembler</source>
-        <translation type="vanished">汇编</translation>
-    </message>
-    <message>
+        <message>
         <location line="+66"/>
         <location line="+4"/>
         <location line="+4"/>
@@ -10640,19 +9065,7 @@ p, li { white-space: pre-wrap; }
         <source>default</source>
         <translation>默认</translation>
     </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; to write!</source>
-        <translation type="vanished">无法写入文件&apos;%1&apos;!</translation>
-    </message>
-    <message>
-        <source>Failed to write data.</source>
-        <translation type="vanished">写入数据失败。</translation>
-    </message>
-    <message>
-        <source>Untitled</source>
-        <translation type="vanished">无标题</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/parser/cppparser.cpp" line="+1361"/>
         <source>constructor</source>
         <translation>构造函数</translation>
@@ -10684,11 +9097,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t parse problem set file &apos;%1&apos;:%2</source>
         <translation>无法解析试题集文件&quot;%1&quot;:%2</translation>
     </message>
-    <message>
-        <source>&lt;Auto Generated by Git&gt;</source>
-        <translation type="vanished">&lt;由Git自动生成&gt;</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/problems/freeprojectsetformat.cpp" line="+12"/>
         <source>Can&apos;t open file &quot;%1&quot; for read.</source>
         <translation>无法读取文件“%1”。</translation>
@@ -10769,11 +9178,7 @@ p, li { white-space: pre-wrap; }
         <source>64-bit</source>
         <translation>64位</translation>
     </message>
-    <message>
-        <source>Accumulator</source>
-        <translation type="vanished">累加器</translation>
-    </message>
-    <message>
+        <message>
         <location line="-103"/>
         <location line="+1"/>
         <location line="+1"/>
@@ -11072,114 +9477,10 @@ p, li { white-space: pre-wrap; }
         <source>Value</source>
         <translation>值</translation>
     </message>
-    <message>
-        <source>Value(Hex)</source>
-        <translation type="vanished">值(HEX)</translation>
-    </message>
-    <message>
-        <source>Value(Dec)</source>
-        <translation type="vanished">值(DEC)</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>ReplaceDialog</name>
-    <message>
-        <source>Replace</source>
-        <translation type="vanished">替换</translation>
-    </message>
-    <message>
-        <source>Text to Find:</source>
-        <translation type="vanished">查找字符串：</translation>
-    </message>
-    <message>
-        <source>Replace with:</source>
-        <translation type="vanished">替换为：</translation>
-    </message>
-    <message>
-        <source>Scope:</source>
-        <translation type="vanished">范围：</translation>
-    </message>
-    <message>
-        <source>Global</source>
-        <translation type="vanished">全局</translation>
-    </message>
-    <message>
-        <source>Selection</source>
-        <translation type="vanished">选中内容</translation>
-    </message>
-    <message>
-        <source>Origin:</source>
-        <translation type="vanished">起点：</translation>
-    </message>
-    <message>
-        <source>From cursor</source>
-        <translation type="vanished">从光标处</translation>
-    </message>
-    <message>
-        <source>Entire scope</source>
-        <translation type="vanished">整个范围</translation>
-    </message>
-    <message>
-        <source>Options:</source>
-        <translation type="vanished">选项：</translation>
-    </message>
-    <message>
-        <source>Whole words only</source>
-        <translation type="vanished">整个单词</translation>
-    </message>
-    <message>
-        <source>Wrap Around</source>
-        <translation type="vanished">循环查找</translation>
-    </message>
-    <message>
-        <source>Regular Expression</source>
-        <translation type="vanished">正则表达式</translation>
-    </message>
-    <message>
-        <source>Prompt on replace</source>
-        <translation type="vanished">替换时提示</translation>
-    </message>
-    <message>
-        <source>Case Sensitive</source>
-        <translation type="vanished">区分大小写</translation>
-    </message>
-    <message>
-        <source>Find Previous</source>
-        <translation type="vanished">查找前一个</translation>
-    </message>
-    <message>
-        <source>Find Next</source>
-        <translation type="vanished">查找下一个</translation>
-    </message>
-    <message>
-        <source>Replace All</source>
-        <translation type="vanished">全部替换</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">关闭</translation>
-    </message>
-    <message>
-        <source>Beginning of file has been reached. </source>
-        <translation type="vanished">已到达文件开头。</translation>
-    </message>
-    <message>
-        <source>Do you want to continue from file&apos;s end?</source>
-        <translation type="vanished">是否需要从文件末尾开始继续查找？</translation>
-    </message>
-    <message>
-        <source>End of file has been reached. </source>
-        <translation type="vanished">已到达文件结尾。</translation>
-    </message>
-    <message>
-        <source>Do you want to continue from file&apos;s beginning?</source>
-        <translation type="vanished">是否从文件开头继续？</translation>
-    </message>
-    <message>
-        <source>Continue Search</source>
-        <translation type="vanished">继续查找</translation>
-    </message>
-</context>
+                                                                                                </context>
 <context>
     <name>SDCCFileCompiler</name>
     <message>
@@ -11229,11 +9530,7 @@ p, li { white-space: pre-wrap; }
         <source>- %1 Compiler: %2</source>
         <translation>- %1 编译器: %2</translation>
     </message>
-    <message>
-        <source>- Command: %1 %2</source>
-        <translation type="vanished">- 命令: %1 %2</translation>
-    </message>
-    <message>
+        <message>
         <location line="+35"/>
         <source>Can&apos;t delete the old executable file &quot;%1&quot;.
 </source>
@@ -11297,18 +9594,10 @@ p, li { white-space: pre-wrap; }
         <source>- Command: %1</source>
         <translation>- 命令: %1</translation>
     </message>
-    <message>
-        <source>- Command: %1 %2</source>
-        <translation type="vanished">- 命令: %1 %2</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>SearchDialog</name>
-    <message>
-        <source>Dialog</source>
-        <translation type="vanished">对话框</translation>
-    </message>
-    <message>
+        <message>
         <location filename="../src/widgets/searchdialog.ui" line="+80"/>
         <source>Text to Find:</source>
         <translation>要查找的关键字</translation>
@@ -11348,11 +9637,7 @@ p, li { white-space: pre-wrap; }
         <source>Regular Expression</source>
         <translation>正则表达式</translation>
     </message>
-    <message>
-        <source>Prompt on replace</source>
-        <translation type="vanished">替换时提示</translation>
-    </message>
-    <message>
+        <message>
         <location line="-116"/>
         <source>Scope:</source>
         <translation>范围：</translation>
@@ -11372,11 +9657,7 @@ p, li { white-space: pre-wrap; }
         <source>Origin:</source>
         <translation>起点：</translation>
     </message>
-    <message>
-        <source>From cursor</source>
-        <translation type="vanished">从光标处</translation>
-    </message>
-    <message>
+        <message>
         <location line="+28"/>
         <source>Entire scope</source>
         <translation>整个范围</translation>
@@ -11411,73 +9692,17 @@ p, li { white-space: pre-wrap; }
         <source>&amp;Close</source>
         <translation>关闭[&amp;C]</translation>
     </message>
-    <message>
-        <source>Find Previous</source>
-        <translation type="vanished">查找前一个</translation>
-    </message>
-    <message>
-        <source>Find Next</source>
-        <translation type="vanished">查找下一个</translation>
-    </message>
-    <message>
-        <source>Replace All</source>
-        <translation type="vanished">全部替换</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="vanished">关闭</translation>
-    </message>
-    <message>
-        <source>Direction:</source>
-        <translation type="vanished">方向</translation>
-    </message>
-    <message>
-        <source>Forward</source>
-        <translation type="vanished">向后</translation>
-    </message>
-    <message>
-        <source>Backward</source>
-        <translation type="vanished">向前</translation>
-    </message>
-    <message>
-        <source>Where:</source>
-        <translation type="vanished">在哪些文件中查找：</translation>
-    </message>
-    <message>
-        <source>Current File</source>
-        <translation type="vanished">当前文件</translation>
-    </message>
-    <message>
-        <source>Files In Project</source>
-        <translation type="vanished">项目中的文件</translation>
-    </message>
-    <message>
-        <source>Open Files</source>
-        <translation type="vanished">已打开的文件</translation>
-    </message>
-    <message>
+                                                <message>
         <location line="-396"/>
         <source>Find</source>
         <translation>查找</translation>
     </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-    <message>
-        <source>Find in files</source>
-        <translation type="vanished">在文件中查找</translation>
-    </message>
-    <message>
+            <message>
         <location filename="../src/widgets/searchdialog.cpp" line="+23"/>
         <source>Replace</source>
         <translation>替换</translation>
     </message>
-    <message>
-        <source>Replace in files</source>
-        <translation type="vanished">在文件中替换</translation>
-    </message>
-    <message>
+        <message>
         <location line="+109"/>
         <location line="+80"/>
         <source>Continue Search</source>
@@ -11523,16 +9748,7 @@ p, li { white-space: pre-wrap; }
         <source>Can&apos;t find &apos;%1&apos;</source>
         <translation>找不到‘%1’</translation>
     </message>
-    <message>
-        <source>Replace this occurrence of &apos;&apos;%1&apos;&apos;?</source>
-        <translation type="vanished">替换这里的&quot;%1&quot;？</translation>
-    </message>
-    <message>
-        <source>Continue Replace</source>
-        <oldsource>Replace Around</oldsource>
-        <translation type="vanished">继续替换</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>SearchInFileDialog</name>
     <message>
@@ -11634,47 +9850,7 @@ p, li { white-space: pre-wrap; }
         <source>&amp;Cancel</source>
         <translation>取消[&amp;C]</translation>
     </message>
-    <message>
-        <source>Find</source>
-        <translation type="vanished">查找</translation>
-    </message>
-    <message>
-        <source>Replace</source>
-        <translation type="vanished">替换</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="vanished">取消</translation>
-    </message>
-    <message>
-        <source>Find in files</source>
-        <translation type="vanished">在文件中查找</translation>
-    </message>
-    <message>
-        <source>Replace in files</source>
-        <translation type="vanished">在文件中替换</translation>
-    </message>
-    <message>
-        <source>Continue Search</source>
-        <translation type="vanished">继续查找</translation>
-    </message>
-    <message>
-        <source>End of file has been reached. </source>
-        <translation type="vanished">已到达文件结尾。</translation>
-    </message>
-    <message>
-        <source>Do you want to continue from file&apos;s beginning?</source>
-        <translation type="vanished">是否从文件开头继续？</translation>
-    </message>
-    <message>
-        <source>Replace this occurrence of &apos;&apos;%1&apos;&apos;?</source>
-        <translation type="vanished">替换这里的&quot;%1&quot;？</translation>
-    </message>
-    <message>
-        <source>Continue Replace</source>
-        <translation type="vanished">继续替换</translation>
-    </message>
-    <message>
+                                            <message>
         <location filename="../src/widgets/searchinfiledialog.cpp" line="+304"/>
         <location line="+12"/>
         <source>Searching...</source>
@@ -11709,35 +9885,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>SearchResultListModel</name>
-    <message>
-        <source>Current File:</source>
-        <translation type="vanished">当前文件：</translation>
-    </message>
-    <message>
-        <source>Files In Project:</source>
-        <translation type="vanished">项目中的文件：</translation>
-    </message>
-    <message>
-        <source>Open Files:</source>
-        <translation type="vanished">打开的文件：</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; in Folder &quot;%2&quot;</source>
-        <translation type="vanished">&quot;%1&quot;在文件夹&quot;%2&quot;中</translation>
-    </message>
-    <message>
-        <source>Find Usages in Current File: &apos;%1&apos;</source>
-        <translation type="vanished">在当前文件查找符号&quot;%1&quot;</translation>
-    </message>
-    <message>
-        <source>Find Usages in Project: &apos;%1&apos;</source>
-        <translation type="vanished">在项目中查找符号&quot;%1&quot;</translation>
-    </message>
-    <message>
-        <source>References to symbol &apos;%1&apos; at &apos;%2&apos;:%3</source>
-        <translation type="vanished">符号&apos;%1&apos;出现在&apos;%2&apos;: %3</translation>
-    </message>
-</context>
+                            </context>
 <context>
     <name>SearchResultModel</name>
     <message>
@@ -11855,11 +10003,7 @@ p, li { white-space: pre-wrap; }
         <source>Shortcuts</source>
         <translation>快捷键</translation>
     </message>
-    <message>
-        <source>Folders</source>
-        <translation type="vanished">文件夹</translation>
-    </message>
-    <message>
+        <message>
         <location line="+3"/>
         <source>Terminal</source>
         <translation>终端程序</translation>
@@ -12176,7 +10320,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+12"/>
         <source>TextLabel</source>
-        <translation></translation>
+        <translation>TextLabel</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -12206,11 +10350,7 @@ p, li { white-space: pre-wrap; }
         <source>- Compiler Set Name: %1</source>
         <translation>- 编译器配置: %1</translation>
     </message>
-    <message>
-        <source>Can&apos;t find the compiler for file %1</source>
-        <translation type="vanished">找不到适合文件%1的编译器</translation>
-    </message>
-    <message>
+        <message>
         <location line="+44"/>
         <source>The Compiler &apos;%1&apos; doesn&apos;t exists!</source>
         <translation>编译器程序&apos;%1&apos;不存在！</translation>
@@ -12230,11 +10370,7 @@ p, li { white-space: pre-wrap; }
         <source>Command: %1</source>
         <translation>命令: %1</translation>
     </message>
-    <message>
-        <source>Command: %1 %2</source>
-        <translation type="vanished">命令: %1 %2</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>SymbolUsageManager</name>
     <message>
@@ -12272,44 +10408,16 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>SynDocument</name>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for read!</source>
-        <translation type="vanished">无法读取文件&apos;%1&apos;!</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for save!</source>
-        <translation type="vanished">无法写入文件&apos;%2&apos;!</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>SynEdit</name>
-    <message>
-        <source>The highlighter seems to be in an infinite loop</source>
-        <translation type="vanished">高亮处理进入了死循环</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>SynEditStringList</name>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for read!</source>
-        <translation type="vanished">无法读取文件&apos;%1&apos;!</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for save!</source>
-        <translation type="vanished">无法写入文件&apos;%2&apos;!</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>ThemeManager</name>
-    <message>
-        <source>custom</source>
-        <translation type="vanished">自定义</translation>
-    </message>
-    <message>
-        <source>built-in</source>
-        <translation type="vanished">内置</translation>
-    </message>
-</context>
+        </context>
 <context>
     <name>TodoModel</name>
     <message>
@@ -12322,11 +10430,7 @@ p, li { white-space: pre-wrap; }
         <source>Line</source>
         <translation>行</translation>
     </message>
-    <message>
-        <source>Column</source>
-        <translation type="vanished">列</translation>
-    </message>
-    <message>
+        <message>
         <location line="+2"/>
         <source>Content</source>
         <translation>内容</translation>
@@ -12395,11 +10499,7 @@ p, li { white-space: pre-wrap; }
         <source>Title</source>
         <translation>名称</translation>
     </message>
-    <message>
-        <source>Pause console after the program exit</source>
-        <translation type="vanished">程序在主控台中结束运行后暂停</translation>
-    </message>
-    <message>
+        <message>
         <location line="-57"/>
         <source>Program</source>
         <translation>程序</translation>
@@ -12419,11 +10519,7 @@ p, li { white-space: pre-wrap; }
         <source>Save Changes?</source>
         <translation>保存修改？</translation>
     </message>
-    <message>
-        <source>Do you want to save changes to the current tool?</source>
-        <translation type="vanished">您需要保存对当前工具的修改吗？</translation>
-    </message>
-    <message>
+        <message>
         <location line="-71"/>
         <location line="+6"/>
         <source>None</source>
@@ -12484,50 +10580,14 @@ p, li { white-space: pre-wrap; }
         <source>Select program</source>
         <translation>选择程序</translation>
     </message>
-    <message>
-        <source>Executable files (*.exe)</source>
-        <translation type="vanished">可执行文件 (*.exe)</translation>
-    </message>
-</context>
+    </context>
 <context>
     <name>ToolsGitWidget</name>
     <message>
         <source>Form</source>
         <translation type="obsolete">表单</translation>
     </message>
-    <message>
-        <source>Git</source>
-        <translation type="vanished">Git</translation>
-    </message>
-    <message>
-        <source>Test</source>
-        <translation type="vanished">测试</translation>
-    </message>
-    <message>
-        <source>Browse</source>
-        <translation type="vanished">浏览</translation>
-    </message>
-    <message>
-        <source>...</source>
-        <translation type="vanished">...</translation>
-    </message>
-    <message>
-        <source>Path to Git Executable:</source>
-        <translation type="vanished">Git程序路径</translation>
-    </message>
-    <message>
-        <source>TextLabel</source>
-        <translation type="vanished">选项</translation>
-    </message>
-    <message>
-        <source>Git Executable</source>
-        <translation type="vanished">Git程序文件</translation>
-    </message>
-    <message>
-        <source>All files (%1)</source>
-        <translation type="vanished">所有文件 (%1)</translation>
-    </message>
-</context>
+                                </context>
 <context>
     <name>ToolsManager</name>
     <message>
@@ -12535,11 +10595,7 @@ p, li { white-space: pre-wrap; }
         <source>Remove Compiled</source>
         <translation>删除编译文件</translation>
     </message>
-    <message>
-        <source>Open compiled in explorer</source>
-        <translation type="vanished">在文件管理器中打开编译结果</translation>
-    </message>
-    <message>
+        <message>
         <location line="+32"/>
         <location line="+13"/>
         <source>Read tools config failed</source>
@@ -12575,19 +10631,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>WatchModel</name>
-    <message>
-        <source>Save file &apos;%1&apos; failed.</source>
-        <translation type="vanished">保存文件&apos;%1&apos;失败。</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for write.</source>
-        <translation type="vanished">无法写入文件&apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>Error in json file &apos;%1&apos;:%2 : %3</source>
-        <translation type="vanished">JSON文件&apos;%1&apos;:%2中存在错误：%3</translation>
-    </message>
-    <message>
+                <message>
         <location filename="../src/debugger/debuggermodels.cpp" line="-394"/>
         <location line="+106"/>
         <source>Execute to evaluate</source>
@@ -12599,11 +10643,7 @@ p, li { white-space: pre-wrap; }
         <source>Not Valid</source>
         <translation>在当前作用域中无效</translation>
     </message>
-    <message>
-        <source>Can&apos;t open file &apos;%1&apos; for read.</source>
-        <translation type="vanished">无法读取文件&apos;%1&apos;.</translation>
-    </message>
-    <message>
+        <message>
         <location line="+202"/>
         <source>Expression</source>
         <translation>表达式</translation>
@@ -12621,47 +10661,7 @@ p, li { white-space: pre-wrap; }
 </context>
 <context>
     <name>XMakeCompiler</name>
-    <message>
-        <source>Building xmake.lua file...</source>
-        <translation type="vanished">正在构建xmake.lua文件...</translation>
-    </message>
-    <message>
-        <source>- Filename: %1</source>
-        <translation type="vanished">- 文件名: %1</translation>
-    </message>
-    <message>
-        <source>Can&apos;t open &apos;%1&apos; for write!</source>
-        <translation type="vanished">无法写入文件&apos;%1&apos;！</translation>
-    </message>
-    <message>
-        <source>Compiling project changes...</source>
-        <translation type="vanished">正在编译项目修改...</translation>
-    </message>
-    <message>
-        <source>- Project Filename: %1</source>
-        <translation type="vanished">- 项目文件名: %1</translation>
-    </message>
-    <message>
-        <source>- Compiler Set Name: %1</source>
-        <translation type="vanished">- 编译器配置: %1</translation>
-    </message>
-    <message>
-        <source>Make program &apos;%1&apos; doesn&apos;t exists!</source>
-        <translation type="vanished">Make程序“%1”不存在！</translation>
-    </message>
-    <message>
-        <source>Processing makefile:</source>
-        <translation type="vanished">正在处理makefile...</translation>
-    </message>
-    <message>
-        <source>- makefile processer: %1</source>
-        <translation type="vanished">- makefile处理器: %1</translation>
-    </message>
-    <message>
-        <source>- Command: %1 %2</source>
-        <translation type="vanished">- 命令: %1 %2</translation>
-    </message>
-</context>
+                                        </context>
 <context>
     <name>editorcustomctypekeywords</name>
     <message>
@@ -12712,11 +10712,7 @@ p, li { white-space: pre-wrap; }
         <source>Auto Indent</source>
         <translation>自动计算缩进</translation>
     </message>
-    <message>
-        <source>Add Indent after { and :</source>
-        <translation type="vanished">在{和:的下一行添加缩进</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Replace tab with spaces</source>
         <translation>自动使用空格代替制表符(Tab)</translation>
@@ -12731,11 +10727,7 @@ p, li { white-space: pre-wrap; }
         <source>Show Indent Lines</source>
         <translation>显示缩进提示线</translation>
     </message>
-    <message>
-        <source>Indent Line Color</source>
-        <translation type="vanished">缩进提示线颜色</translation>
-    </message>
-    <message>
+        <message>
         <location line="+7"/>
         <source>Fill Indents</source>
         <translation>填充缩进区域</translation>
@@ -12810,23 +10802,7 @@ p, li { white-space: pre-wrap; }
         <source>Page Up/Down scrolls half a page</source>
         <translation>翻页键只滚动半页</translation>
     </message>
-    <message>
-        <source>Forces page scroll to be one line less</source>
-        <translation type="vanished">在滚动页时少滚动一行</translation>
-    </message>
-    <message>
-        <source>Mouse Scroll Direction</source>
-        <translation type="vanished">鼠标卷轴方向</translation>
-    </message>
-    <message>
-        <source>Natural</source>
-        <translation type="vanished">正常</translation>
-    </message>
-    <message>
-        <source>Invert</source>
-        <translation type="vanished">反向</translation>
-    </message>
-    <message>
+                    <message>
         <location line="+22"/>
         <source>Mouse Wheel Scroll Speed</source>
         <translation>鼠标滚轮卷轴速度（行）</translation>
@@ -12861,6 +10837,37 @@ p, li { white-space: pre-wrap; }
         <location line="+17"/>
         <source>Caret Color</source>
         <translation>光标颜色</translation>
+    </message>
+</context>
+<context>
+    <name>Utils</name>
+    <message>
+        <source>Timeout: the process doesn&apos;t finish in %1 ms!</source>
+        <translation>超时：进程在 %1 毫秒内没有结束！</translation>
+    </message>
+    <message>
+        <source>Failed to start process!</source>
+        <translation>无法启动进程！</translation>
+    </message>
+    <message>
+        <source>Process crashed!</source>
+        <translation>进程崩溃！</translation>
+    </message>
+    <message>
+        <source>Timeout!</source>
+        <translation>超时！</translation>
+    </message>
+    <message>
+        <source>Read Error:</source>
+        <translation>读取错误：</translation>
+    </message>
+    <message>
+        <source>Write Error:</source>
+        <translation>写入错误：</translation>
+    </message>
+    <message>
+        <source>Unknown Error:</source>
+        <translation>未知错误：</translation>
     </message>
 </context>
 </TS>

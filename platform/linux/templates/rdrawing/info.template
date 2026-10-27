@@ -2,14 +2,20 @@
 ver=2
 Name=rdrawing
 Name[zh_CN]=rdrawing
+Name[zh_TW]=rdrawing
+Name[ru_RU]=rdrawing
+Name[pt_BR]=rdrawing
 Icon=rdrawing.ico
 Description=A simple 2d drawing app using raylib and rdrawing
 Description[zh_CN]=基于raylib和rdrawing的2维绘图程序 (https://github.com/royqh1979/raylib-drawing)
+Description[zh_TW]=基於raylib和rdrawing的二維繪圖程式 (https://github.com/royqh1979/raylib-drawing)
+Description[ru_RU]=Простое приложение для двухмерного рисования с использованием raylib and rdrawing
+Description[pt_BR]=Um aplicativo simples de desenho 2D usando raylib e rdrawing
 Category=Multimedia
 Category[zh_CN]=多媒体
-Name[ru_RU]=rdrawing
-Description[ru_RU]=Простое приложение для двухмерного рисования с использованием raylib and rdrawing
+Category[zh_TW]=多媒體
 Category[ru_RU]=Мультимедиа
+Category[pt_BR]=Multimídia
 
 [Unit0]
 CName=main.c

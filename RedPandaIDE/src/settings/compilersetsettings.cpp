@@ -1043,9 +1043,12 @@ QStringList CompilerSet::defines(bool isCpp) {
         QList<QByteArray> lines = output.split('\n');
         for (QByteArray& line:lines) {
             QByteArray trimmedLine = line.trimmed();
-            if (!trimmedLine.isEmpty()) {
+            // Keep only #define directives: addHardDefineByLine() expects the text
+            // after '#' to start with "define" and would parse any other directive
+            // (an "#undef", a line marker such as `# 1 "file.c"`, a diagnostic) as a
+            // bogus define.
+            if (trimmedLine.startsWith("#define"))
                 result.append(trimmedLine);
-            }
         }
     }
     return result;

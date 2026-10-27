@@ -19,11 +19,51 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QStringList>
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QUuid>
 #include "settings.h"
 #include "systemconsts.h"
+
+namespace {
+
+// Defaults of the built-in "Remove Compiled" tool. They are used to create the
+// tool, and to migrate a configuration written before the isBuiltIn field existed.
+#ifdef Q_OS_WIN
+const char* const REMOVE_COMPILED_PROGRAM = "del";
+const char* const REMOVE_COMPILED_PARAMETERS = "/q /f <EXENAME>";
+#else
+const char* const REMOVE_COMPILED_PROGRAM = "rm";
+const char* const REMOVE_COMPILED_PARAMETERS = "-f <EXENAME>";
+#endif
+const char* const REMOVE_COMPILED_WORKDIR = "<SOURCEPATH>";
+
+// True when "item" is (still) the built-in "Remove Compiled" tool. Its title is
+// persisted translated, so it is recognized by its command instead of its name.
+bool isRemoveCompiledTool(const PToolItem& item)
+{
+    return item->workingDirectory == QLatin1String(REMOVE_COMPILED_WORKDIR)
+            && item->parameters == QLatin1String(REMOVE_COMPILED_PARAMETERS)
+            && item->program == QLatin1String(REMOVE_COMPILED_PROGRAM);
+}
+
+// The title the built-in tool was persisted with, in every language the application
+// ships a translation for. An old configuration has no isBuiltIn field: its title is
+// the only marker that tells it from a user tool with the same command.
+bool isKnownRemoveCompiledTitle(const QString& title)
+{
+    static const QStringList titles{
+        QStringLiteral("Remove Compiled"),
+        QStringLiteral("删除编译文件"),
+        QStringLiteral("刪除編譯檔案"),
+        QStringLiteral("Удалить скомпилированное"),
+        QStringLiteral("Remover compilado")
+    };
+    return titles.contains(title);
+}
+
+} // namespace
 
 ToolsManager::ToolsManager(QObject *parent) : QObject(parent)
 {
@@ -39,20 +79,13 @@ void ToolsManager::load()
         PToolItem item = std::make_shared<ToolItem>();
         item->id = QUuid::createUuid().toString();
         item->title = tr("Remove Compiled");
-#ifdef Q_OS_WIN
-        item->program = "del";
-#else
-        item->program = "rm";
-#endif
-        item->workingDirectory = "<SOURCEPATH>";
-#ifdef Q_OS_WIN
-        item->parameters = "/q /f <EXENAME>";
-#else
-        item->parameters = "-f <EXENAME>";
-#endif
+        item->program = REMOVE_COMPILED_PROGRAM;
+        item->workingDirectory = REMOVE_COMPILED_WORKDIR;
+        item->parameters = REMOVE_COMPILED_PARAMETERS;
         item->inputOrigin = ToolItemInputOrigin::None;
         item->outputTarget = ToolItemOutputTarget::RedirectToToolsOutputPanel;
         item->isUTF8 = false;
+        item->isBuiltIn = true;
         mTools.append(item);
 //#ifdef Q_OS_WIN
 //        item = std::make_shared<ToolItem>();
@@ -106,6 +139,21 @@ void ToolsManager::load()
         item->outputTarget = static_cast<ToolItemOutputTarget>(object["outputTarget"].toInt(0));
         item->inputOrigin= static_cast<ToolItemInputOrigin>(object["inputOrigin"].toInt(0));
         item->isUTF8 = object["isUTF8"].toBool(true);
+        item->isBuiltIn = object["isBuiltIn"].toBool(false);
+        // The title above was persisted in whatever language was active when the
+        // file was written, so switching the language never updated it. Only the
+        // built-in tool gets a fresh title in the current language; a user tool
+        // keeps its own title, even if its command is the same as a built-in one.
+        // Configurations written before the isBuiltIn field existed are migrated
+        // when their title is one of the translations the built-in tool is saved
+        // with (whatever language was active then), and its command is the built-in
+        // one.
+        if (!object.contains("isBuiltIn")
+                && isKnownRemoveCompiledTitle(item->title)
+                && isRemoveCompiledTool(item))
+            item->isBuiltIn = true;
+        if (item->isBuiltIn)
+            item->title = tr("Remove Compiled");
         mTools.append(item);
     }
 }
@@ -132,6 +180,7 @@ void ToolsManager::save()
         object["outputTarget"]=static_cast<int>(tool->outputTarget);
         object["inputOrigin"]=static_cast<int>(tool->inputOrigin);
         object["isUTF8"]=tool->isUTF8;
+        object["isBuiltIn"]=tool->isBuiltIn;
         array.append(object);
     }
     QJsonDocument doc;

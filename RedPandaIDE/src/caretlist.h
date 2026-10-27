@@ -20,6 +20,8 @@
 #include <memory>
 #include <QVector>
 #include <QObject>
+#include <QMap>
+#include <QList>
 
 class Editor;
 
@@ -42,6 +44,17 @@ public:
     const PEditorCaret &gotoAndGetPrevious();
     const PEditorCaret &gotoAndGetNext();
     void removeEditor(const Editor* editor);
+    // Puts the carets of a file back on their code after the whole content of its
+    // editor has been replaced: "lineMap" maps the lines of the old content to the
+    // lines of the new one (see Editor::replaceContentAndRemap()). The incremental
+    // line bookkeeping (onLinesDeleted() and the others) is skipped while that
+    // replacement runs, so this is the only place that moves them.
+    void remapLines(const Editor* editor, const QMap<int,int>& lineMap);
+    // The distinct lines the carets of the given file are on: the editor anchors
+    // them when it replaces the whole content, so that the history entries are
+    // moved too and not left on stale lines (see remapLines()). Distinct lines,
+    // because the history can get long.
+    QList<int> caretLines(const Editor* editor) const;
     void reset();
     void pause();
     void unPause();
@@ -49,10 +62,25 @@ public slots:
     void onLinesDeleted(const Editor* editor, int firstLine, int count);
     void onLinesInserted(const Editor* editor, int firstLine, int count);
     void onLinesMoved(const Editor* editor, int fromLine, int toLine);
+    // A merge appends the text of the removed line to the line above it: the carets
+    // of the removed line follow their code there, and come back on their own line
+    // when the merge is undone (see onLinesSplit()).
+    void onLinesMerged(const Editor* editor, int removedLine, int intoLine);
+    void onLinesSplit(const Editor* editor, int mergedLine, int newLine);
 private:
     void removeCaret(int index);
+    void forgetCaret(const EditorCaret* caret);
 private:
+    struct MergedCarets {
+        int removedLine = 0;
+        // Raw pointers: the entries live in mList, and forgetCaret() drops them
+        // from these records when their entry is removed.
+        QList<EditorCaret*> carets;
+    };
     std::vector<PEditorCaret> mList;
+    // The carets a merge moved, per editor (innermost last), so that undoing the
+    // merge puts them back on the line they were set on.
+    QMap<const Editor*, QList<MergedCarets>> mMergedCarets;
     int mIndex;
     bool mPauseAdd;
     static const PEditorCaret NullCaret;

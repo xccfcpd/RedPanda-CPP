@@ -18,10 +18,12 @@
 #define DEBUGGER_H
 
 #include <QAbstractTableModel>
+#include <QHash>
 #include <QList>
 #include <QList>
 #include <QMap>
 #include <QMutex>
+#include <QPair>
 #include <QObject>
 #include <QProcess>
 #include <QQueue>
@@ -95,7 +97,8 @@ public:
     void clearForProject();
 
     //breakpoints
-    void addBreakpoint(int line, const QString& filename, bool forProject);
+    void addBreakpoint(int line, const QString& filename, bool forProject,
+                       const QString& fingerprint = QString());
     void deleteBreakpoints(const QString& filename, bool forProject);
     void deleteBreakpoints(bool forProject);
     void deleteInvalidProjectBreakpoints(const QSet<QString> unitFiles);
@@ -104,6 +107,13 @@ public:
     PBreakpoint breakpointAt(int line, const QString &filename, int *index, bool forProject);
     void setBreakPointCondition(int index, const QString& condition, bool forProject);
     void sendAllBreakpointsToDebugger();
+    // Puts the breakpoints of the files that are not open in an editor back on the
+    // code they were set on, reading those files from the disk. The breakpoints of
+    // the open files are re-anchored by the editors themselves (from the content
+    // they have, which may differ from the disk). Called before the breakpoints
+    // are sent to the debugger, so that it never gets a line that doesn't hold the
+    // breakpoint's code any more.
+    void reanchorBreakpointsFromDisk();
 
     void saveForNonproject(const QString &filename);
     void saveForProject(const QString &filename, const QString &projectFolder);
@@ -192,6 +202,16 @@ private slots:
     void fetchVarChildren(const QString& varName);
 private:
     //bool mCommandChanged;
+    // The (mtime, size, breakpoint state) last re-anchored for a file that is not
+    // open in an editor: an unchanged file with unchanged breakpoints doesn't have to
+    // be read and scanned again on every startClient(). The size catches a rewrite
+    // that kept the timestamp (coarse filesystems, tools restoring it).
+    struct ReanchorState {
+        qint64 mtime = 0;
+        qint64 size = -1;
+        QString breakpoints;
+    };
+    QHash<QString, ReanchorState> mReanchorStates;
     std::shared_ptr<BreakpointModel> mBreakpointModel;
     std::shared_ptr<BacktraceModel> mBacktraceModel;
     std::shared_ptr<WatchModel> mWatchModel;
@@ -332,7 +352,7 @@ signals:
     void cmdFinished();
 
     void errorNoSymbolTable();
-    void breakpointInfoGetted(const QString& filename, int line, int number);
+    void breakpointInfoGetted(const QString& filename, int line, int number, const QString& condition);
     void inferiorContinued();
     void watchpointHitted(const QString& var, const QString& oldVal, const QString& newVal);
     void inferiorStopped(const QString& filename, int line);

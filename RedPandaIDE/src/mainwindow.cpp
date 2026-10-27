@@ -490,10 +490,11 @@ MainWindow::MainWindow(QWidget *parent)
         ui->actionIA_32_Assembly_Language_Reference_Manual->setVisible(false);
         ui->actionx86_Assembly_Language_Reference_Manual->setVisible(false);
 #endif
-    ui->actionEGE_Manual->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionOI_Wiki->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionTurtle_Graphics_Manual->setVisible(pSettings->environment().language()=="zh_CN");
-    ui->actionDocument->setVisible(pSettings->environment().language()=="zh_CN");
+    ui->actionEGE_Manual->setVisible(false);   //让ege帮助文件不可见
+    //ui->actionOI_Wiki->setVisible(pSettings->environment().language()=="zh_CN"); //任何语言环境都显示OI-WIKI帮助
+    ui->actionTurtle_Graphics_Manual->setVisible(false); //让海归作图帮助文件不可见
+    //ui->actionDocument->setVisible(pSettings->environment().language()=="zh_CN"); //任何语言环境都显示帮助
+    ui->actionRaylib_Manual->setVisible(false);//屏蔽Raylib帮助  [新增]
 
     connect(ui->EditorTabsLeft, &EditorsTabWidget::middleButtonClicked,
             this, &MainWindow::on_EditorTabsLeft_tabCloseRequested);
@@ -634,7 +635,7 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionIndent->setEnabled(false);
         ui->actionPaste->setEnabled(false);
         ui->actionPaste_indentation->setEnabled(false);
-        ui->actionRedo->setEnabled(false);
+        ui->actionRedo->setEnabled(mEditorManager->canRedoUnboundBreakpoint());
         ui->actionSave->setEnabled(false);
         ui->actionSaveAs->setEnabled(false);
         ui->actionExport_As_HTML->setEnabled(false);
@@ -643,7 +644,7 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionToggleComment->setEnabled(false);
         ui->actionToggle_Block_Comment->setEnabled(false);
         ui->actionUnIndent->setEnabled(false);
-        ui->actionUndo->setEnabled(false);
+        ui->actionUndo->setEnabled(mEditorManager->canUndoUnboundBreakpoint());
         ui->actionUnfoldAll->setEnabled(false);
         ui->actionDelete_Line->setEnabled(false);
         ui->actionDelete_Word->setEnabled(false);
@@ -721,8 +722,8 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionIndent->setEnabled(!e->readOnly());
         ui->actionPaste->setEnabled(!e->readOnly());
         ui->actionPaste_indentation->setEnabled(!e->readOnly());
-        ui->actionRedo->setEnabled(e->canRedo());
-        ui->actionUndo->setEnabled(e->canUndo());
+        ui->actionRedo->setEnabled(e->canRedo() || e->canRedoBreakpoint());
+        ui->actionUndo->setEnabled(e->canUndo() || e->canUndoBreakpoint());
         ui->actionSave->setEnabled(!e->readOnly());
         ui->actionSaveAs->setEnabled(true);
         ui->actionExport_As_HTML->setEnabled(true);
@@ -769,7 +770,11 @@ void MainWindow::updateEditorActions(const Editor *e)
         ui->actionFind_Previous->setEnabled(true);
 
         //code
-        ui->actionReformat_Code->setEnabled(isCFile(e->filename()) || isHFile(e->filename()));
+        // An unsaved editor is formatted as a new C++ file (see Editor::reformat()),
+        // so the action must be enabled for it too.
+        const bool canFormat = isFormattableCppFile(e->fileType())
+                || (e->filename().isEmpty() && e->fileType() == FileType::None);
+        ui->actionReformat_Code->setEnabled(canFormat);
         ui->actionReparse_Code->setEnabled(e->inProject() || isCFile(e->filename()) || isHFile(e->filename()));
 
         ui->actionClose->setEnabled(true);
@@ -1390,14 +1395,19 @@ void MainWindow::executeTool(PToolItem item)
             QString cmd="cmd";
             QStringList args{"/C",file.fileName()};
             command = escapeCommandForPlatformShell(cmd, args);
-            auto [o, _, em] = runAndGetOutput(cmd, workDir, args, inputContent);
+            // a tool of the user can run for minutes: wait for it, don't kill it
+            // after the default 30 s bound of the formatters
+            auto [o, _, em] = runAndGetOutput(cmd, workDir, args, inputContent,
+                                              false, true, QProcessEnvironment(), -1);
             output = o;
             errorMessage = em;
         }
     } else {
 #endif
         command = escapeCommandForPlatformShell(program, params);
-        auto [o, _, em] = runAndGetOutput(program, workDir, params, inputContent);
+        // see above: the tools of the user are not bounded by the formatter timeout
+        auto [o, _, em] = runAndGetOutput(program, workDir, params, inputContent,
+                                          false, true, QProcessEnvironment(), -1);
         output = o;
         errorMessage = em;
 #ifdef Q_OS_WIN
@@ -1896,6 +1906,7 @@ Editor* MainWindow::openFile(QString filename, bool activate, FileType fileType,
 
 void MainWindow::openProject(QString filename, bool openFiles)
 {
+    mEditorManager->clearBreakpointHistories();
     mOpeningProject=true;
     auto action=finally([this]{
         mOpeningProject=false;
@@ -3190,6 +3201,14 @@ void MainWindow::createCustomActions()
                 ui->tblBreakpoints);
     connect(mBreakpointViewRemoveAction,&QAction::triggered,
             this, &MainWindow::onBreakpointRemove);
+    mAddBreakpointAction = createAction(tr("Add Breakpoint..."), this);
+    connect(mAddBreakpointAction, &QAction::triggered,
+            this, &MainWindow::onAddBreakpoint);
+    QAction* addBookmarkAction = createAction(tr("Add Bookmark..."), this);
+    addBookmarkAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+Alt+B")));
+    connect(addBookmarkAction, &QAction::triggered,
+            this, &MainWindow::onAddBookmark);
+    ui->menuEdit->insertAction(ui->actionToggle_Bookmark, addBookmarkAction);
 
     //project
     mProject_Rename_Unit = createAction(
@@ -4891,10 +4910,9 @@ void MainWindow::onBookmarkRemove()
         PBookmark bookmark = mBookmarkModel->bookmark(index.row());
         if (bookmark) {
             Editor * editor = mEditorManager->getOpenedEditor(bookmark->filename);
-            if (editor && editor->inProject() == mBookmarkModel->isForProject()) {
-                editor->removeBookmark(bookmark->line);
-            }
             mBookmarkModel->removeBookmarkAt(index.row());
+            if (editor && editor->inProject() == mBookmarkModel->isForProject())
+                editor->resetBookmarks(mBookmarkModel);
         }
     }
 }
@@ -4915,11 +4933,15 @@ void MainWindow::onBookmarkModify()
     if (index.isValid()) {
         PBookmark bookmark = mBookmarkModel->bookmark(index.row());
         if (bookmark) {
+            bool ok = false;
             QString desc = QInputDialog::getText(ui->tableBookmark,tr("Bookmark Description"),
                                              tr("Description:"),QLineEdit::Normal,
-                                             bookmark->description);
+                                             bookmark->description, &ok);
+            if (!ok)
+                return;
             desc = desc.trimmed();
-            mBookmarkModel->updateDescription(bookmark->filename,bookmark->line,desc);
+            mBookmarkModel->updateDescriptionAt(index.row(), desc,
+                                                mBookmarkModel->isForProject());
         }
     }
 }
@@ -5196,22 +5218,14 @@ void MainWindow::onBreakpointRemove()
 {
     int index =ui->tblBreakpoints->selectionModel()->currentIndex().row();
 
-    PBreakpoint breakpoint = debugger()->breakpointModel()->breakpoint(index, debugger()->isForProject());
-    if (breakpoint) {
-        Editor * e = mEditorManager->getOpenedEditor(breakpoint->filename);
-        if (e) {
-            if (e->hasBreakpoint(breakpoint->line))
-                e->toggleBreakpoint(breakpoint->line);
-        } else {
-            debugger()->breakpointModel()->removeBreakpoint(index,debugger()->isForProject());
-        }
-    }
+    // Remove the selected breakpoint object, not whichever breakpoint happens to
+    // be last on its line: a line can hold several conditional breakpoints.
+    mEditorManager->removeBreakpointFromTable(index, debugger()->isForProject());
 }
 
 void MainWindow::onBreakpointViewRemoveAll()
 {
-    debugger()->deleteBreakpoints(debugger()->isForProject());
-    mEditorManager->updateEditorBreakpoints();
+    mEditorManager->removeAllBreakpointsFromTable(debugger()->isForProject());
 }
 
 void MainWindow::onModifyBreakpointCondition()
@@ -5312,6 +5326,7 @@ void MainWindow::onEditorContextMenu(const QPoint& pos)
             menu.addAction(ui->actionAdd_Watch);
             menu.addAction(ui->actionAdd_Watchpoint);
             menu.addAction(ui->actionToggle_Breakpoint);
+            menu.addAction(mAddBreakpointAction);
             menu.addAction(ui->actionBreakpoint_property);
             menu.addAction(ui->actionClear_all_breakpoints);
             menu.addSeparator();
@@ -5509,6 +5524,8 @@ void MainWindow::prepareProjectForCompile()
 
 void MainWindow::closeProject(bool refreshEditor)
 {
+    // A table-only breakpoint history must not survive into another project.
+    mEditorManager->clearBreakpointHistories();
     // Stop executing program
     on_actionStop_Execution_triggered();
 
@@ -5650,11 +5667,9 @@ void MainWindow::onFileChanged(const QString &path)
                                       QMessageBox::Yes|QMessageBox::No,
                                       QMessageBox::No) == QMessageBox::Yes) {
                 try {
-                    int top = e->topPos();
-                    QSynedit::CharPos caretPos = e->caretXY();
+                    // loadFile() itself keeps the caret, the first displayed line
+                    // and the markers of the file on the code they are on
                     e->loadFile();
-                    mEditorManager->activeEditorAndSetCaret(e, QSynedit::CharPos{0,caretPos.line});
-                    e->setTopPos(top);
                 } catch(FileError e) {
                     QMessageBox::critical(this,tr("Error"),e.reason());
                 }
@@ -6443,17 +6458,33 @@ void MainWindow::on_actionRun_triggered()
 
 void MainWindow::on_actionUndo_triggered()
 {
+    // A "clear all" from the breakpoint table belongs to the table history even
+    // when an editor still has the keyboard focus.
+    if (mEditorManager->lastBreakpointActionWasUnbound()
+            && mEditorManager->canUndoUnboundBreakpoint()) {
+        mEditorManager->undoUnboundBreakpoint();
+        return;
+    }
     Editor * editor = mEditorManager->getEditor();
-    if (editor) {
+    if (editor && !ui->tblBreakpoints->hasFocus()) {
         editor->undo();
+    } else {
+        mEditorManager->undoUnboundBreakpoint();
     }
 }
 
 void MainWindow::on_actionRedo_triggered()
 {
+    if (mEditorManager->lastBreakpointActionWasUnbound()
+            && mEditorManager->canRedoUnboundBreakpoint()) {
+        mEditorManager->redoUnboundBreakpoint();
+        return;
+    }
     Editor * editor = mEditorManager->getEditor();
-    if (editor) {
+    if (editor && !ui->tblBreakpoints->hasFocus()) {
         editor->redo();
+    } else {
+        mEditorManager->redoUnboundBreakpoint();
     }
 }
 
@@ -7129,6 +7160,36 @@ void MainWindow::on_actionToggle_Breakpoint_triggered()
     Editor * editor = mEditorManager->getEditor();
     if (editor)
         editor->toggleBreakpoint(editor->caretY());
+}
+
+// Add another breakpoint to the current line, with its own condition: a line can
+// hold several conditional breakpoints, and each one is a separate row in the
+// breakpoint view (where it can be edited or removed on its own).
+void MainWindow::onAddBreakpoint()
+{
+    Editor* editor = mEditorManager->getEditor();
+    if (!editor)
+        return;
+    const int line = editor->caretY();
+    bool isOk = false;
+    const QString condition = QInputDialog::getText(
+                this, tr("Add Breakpoint"),
+                tr("Condition of the new breakpoint (leave empty for none):"),
+                QLineEdit::Normal, QString(), &isOk);
+    if (!isOk)
+        return;
+    editor->addBreakpoint(line);
+    // The breakpoint just added is the last one of this line/file.
+    const QList<PBreakpoint>& breakpoints =
+            mDebugger->breakpointModel()->breakpoints(editor->inProject());
+    for (int i=breakpoints.count()-1;i>=0;i--) {
+        const PBreakpoint& breakpoint = breakpoints[i];
+        if (breakpoint->filename == editor->filename()
+                && breakpoint->line == line) {
+            mDebugger->setBreakPointCondition(i, condition, editor->inProject());
+            break;
+        }
+    }
 }
 
 
@@ -8876,17 +8937,48 @@ void MainWindow::on_tableBookmark_doubleClicked(const QModelIndex &index)
 void MainWindow::on_actionModify_Bookmark_Description_triggered()
 {
     Editor* editor = mEditorManager->getEditor();
-    if (editor) {
-        int line = editor->caretY();
-        PBookmark bookmark = mBookmarkModel->bookmark(editor->filename(),line);
-        if (bookmark) {
-            QString desc = QInputDialog::getText(editor,tr("Bookmark Description"),
-                                                 tr("Description:"),QLineEdit::Normal,
-                                                 bookmark->description);
-            desc = desc.trimmed();
-            mBookmarkModel->updateDescription(editor->filename(),line,desc);
+    if (!editor)
+        return;
+    int line = editor->caretY();
+    bool forProject = editor->inProject();
+    QList<PBookmark> bookmarks = mBookmarkModel->bookmarksAt(editor->filename(), line,
+                                                             forProject);
+    if (bookmarks.isEmpty())
+        return;
+    PBookmark bookmark = bookmarks.first();
+    if (bookmarks.count()>1) {
+        // Pick the bookmark whose description is to be changed, instead of
+        // always changing the first one on the line.
+        QStringList choices;
+        for (int i=0;i<bookmarks.count();i++) {
+            QString description = bookmarks[i]->description;
+            if (description.isEmpty())
+                description = tr("Bookmark");
+            choices.append(QStringLiteral("%1: %2").arg(i+1).arg(description));
         }
+        bool ok = false;
+        QString selected = QInputDialog::getItem(editor, tr("Bookmark Description"),
+                                                 tr("Description:"), choices, 0,
+                                                 false, &ok);
+        if (!ok)
+            return;
+        int index = choices.indexOf(selected);
+        if (index<0)
+            return;
+        bookmark = bookmarks[index];
     }
+    bool ok = false;
+    QString desc = QInputDialog::getText(editor,tr("Bookmark Description"),
+                                         tr("Description:"),QLineEdit::Normal,
+                                         bookmark->description, &ok);
+    if (!ok)
+        return;
+    desc = desc.trimmed();
+    int row = mBookmarkModel->rowOfBookmark(bookmark, forProject);
+    if (row>=0)
+        mBookmarkModel->updateDescriptionAt(row, desc, forProject);
+    else
+        mBookmarkModel->updateDescription(editor->filename(), line, desc, forProject);
 }
 
 
@@ -10396,9 +10488,15 @@ void MainWindow::on_actionSubmit_Issues_triggered()
 }
 
 
-void MainWindow::on_actionDocument_triggered()
-{
-    QDesktopServices::openUrl(QUrl("http://royqh.net/redpandacpp//docsy/docs/usage"));
+//修改后
+void MainWindow::on_actionDocument_triggered() {
+	QFileInfo fileInfo{includeTrailingPathDelimiter(pSettings->dirs().appDir()) +
+	                   QString{"RedPandaIDE.pdf"}};
+	if (fileInfo.exists()) {
+		QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
+		return;
+	}
+	QDesktopServices::openUrl(QUrl("http://royqh.net/redpandacpp/docsy/docs/usage"));
 }
 
 
@@ -10437,7 +10535,7 @@ void MainWindow::on_actionNew_NASM_File_triggered()
 void MainWindow::on_actionGNU_Assembler_Manual_triggered()
 {
     QFileInfo fileInfo{includeTrailingPathDelimiter(pSettings->dirs().appDir())+
-                       QString{"Using GNU Assembler.pdf"}};
+                       QString{"binutils.pdf"}};
     if (fileInfo.exists()) {
         QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
         return;
@@ -10462,7 +10560,7 @@ void MainWindow::on_actionx86_Assembly_Language_Reference_Manual_triggered()
 void MainWindow::on_actionIA_32_Assembly_Language_Reference_Manual_triggered()
 {
     QFileInfo fileInfo{includeTrailingPathDelimiter(pSettings->dirs().appDir())+
-                       QString{"IA-32 Assembly Language Reference Manual.pdf"}};
+                       QString{"assembly.pdf"}};
     if (fileInfo.exists()) {
         QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
         return;
@@ -10693,18 +10791,45 @@ void MainWindow::on_actionToggle_Bookmark_triggered()
         if (editor->lineCount()<=0)
             return;
         int line = editor->caretY();
-        editor->toggleBookmark(line);
         if (editor->hasBookmark(line)) {
+            // Removing a bookmark needs no description.  A line may hold several
+            // bookmarks now; keep the gutter marker while another one remains.
+            editor->removeBookmark(line);
+            mBookmarkModel->removeBookmark(editor->filename(),line,editor->inProject());
+            editor->resetBookmarks(mBookmarkModel);
+        } else {
+            bool ok = false;
             QString desc = QInputDialog::getText(editor,tr("Bookmark Description"),
                                                  tr("Description:"),QLineEdit::Normal,
-                                                 editor->lineText(line).trimmed());
+                                                 editor->lineText(line).trimmed(), &ok);
+            if (!ok)
+                return;
             desc = desc.trimmed();
+            editor->addBookmark(line);
             mBookmarkModel->addBookmark(editor->filename(),line,desc,editor->inProject());
-        } else
-            mBookmarkModel->removeBookmark(editor->filename(),line,editor->inProject());
+        }
     }
 }
 
+
+void MainWindow::onAddBookmark()
+{
+    Editor* editor = mEditorManager->getEditor();
+    if (editor) {
+        int line = editor->caretY();
+        if (line<0 || line>=editor->lineCount())
+            return;
+        bool ok = false;
+        QString desc = QInputDialog::getText(editor, tr("Bookmark Description"),
+                                             tr("Description:"), QLineEdit::Normal,
+                                             editor->lineText(line).trimmed(), &ok);
+        if (!ok)
+            return;
+        desc = desc.trimmed();
+        editor->addBookmark(line);
+        mBookmarkModel->addBookmark(editor->filename(), line, desc, editor->inProject());
+    }
+}
 
 void MainWindow::on_actionCode_Completion_triggered()
 {

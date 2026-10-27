@@ -1,10 +1,13 @@
 {
     "name": "One Dark",
     "name_zh_CN": "One Dark",
+    "name_zh_TW": "One Dark",
+    "name_ru_RU": "One Dark",
+    "name_pt_BR": "One Dark",
     "useQtFusionStyle": true,
     "isDark": true,
     "default scheme": "One Dark",
-    "default iconset": "contrast",
+    "default iconset": "newlook",
     "palette": {
         "PaletteWindow": "#282c34",
         "PaletteWindowDisabled": "#21252B",

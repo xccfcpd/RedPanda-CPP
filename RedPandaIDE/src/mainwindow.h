@@ -435,6 +435,8 @@ private slots:
     void onProjectAddFolder();
     void onProjectRenameUnit();
     void onBreakpointRemove();
+    void onAddBreakpoint();
+    void onAddBookmark();
     void onBreakpointViewRemoveAll();
     void onModifyBreakpointCondition();
     void onSearchViewClearAll();
@@ -995,6 +997,9 @@ private:
     QAction * mBreakpointViewPropertyAction;
     QAction * mBreakpointViewRemoveAllAction;
     QAction * mBreakpointViewRemoveAction;
+    // Adds another breakpoint on the current line, without removing the existing
+    // ones: a line can hold several conditional breakpoints.
+    QAction * mAddBreakpointAction;
 
     //actions for project view
     QAction * mProject_Add_Folder;

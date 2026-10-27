@@ -20,6 +20,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QMap>
+#include <QSet>
 
 FileType getFileType(const QString &filename)
 {
@@ -126,6 +127,51 @@ FileType getFileType(const QString &filename)
         return FileType::Other;
     }
     return FileType::Other;
+}
+
+bool isFormattableCppFileName(const QString &fileName)
+{
+    if (fileName.isEmpty())
+        return false;
+    QFileInfo fileInfo(fileName);
+    QString suffix = fileInfo.suffix().toLower();
+    if (suffix.isEmpty())
+        return false;
+    // Keep this list in sync with the c/c++ extensions recognized by getFileType():
+    // the formatters guess the language from the file name and fall back to c++
+    // for unknown names, so everything else has to be rejected explicitly.
+    static const QSet<QString> cppExtensions {
+        // c/c++ sources
+        "c", "cpp", "cc", "cxx", "c++",
+        // c/c++ headers
+        "h", "hpp", "hh", "hxx", "tcc", "inl"
+    };
+    return cppExtensions.contains(suffix);
+}
+
+namespace {
+
+// clang-format accepts the option with one or two leading dashes, and the value
+// either after a "=" or as the next command line argument
+bool isAssumedFilenameOption(const QString& arg)
+{
+    int pos = 0;
+    while (pos < arg.length() && arg.at(pos) == QLatin1Char('-'))
+        pos++;
+    return arg.mid(pos).startsWith(QStringLiteral("assume-filename"));
+}
+
+}
+
+QStringList addAssumedFilenameArgument(const QStringList& args, const QString& fileName)
+{
+    for (const QString& arg: args) {
+        if (isAssumedFilenameOption(arg))
+            return args;
+    }
+    QStringList arguments = args;
+    arguments.append(QString("-assume-filename=%1").arg(fileName));
+    return arguments;
 }
 
 static const QMap<QString,FileType> FileTypeMapping{

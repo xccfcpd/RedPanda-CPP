@@ -47,8 +47,15 @@ struct ProcessOutput
 ProcessOutput runAndGetOutput(const QString& cmd, const QString& workingDir, const QStringList& arguments,
                            const QByteArray& inputContent = QByteArray(),
                            bool separateStderr = false,
-                           bool inheritEnvironment = false,
-                           const QProcessEnvironment& env = QProcessEnvironment() );
+                           bool inheritEnvironment = true,
+                           const QProcessEnvironment& env = QProcessEnvironment(),
+                           // A negative timeout waits for the process to finish on its own.
+                           // The default is bounded like the QProcess default used to be:
+                           // the calls run on the GUI thread, so a process that never exits
+                           // must not freeze the application forever. Callers that really
+                           // need to wait longer can pass a larger value (or -1) explicitly.
+                           int timeoutMs = 30000,
+                           int* exitCode = nullptr );
 
 void openFileFolderInExplorer(const QString& path);
 
@@ -69,6 +76,7 @@ void updateComboHistory(QStringList &historyList, const QString &newKey);
 
 QStringList getExecutableSearchPaths();
 bool programExists(const QString &program);
+QString findProgramInPath(const QString &program);
 
 QString findBundledOrSystemTool(const QString &subDir, const QString &name);
 

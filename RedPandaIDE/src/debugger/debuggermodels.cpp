@@ -20,6 +20,12 @@
 #include <QFont>
 #include "../utils.h"
 #include "../settings.h"
+#include "../systemconsts.h"
+#include "breakpointanchor.h"
+
+// The anchors of the breakpoints (contentFingerprint(), contentContextFingerprint(),
+// lineFingerprintOf(), findNearestLineByAnchor() and reanchorBreakpoint()) live in
+// breakpointanchor.h, so that they are tested without the debugger sources.
 
 QJsonArray BreakpointModel::toJson(const QString& projectFolder)
 {
@@ -36,6 +42,7 @@ QJsonArray BreakpointModel::toJson(const QString& projectFolder)
         obj["enabled"]=breakpoint->enabled;
         obj["breakpoint_type"] = static_cast<int>(breakpoint->breakpointType);
         obj["timestamp"]=QString("%1").arg(breakpoint->timestamp);
+        obj["fingerprint"]=breakpoint->fingerprint;
         array.append(obj);
     }
     return array;
@@ -43,6 +50,7 @@ QJsonArray BreakpointModel::toJson(const QString& projectFolder)
 
 void BreakpointModel::setBreakpoints(const QList<PBreakpoint> &list, bool forProject)
 {
+    clearRemovedBreakpointsForModel(forProject);
     if (mIsForProject == forProject)
         beginResetModel();
     if (forProject) {
@@ -149,6 +157,7 @@ void BreakpointModel::addBreakpoint(PBreakpoint p, bool forProject)
 
 void BreakpointModel::clear(bool forProject)
 {
+    clearRemovedBreakpointsForModel(forProject);
     if (forProject == mIsForProject)
         beginResetModel();
     if (forProject)
@@ -173,6 +182,7 @@ void BreakpointModel::removeBreakpoint(int row, bool forProject)
 
 void BreakpointModel::removeBreakpointsInFile(const QString &fileName, bool forProject)
 {
+    clearRemovedBreakpoints(fileName, forProject);
     QList<PBreakpoint> & lst=forProject?mProjectBreakpoints:mBreakpoints;
     for (int i=lst.count()-1;i>=0;i--) {
         if (lst[i]->filename==fileName)
@@ -182,16 +192,119 @@ void BreakpointModel::removeBreakpointsInFile(const QString &fileName, bool forP
 
 void BreakpointModel::renameBreakpointFilenames(const QString &oldFileName, const QString &newFileName, bool forProject)
 {
-    QList<PBreakpoint> & lst=forProject?mProjectBreakpoints:mBreakpoints;
-    for (int i=lst.count()-1;i>=0;i--) {
-        if (lst[i]->filename==oldFileName) {
-            lst[i]->filename=newFileName;
-            if (forProject == mIsForProject) {
+    // A rename belongs to the file: the same path can be held by the project model and
+    // by the other one, and both lists must follow it (like BookmarkModel does). Only
+    // the active list gets the dataChanged() notifications.
+    Q_UNUSED(forProject);
+    auto renameList = [this, &oldFileName, &newFileName](QList<PBreakpoint>& list,
+                                                        bool listForProject) {
+        for (int i=0;i<list.count();i++) {
+            if (list[i]->filename.compare(oldFileName, PATH_SENSITIVITY) != 0)
+                continue;
+            list[i]->filename = newFileName;
+            if (listForProject == mIsForProject) {
                 QModelIndex index=createIndex(i,0);
                 emit dataChanged(index,index);
             }
         }
+    };
+    renameList(mProjectBreakpoints, true);
+    renameList(mBreakpoints, false);
+    // The deletion records are about the same file: move them to the new name too,
+    // so that undoing a deletion after a rename still finds them.
+    if (oldFileName != newFileName) {
+        auto removedIt=mRemovedBreakpoints.find(oldFileName);
+        if (removedIt!=mRemovedBreakpoints.end()) {
+            QList<RemovedBreakpoint> records=removedIt.value();
+            mRemovedBreakpoints.erase(removedIt);
+            mRemovedBreakpoints[newFileName].append(records);
+        }
     }
+}
+
+void BreakpointModel::reanchorBreakpoints(const QString &filename, const QStringList &content, bool forProject)
+{
+    // The content has been replaced: the line history of a deletion is about the
+    // old content and must not restore anything afterwards.
+    clearRemovedBreakpoints(filename, forProject);
+    QList<PBreakpoint> & lst=forProject?mProjectBreakpoints:mBreakpoints;
+    for (int i=0;i<lst.count();i++) {
+        PBreakpoint breakpoint = lst[i];
+        if (breakpoint->filename!=filename)
+            continue;
+        ReanchoredBreakpoint reanchored = reanchorBreakpoint(content, breakpoint->line,
+                                                             breakpoint->fingerprint);
+        breakpoint->line = reanchored.line;
+        breakpoint->fingerprint = reanchored.fingerprint;
+        if (reanchored.changed && forProject==mIsForProject) {
+            QModelIndex index=createIndex(i,0);
+            emit dataChanged(index,createIndex(i,2));
+        }
+    }
+}
+
+void BreakpointModel::removeBreakpointFromRemovedHistory(const PBreakpoint &breakpoint,
+                                                        bool forProject)
+{
+    auto it = mRemovedBreakpoints.find(breakpoint->filename);
+    if (it == mRemovedBreakpoints.end())
+        return;
+    QList<RemovedBreakpoint> &records = it.value();
+    for (int i=records.count()-1;i>=0;i--) {
+        if (records[i].forProject != forProject)
+            continue;
+        records[i].breakpoints.removeAll(breakpoint);
+        if (records[i].breakpoints.isEmpty())
+            records.removeAt(i);
+    }
+    if (records.isEmpty())
+        mRemovedBreakpoints.erase(it);
+}
+
+void BreakpointModel::snapBreakpointsToCode(const QString &filename,
+                                            const QStringList &content,
+                                            bool forProject)
+{
+    Q_UNUSED(forProject);
+    auto snapList = [&](QList<PBreakpoint> &list, bool listForProject) {
+        bool changed = false;
+        const QStringList codeLines = breakpointCodeLines(content);
+        for (int i=0;i<list.count();i++) {
+            PBreakpoint breakpoint = list[i];
+            if (breakpoint->filename != filename
+                    || breakpoint->line < 0
+                    || breakpoint->line >= content.count())
+                continue;
+            if (!content[breakpoint->line].trimmed().isEmpty())
+                continue;
+            int target = breakpoint->line;
+            for (int next=breakpoint->line+1; next<content.count(); next++) {
+                if (isBreakpointCandidateCode(codeLines[next])) {
+                    target = next;
+                    break;
+                }
+            }
+            if (target == breakpoint->line) {
+                for (int previous=breakpoint->line-1; previous>=0; previous--) {
+                    if (isBreakpointCandidateCode(codeLines[previous])) {
+                        target = previous;
+                        break;
+                    }
+                }
+            }
+            if (target == breakpoint->line)
+                continue;
+            breakpoint->line = target;
+            breakpoint->fingerprint = contentContextFingerprint(content, target);
+            changed = true;
+            if (listForProject == mIsForProject)
+                emit dataChanged(createIndex(i,0),createIndex(i,2));
+            removeBreakpointFromRemovedHistory(breakpoint, listForProject);
+        }
+        Q_UNUSED(changed);
+    };
+    snapList(mBreakpoints, false);
+    snapList(mProjectBreakpoints, true);
 }
 
 void BreakpointModel::invalidateAllBreakpointNumbers()
@@ -223,19 +336,68 @@ PBreakpoint BreakpointModel::breakpoint(int index, bool forProject) const
 }
 
 
-void BreakpointModel::updateBreakpointNumber(const QString& filename, int line, int number)
+static QString normalizedBreakpointCondition(const QString& text)
 {
+    QString result;
+    QChar quote;
+    for (int i=0;i<text.length();i++) {
+        const QChar c = text[i];
+        if (!quote.isNull()) {
+            result += c;
+            if (c == QLatin1Char('\\') && i+1<text.length())
+                result += text[++i];
+            else if (c == quote)
+                quote = QChar();
+            continue;
+        }
+        if (c == QLatin1Char('"') || c == QLatin1Char('\'')) {
+            quote = c;
+            result += c;
+            continue;
+        }
+        if (c.isSpace())
+            continue;
+        result += c;
+    }
+    return result;
+}
+
+void BreakpointModel::updateBreakpointNumber(const QString& filename, int line, int number,
+                                             const QString& condition)
+{
+    const QString wanted = normalizedBreakpointCondition(condition);
+    PBreakpoint firstMatch;
+    PBreakpoint firstUnnumbered;
+    PBreakpoint sameCondition;
     foreach (PBreakpoint bp, breakpoints(mIsForProject)) {
-        if (bp->filename == filename && bp->line == line) {
-            bp->number = number;
-            return;
+        if (bp->filename != filename || bp->line != line)
+            continue;
+        if (!firstMatch)
+            firstMatch = bp;
+        if (bp->number >= 0)
+            continue;
+        if (!firstUnnumbered)
+            firstUnnumbered = bp;
+        if (normalizedBreakpointCondition(bp->condition) == wanted) {
+            sameCondition = bp;
+            break;
         }
     }
+    if (sameCondition)
+        sameCondition->number = number;
+    else if (firstUnnumbered)
+        firstUnnumbered->number = number;
+    else if (firstMatch)
+        firstMatch->number = number;
 }
 
 void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject)
 {
+    // A later deletion supersedes the history of the previous one: only the line
+    // deletion the user is about to undo is remembered.
+    clearRemovedBreakpoints(filename, forProject);
     const QList<PBreakpoint> &list=breakpoints(forProject);
+    QList<PBreakpoint> removed;
     for (int i = list.count()-1;i>=0;i--){
         PBreakpoint breakpoint = list[i];
         if  (breakpoint->filename == filename
@@ -245,13 +407,21 @@ void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, 
                 if (forProject==mIsForProject)
                     emit dataChanged(createIndex(i,0),createIndex(i,2));
             } else {
+                // Keep the breakpoint alive until we know whether this deletion is
+                // undone (see onFileInsertLines()). Its line is still the one it
+                // was set on.
+                removed.append(breakpoint);
                 removeBreakpoint(i,forProject);
             }
         }
     }
+    for (const PBreakpoint& breakpoint : removed)
+        mRemovedBreakpoints[filename].append(
+                    RemovedBreakpoint{breakpoint->line, forProject, {breakpoint}});
 }
 
-void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, int count, bool forProject)
+void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, int count,
+                                        bool forProject, bool undoRedo)
 {
     const QList<PBreakpoint> &list=breakpoints(forProject);
     for (int i = 0; i<list.count();i++){
@@ -263,10 +433,72 @@ void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, 
                 emit dataChanged(createIndex(i,0),createIndex(i,2));
         }
     }
+
+    auto it=mRemovedBreakpoints.find(filename);
+    if (it==mRemovedBreakpoints.end())
+        return;
+    QList<RemovedBreakpoint>& records = it.value();
+    if (undoRedo) {
+        // The line is inserted back by Ctrl+Z: restore the breakpoints that were
+        // removed from the lines of the inserted range. They keep their original
+        // lines and fingerprints.
+        for (int i=records.count()-1;i>=0;i--) {
+            const RemovedBreakpoint& record = records[i];
+            if (record.forProject!=forProject)
+                continue;
+            if (record.line<startLine || record.line>=startLine+count)
+                continue;
+            for (const PBreakpoint& breakpoint : record.breakpoints) {
+                breakpoint->line = record.line;
+                addBreakpoint(breakpoint, forProject);
+            }
+            records.removeAt(i);
+        }
+    }
+    // Any record left is stale: either this was a plain insertion (the breakpoint
+    // stays deleted), or the undo inserted another line than the deleted one.
+    for (int i=records.count()-1;i>=0;i--) {
+        if (records[i].forProject==forProject)
+            records.removeAt(i);
+    }
+    if (records.isEmpty())
+        mRemovedBreakpoints.erase(it);
+}
+
+void BreakpointModel::clearRemovedBreakpointsForModel(bool forProject)
+{
+    for (auto it=mRemovedBreakpoints.begin();it!=mRemovedBreakpoints.end();) {
+        QList<RemovedBreakpoint>& records = it.value();
+        for (int i=records.count()-1;i>=0;i--) {
+            if (records[i].forProject==forProject)
+                records.removeAt(i);
+        }
+        if (records.isEmpty())
+            it = mRemovedBreakpoints.erase(it);
+        else
+            ++it;
+    }
+}
+
+void BreakpointModel::clearRemovedBreakpoints(const QString& filename, bool forProject)
+{
+    auto it=mRemovedBreakpoints.find(filename);
+    if (it==mRemovedBreakpoints.end())
+        return;
+    QList<RemovedBreakpoint>& records = it.value();
+    for (int i=records.count()-1;i>=0;i--) {
+        if (records[i].forProject==forProject)
+            records.removeAt(i);
+    }
+    if (records.isEmpty())
+        mRemovedBreakpoints.erase(it);
 }
 
 void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int toLine, bool forProject)
 {
+    // The line history of a deletion is about the lines of the old content: a line
+    // move means the content changed, so it must not be used to restore anything.
+    clearRemovedBreakpoints(filename, forProject);
     const QList<PBreakpoint> &list=breakpoints(forProject);
 
     for (int i = 0; i<list.count();i++){
@@ -290,6 +522,25 @@ void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int
         }
         if (changed && forProject == mIsForProject)
             emit dataChanged(createIndex(i,0),createIndex(i,2));
+    }
+}
+
+void BreakpointModel::onFileMergeLines(const QString &filename, int removedLine, int intoLine, bool forProject)
+{
+    // The line is removed (onFileDeleteLines() is called right after), but its text is
+    // appended to the line it is merged into: a breakpoint set on it follows its code
+    // there instead of being dropped.
+    clearRemovedBreakpoints(filename, forProject);
+    const QList<PBreakpoint> &list=breakpoints(forProject);
+
+    for (int i = 0; i<list.count();i++){
+        PBreakpoint breakpoint = list[i];
+        if  (breakpoint->filename == filename
+             && breakpoint->line == removedLine) {
+            breakpoint->line = intoLine;
+            if (forProject == mIsForProject)
+                emit dataChanged(createIndex(i,0),createIndex(i,2));
+        }
     }
 }
 
@@ -325,6 +576,8 @@ QList<PBreakpoint> BreakpointModel::loadJson(const QJsonArray& jsonArray, qint64
             breakpoint->enabled = obj["enabled"].toBool();
             breakpoint->breakpointType = static_cast<BreakpointType>(obj["breakpoint_type"].toInt());
             breakpoint->timestamp = timestamp;
+            // empty for config files written before the field existed
+            breakpoint->fingerprint = obj["fingerprint"].toString();
             result.append(breakpoint);
         }
     }

@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
         }
     }
     //Translation must be loaded first
-    QTranslator trans,transQt,transUtils;
+    QTranslator trans,transQt,transUtils,transQsynedit;
     bool firstRun;
     QString settingFilename = getSettingFilename(QString(), firstRun);
     if (!usePortableConfigPath()) {
@@ -326,6 +326,11 @@ int main(int argc, char *argv[])
         }
         if (transUtils.load("qt_utils_"+language,":/i18n/")) {
             app.installTranslator(&transUtils);
+        }
+        // qsynedit strings (the assembly instruction hints, ...) are embedded too;
+        // without this translator they always stay English.
+        if (transQsynedit.load("qsynedit_"+language,":/i18n/")) {
+            app.installTranslator(&transQsynedit);
         }
         QString translationsPath(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
         if (
@@ -359,37 +364,53 @@ int main(int argc, char *argv[])
         //load settings
         pSettings = settings.get();
         if (firstRun) {
-            pSettings->compilerSets().findSets(true);
+            pSettings->compilerSets().findSets(false); //由true调整为false,首次打开软件时仍会静默搜索并保存编译器设置，但不再弹出“正在搜索…”进度窗口.
             pSettings->compilerSets().saveSets();
         }
         pSettings->load();
+        //auto detect nasm in path
+        pSettings->compile().detectNasmInPath();
         if (firstRun) {
             //set theme
-            ChooseThemeDialog themeDialog;
-            themeDialog.setFont(QFont(defaultUiFont(),11));
-            themeDialog.exec();
-            switch (themeDialog.theme()) {
-            case ChooseThemeDialog::Theme::AutoFollowSystem:
-                setTheme("system");
-                break;
-            case ChooseThemeDialog::Theme::Dark:
-                setTheme("dark");
-                break;
-            case ChooseThemeDialog::Theme::Light:
-                setTheme("default");
-                break;
-            default:
-                setTheme("default");
-            }
+            // ChooseThemeDialog themeDialog;
+            // themeDialog.setFont(QFont(defaultUiFont(),11));
+            // themeDialog.exec();
+            // switch (themeDialog.theme()) {
+            // case ChooseThemeDialog::Theme::AutoFollowSystem:
+            //     setTheme("system");
+            //     break;
+            // case ChooseThemeDialog::Theme::Dark:
+            //     setTheme("dark");
+            //     break;
+            // case ChooseThemeDialog::Theme::Light:
+            //     setTheme("default");
+            //     break;
+            // default:
+            //     setTheme("default");
+            // }
 
-            pSettings->editor().setDefaultFileCpp(themeDialog.language()==ChooseThemeDialog::Language::CPlusPlus);
-            if (themeDialog.shareParser()) {
-                pSettings->codeCompletion().setShareParser(true);
-                pSettings->codeCompletion().setClearWhenEditorHidden(true);
-            } else {
-                pSettings->codeCompletion().setShareParser(false);
-            }
+            // pSettings->editor().setDefaultFileCpp(themeDialog.language()==ChooseThemeDialog::Language::CPlusPlus);
+            // if (themeDialog.shareParser()) {
+            //     pSettings->codeCompletion().setShareParser(true);
+            //     pSettings->codeCompletion().setClearWhenEditorHidden(true);
+            // } else {
+            //     pSettings->codeCompletion().setShareParser(false);
+            // }
+// 修改开始 260725
+            // First-run wizard dialog is skipped: use the locked defaults.
+//  - Language:     C++
+//  - Memory:       Share a single parser across all files
+//  - Theme:        Light ("default" in resources/themes/default.json)
+setTheme("default");
+ 
+pSettings->editor().setDefaultFileCpp(true);
+pSettings->codeCompletion().setShareParser(true);
+pSettings->codeCompletion().setClearWhenEditorHidden(true);
+// 修改结束 260725
             pSettings->editor().save();
+            // The code completion choices above only exist in memory until they
+            // are saved: editor().save() writes a different settings group.
+            pSettings->codeCompletion().save();
 
             //auto detect git in path
 #ifdef ENABLE_VCS

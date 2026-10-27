@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "debugger.h"
+#include "breakpointanchor.h"
 #include "gdbmidebugger.h"
 #include "../utils.h"
 #include "../utils/pe.h"
@@ -25,6 +26,8 @@
 #include "../widgets/cpudialog.h"
 #include "../systemconsts.h"
 #include "../editormanager.h"
+#include <qsynedit/document.h>
+#include <QFont>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -226,6 +229,10 @@ bool Debugger::startClient(int compilerSetIndex,
         mClient->skipStandardLibraryFunctions();
     }
 
+    // The debugger must not be given a line that doesn't hold the breakpoint's
+    // code any more: the breakpoints of the open files were re-anchored when the
+    // files were loaded/edited, put the others back on their code now.
+    reanchorBreakpointsFromDisk();
     sendAllBreakpointsToDebugger();
     pMainWindow->updateAppTitle();
     mInferiorHasBreakpoints = inferiorHasBreakpoints;
@@ -416,7 +423,7 @@ void Debugger::clearForProject()
     mWatchModel->clear(true);
 }
 
-void Debugger::addBreakpoint(int line, const QString &filename, bool forProject)
+void Debugger::addBreakpoint(int line, const QString &filename, bool forProject, const QString &fingerprint)
 {
     QMutexLocker locker{&mClientMutex};
     PBreakpoint bp=std::make_shared<Breakpoint>();
@@ -427,6 +434,7 @@ void Debugger::addBreakpoint(int line, const QString &filename, bool forProject)
     bp->enabled = true;
     bp->breakpointType = BreakpointType::Breakpoint;
     bp->timestamp = QDateTime::currentMSecsSinceEpoch();
+    bp->fingerprint = fingerprint;
     mBreakpointModel->addBreakpoint(bp,forProject);
     if (!mClient) {
         if (forProject && mBreakpointModel->isForProject()) {
@@ -467,11 +475,15 @@ void Debugger::deleteInvalidProjectBreakpoints(const QSet<QString> unitFiles)
 
 void Debugger::removeBreakpoint(int line, const QString &filename, bool forProject)
 {
+    // A line can hold several breakpoints (with different conditions): a gutter click
+    // removes one of them at a time, not all of them. The editor's marker stays on
+    // the line until the last one is gone (see EditorManager::onBreakpointRemoved()).
     const QList<PBreakpoint>& breakpoints=mBreakpointModel->breakpoints(forProject);
     for (int i=breakpoints.size()-1;i>=0;i--) {
         PBreakpoint bp = breakpoints[i];
         if (bp->filename == filename && bp->line == line) {
             removeBreakpoint(i, forProject);
+            break;
         }
     }
 }
@@ -503,14 +515,112 @@ void Debugger::setBreakPointCondition(int index, const QString &condition, bool 
         mClient->setBreakpointCondition(breakpoint);
 }
 
+// Lines of a source file, decoded with the same encoding detection as the
+// editor. Returns false when the file can't be read as text.
+static bool readSourceFileContent(const QString& filename, QStringList& content)
+{
+    QFont font;
+    QSynedit::Document document(font);
+    QByteArray realEncoding;
+    try {
+        document.loadFromFile(filename, ENCODING_AUTO_DETECT, realEncoding);
+    } catch (FileError&) {
+        return false;
+    }
+    content.clear();
+    content.reserve(document.count());
+    for (int i=0;i<document.count();i++)
+        content.append(document.getLine(i));
+    return true;
+}
+
+// The number of lines the file has: from the editor that has it open (its content may
+// differ from the disk - unsaved changes), from the disk otherwise. 0 when the file
+// can't be read: nothing is known about it.
+static int sourceFileLineCount(const QString& filename)
+{
+    Editor* editor = pMainWindow->editorManager()->getOpenedEditor(filename);
+    if (editor)
+        return editor->lineCount();
+    QStringList content;
+    if (!readSourceFileContent(filename, content))
+        return 0;
+    return content.count();
+}
+
+void Debugger::reanchorBreakpointsFromDisk()
+{
+    bool forProject = mBreakpointModel->isForProject();
+    QSet<QString> files;
+    foreach (const PBreakpoint& breakpoint, mBreakpointModel->breakpoints(forProject)) {
+        files.insert(breakpoint->filename);
+    }
+    // The state is what a re-anchoring depends on: the lines and the anchors of the
+    // breakpoints of that file. Together with the file's mtime, it tells whether the
+    // work of the previous startClient() is still valid.
+    auto breakpointState = [this, forProject](const QString& filename) {
+        QString state;
+        foreach (const PBreakpoint& breakpoint, mBreakpointModel->breakpoints(forProject)) {
+            if (breakpoint->filename != filename)
+                continue;
+            state += QString::number(breakpoint->line);
+            state += QLatin1Char(':');
+            state += breakpoint->fingerprint;
+            state += QChar(0x1f);
+        }
+        return state;
+    };
+    foreach (const QString& filename, files) {
+        // The breakpoints of a file that is open in an editor are re-anchored by
+        // the editor itself, from the content it has: it may differ from the file
+        // on the disk (unsaved changes).
+        if (pMainWindow->editorManager()->getOpenedEditor(filename))
+            continue;
+        const QString state = breakpointState(filename);
+        const QFileInfo fileInfo(filename);
+        const qint64 mtime = fileInfo.lastModified().toMSecsSinceEpoch();
+        const qint64 size = fileInfo.size();
+        auto cached = mReanchorStates.constFind(filename);
+        if (cached != mReanchorStates.constEnd()
+                && cached->mtime == mtime && cached->size == size
+                && cached->breakpoints == state)
+            continue;
+        QStringList content;
+        if (!readSourceFileContent(filename, content))
+            continue;
+        // A breakpoint may still be stored on an empty line (an old config, or a
+        // breakpoint set from the table while the file was closed).  Move it to the
+        // nearest code line before it is handed to the debugger.
+        mBreakpointModel->snapBreakpointsToCode(filename, content, forProject);
+        mBreakpointModel->reanchorBreakpoints(filename, content, forProject);
+        // the line or the fingerprint may have moved: remember the state after it
+        mReanchorStates.insert(filename, ReanchorState{mtime, size,
+                                                       breakpointState(filename)});
+    }
+}
+
 void Debugger::sendAllBreakpointsToDebugger()
 {
+    // The number of lines of the files the breakpoints are in (0: unknown)
+    QHash<QString,int> lineCounts;
     for (const PBreakpoint &breakpoint:mBreakpointModel->breakpoints(mBreakpointModel->isForProject())) {
-        if (mBreakpointModel->isForProject()) {
-            sendBreakpointCommand(breakpoint);
-        } else if (breakpoint->filename == mCurrentSourceFile) {
-            sendBreakpointCommand(breakpoint);
+        if (!mBreakpointModel->isForProject() && breakpoint->filename != mCurrentSourceFile)
+            continue;
+        // A breakpoint whose code has gone from the file keeps its anchor and the line
+        // it was on (see reanchorBreakpoint()), and that line can be past the end of the
+        // content: the debugger must not be given it, it resolves to nothing in the file.
+        // The breakpoint stays in the list - it is where the user deletes it - and it
+        // goes back to its code if the code comes back.
+        auto lineCount = lineCounts.constFind(breakpoint->filename);
+        if (lineCount==lineCounts.constEnd())
+            lineCount = lineCounts.insert(breakpoint->filename,
+                                          sourceFileLineCount(breakpoint->filename));
+        if (lineCount.value()>0 && !lineIsInContent(breakpoint->line, lineCount.value())) {
+            qDebug()<<"the line of the breakpoint is not in the file any more, it is not"
+                      " given to the debugger:"<<breakpoint->filename<<breakpoint->line+1;
+            continue;
         }
+        sendBreakpointCommand(breakpoint);
     }
 }
 
@@ -527,6 +637,9 @@ void Debugger::saveForProject(const QString &filename, const QString &projectFol
 void Debugger::loadForNonproject(const QString &filename)
 {
     bool forProject = false;
+    // Restoring the session must take the saved file as it is, whatever its
+    // timestamp: the timestamp filter of load() exists to avoid importing entries
+    // that are already in the models (see save()), not to drop saved breakpoints.
     mLastLoadtime = 0;
     PDebugConfig pConfig = load(filename, forProject);
     if (pConfig->timestamp>0) {
@@ -538,6 +651,8 @@ void Debugger::loadForNonproject(const QString &filename)
 void Debugger::loadForProject(const QString &filename, const QString &projectFolder)
 {
     bool forProject = true;
+    // see loadForNonproject(): reopening a project (even in the same session) must
+    // restore all its breakpoints, whatever the timestamp of the saved file
     mProjectLastLoadtime = 0;
     PDebugConfig pConfig = load(filename, forProject);
     if (pConfig->timestamp>0) {
@@ -843,6 +958,12 @@ void Debugger::save(const QString &filename, const QString& projectFolder)
     } catch (FileError& e) {
 
     }
+    if (!pConfig) {
+        // load() failed: the file can't be read, or it doesn't hold a debug config any
+        // more. Start from an empty one - the configs below are dereferenced, and this
+        // is the path the user takes when the saved debug file got damaged.
+        pConfig = std::make_shared<DebugConfig>();
+    }
 
     QFile file(filename);
     if (file.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -871,9 +992,11 @@ void Debugger::save(const QString &filename, const QString& projectFolder)
         QJsonObject rootObj;
         rootObj["timestamp"] = QString("%1").arg(saveTimestamp);
 
-        if (forProject) {
-            rootObj["breakpoints"] = mBreakpointModel->toJson(projectFolder);
-        }
+        // toJson() writes the list that matches projectFolder: the project's
+        // breakpoints when it is not empty, the others otherwise. Each debug file
+        // holds its own list, and both are loaded back (see loadForNonproject());
+        // the filenames of a project are stored relative to it.
+        rootObj["breakpoints"] = mBreakpointModel->toJson(projectFolder);
         rootObj["watchvars"] = mWatchModel->toJson(forProject);
         QJsonDocument doc;
         doc.setObject(rootObj);

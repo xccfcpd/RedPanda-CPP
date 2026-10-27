@@ -57,6 +57,9 @@ public:
     QString AStylePath() const;
     void setAStylePath(const QString &aStylePath);
 
+    QString clangFormatPath() const;
+    void setClangFormatPath(const QString &clangFormatPath);
+
     QString terminalArgumentsPattern() const;
     void setTerminalArgumentsPattern(const QString &argsPattern);
 
@@ -107,6 +110,7 @@ private:
     QString mDefaultOpenFolder;
     QString mTerminalPath;
     QString mAStylePath;
+    QString mClangFormatPath;
     QString mTerminalArgumentsPattern;
 
     bool mUseCustomTerminal;

@@ -2,14 +2,20 @@
 ver=2
 Name=Epitrochoid
 Name[zh_CN]=外旋轮线
+Name[zh_TW]=外旋輪線
+Name[ru_RU]=Эпитрохоида
+Name[pt_BR]=Epitrocoide
 Icon=epitrochoid.ico
 Description=A simple epitrochoid drawing app
 Description[zh_CN]=外旋轮线绘制程序
+Description[zh_TW]=外旋輪線繪製程式
+Description[ru_RU]=Приложение, рисующее простую эпитрохоиду
+Description[pt_BR]=Um aplicativo simples de desenho de epitrocoide
 Category=Game
 Category[zh_CN]=游戏
-Name[ru_RU]=Эпитрохоида
-Description[ru_RU]=Приложение, рисующее простую эпитрохоиду
+Category[zh_TW]=遊戲
 Category[ru_RU]=Игры
+Category[pt_BR]=Jogos
 
 [Unit0]
 CName=main.c

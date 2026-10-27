@@ -346,7 +346,8 @@ void GDBMIDebuggerClient::handleBreakpoint(const GDBMIResultParser::ParseObject&
     filename = breakpoint["fullname"].pathValue();
     int line = breakpoint["line"].intValue() - 1;
     int number = breakpoint["number"].intValue();
-    emit breakpointInfoGetted(filename, line , number);
+    const QString condition = QString::fromUtf8(breakpoint["cond"].value());
+    emit breakpointInfoGetted(filename, line , number, condition);
 }
 
 void GDBMIDebuggerClient::handleFrame(const GDBMIResultParser::ParseValue &frame)

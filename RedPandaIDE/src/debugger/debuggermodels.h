@@ -64,9 +64,54 @@ struct Breakpoint {
     bool enabled;
     BreakpointType breakpointType;
     qint64 timestamp;
+    // The code the breakpoint was set on, as normalized text (see
+    // breakpointContextFingerprint()): the line itself plus its neighbours, so
+    // that repeated lines can be told apart. It lets the breakpoint follow its
+    // code when the file changes (reloaded from the disk, reformatted, or
+    // restored from an older session); it's empty for breakpoints loaded from a
+    // config file written before this field existed.
+    QString fingerprint;
 };
 
 using PBreakpoint = std::shared_ptr<Breakpoint>;
+
+// Normalized text of a source line: whitespace is removed (reformatting mostly
+// changes the indentation and the spacing between tokens) and the result is
+// capped, so that a very long line doesn't bloat the session file.
+// (Inline: it is used by the editor, which is also built without the debugger
+// sources, in the tests.)
+inline QString breakpointFingerprint(const QString& lineText)
+{
+    // a longer line keeps only its first characters: the session file must stay
+    // small, and a prefix is specific enough to tell code apart
+    const int maxLength = 200;
+    QString result;
+    // lineText.length() is int in Qt5 and qsizetype in Qt6
+    result.reserve(qMin(static_cast<int>(lineText.length()), maxLength));
+    foreach (QChar ch, lineText) {
+        if (ch.isSpace())
+            continue;
+        result.append(ch);
+        if (result.length()>=maxLength)
+            break;
+    }
+    return result;
+}
+
+// Anchor of a breakpoint: the fingerprints of the line it is set on and of its
+// neighbours, joined by '\n'. The neighbours tell repeated code lines (many
+// "return 0;") apart; pass an empty string for a line that doesn't exist (the
+// first and the last line of the file). Normalized text never contains
+// whitespace, so the '\n' separator is unambiguous - and a fingerprint without
+// any '\n' is a plain line fingerprint, as written by older versions.
+inline QString breakpointContextFingerprint(const QString& previousLine,
+                                            const QString& line,
+                                            const QString& nextLine)
+{
+    return breakpointFingerprint(previousLine) + QLatin1Char('\n')
+            + breakpointFingerprint(line) + QLatin1Char('\n')
+            + breakpointFingerprint(nextLine);
+}
 
 struct Trace {
     QString funcname;
@@ -112,6 +157,23 @@ public:
     void removeBreakpoint(int index, bool forProject);
     void removeBreakpointsInFile(const QString& fileName, bool forProject);
     void renameBreakpointFilenames(const QString& oldFileName,const QString& newFileName, bool forProject);
+    // Puts the breakpoints of a file back on the code they were set on, using
+    // their fingerprint: a breakpoint whose line doesn't hold its code any more
+    // is moved to the nearest line that does - looking first for the whole
+    // context (the line and its neighbours), then for the line text alone.
+    // Content is the current content of the file. Breakpoints whose code can't be
+    // found keep their line and their fingerprint - they are never dropped, and
+    // that fingerprint is the memory of the code they were set on: the content can
+    // hold it again, for one by undoing the merge of its line with the line above,
+    // and the breakpoint then follows it. Breakpoints that don't have a
+    // fingerprint yet store the one of the line they are on, so that they can
+    // be re-anchored from now on (also for config files written by older
+    // versions).
+    void reanchorBreakpoints(const QString& filename, const QStringList& content, bool forProject);
+    // Moving the breakpoints stored on an empty line (from an old config, for
+    // instance) to the nearest line that can hold a breakpoint, and refreshing
+    // their anchors.  Called when an editor shows the file.
+    void snapBreakpointsToCode(const QString& filename, const QStringList& content, bool forProject);
     PBreakpoint setBreakPointCondition(int index, const QString& condition, bool forProject);
     const QList<PBreakpoint>& breakpoints(bool forProject) const {
         return forProject?mProjectBreakpoints:mBreakpoints;
@@ -120,11 +182,17 @@ public:
     PBreakpoint breakpoint(int index, bool forProject) const;
 
 public slots:
-    void updateBreakpointNumber(const QString& filename, int line, int number);
+    void updateBreakpointNumber(const QString& filename, int line, int number, const QString& condition = QString());
     void invalidateAllBreakpointNumbers(); // call this when gdb is stopped
     void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject);
-    void onFileInsertLines(const QString& filename, int startLine, int count, bool forProject);
+    // undoRedo tells whether the insertion is the undo/redo of a line deletion:
+    // only then are the breakpoints that deletion removed put back (see
+    // onFileDeleteLines()). A plain insertion of a line at the same place must not
+    // bring back a breakpoint the user removed by deleting its line.
+    void onFileInsertLines(const QString& filename, int startLine, int count,
+                           bool forProject, bool undoRedo = false);
     void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject);
+    void onFileMergeLines(const QString& filename, int removedLine, int intoLine, bool forProject);
 private:
     bool isForProject() const;
     void setIsForProject(bool newIsForProject);
@@ -133,6 +201,19 @@ private:
     void setBreakpoints(const QList<PBreakpoint>& list, bool forProject);
 
 private:
+    // What a line deletion removed: the breakpoints of the deleted lines are kept
+    // until the next line insertion. If that insertion is the undo of the deletion,
+    // they are put back on their original lines; any other edit drops them.
+    struct RemovedBreakpoint {
+        int line = 0;
+        bool forProject = false;
+        QList<PBreakpoint> breakpoints;
+    };
+    QMap<QString, QList<RemovedBreakpoint>> mRemovedBreakpoints;
+    void clearRemovedBreakpoints(const QString& filename, bool forProject);
+    void removeBreakpointFromRemovedHistory(const PBreakpoint& breakpoint, bool forProject);
+    void clearRemovedBreakpointsForModel(bool forProject);
+
     QList<PBreakpoint> mBreakpoints;
     QList<PBreakpoint> mProjectBreakpoints;
     bool mIsForProject;

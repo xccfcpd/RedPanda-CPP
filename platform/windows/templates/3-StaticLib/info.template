@@ -2,14 +2,20 @@
 ver=2
 Name=Static Library
 Name[zh_CN]=静态链接库
+Name[zh_TW]=靜態連結庫
 Name[ru_RU]=Статическая библиотека
+Name[pt_BR]=Biblioteca estática
 Icon=StaticLib.ico
 Description=A static library (.a)
 Description[zh_CN]=静态链接库(.a)
+Description[zh_TW]=靜態連結庫 (.a)
 Description[ru_RU]=Статическая библиотека (.a)
+Description[pt_BR]=Uma biblioteca estática (.a)
 Category=Basic
 Category[zh_CN]=基础
+Category[zh_TW]=基礎
 Category[ru_RU]=Основные
+Category[pt_BR]=Básico
 
 [Unit0]
 CName=

@@ -18,6 +18,9 @@
 #define FORMATTERGENERALWIDGET_H
 
 #include <QAbstractListModel>
+#include <QComboBox>
+#include <QThreadPool>
+#include <QTimer>
 #include <QWidget>
 #include "settingswidget.h"
 #include "../utils.h"
@@ -50,6 +53,7 @@ private:
     QList<PFormatterStyleItem> mStyles;
 };
 
+class QShowEvent;
 class ColorManager;
 class FormatterGeneralWidget : public SettingsWidget
 {
@@ -63,18 +67,39 @@ private slots:
 
     void on_chkBreakMaxCodeLength_stateChanged(int arg1);
 
+    void on_clangFormatStyleChanged();
+
+    void on_chkClangFormatOverrideStyle_toggled(bool checked);
+
+    void on_chkClangFormatUseFallbackStyle_toggled(bool checked);
+
+    void on_chkClangFormatSetColumnLimit_toggled(bool checked);
+
     void updateDemo();
 private:
     void updateCodeFormatter(CodeFormatterSettings& format);
+    void updateClangFormat(CodeFormatterSettings& format);
+    void updateFormatterEngine();
+    void updateClangFormatStyleDescription();
+    void setupClangFormatComboboxes();
+    int findClangFormatStyleIndex(QComboBox *comboBox, int value, int fallbackValue) const;
+    // Applies the result of the asynchronous demo to the widget, unless a newer
+    // demo has been requested in the meantime.
+    void applyDemoResult(quint64 generation, const QString& display);
 
 private:
     Ui::FormatterGeneralWidget *ui;
     FormatterStyleModel mStylesModel;
+    QTimer mDemoTimer;
+    quint64 mDemoGeneration = 0;
 
     // SettingsWidget interface
 protected:
     void doLoad() override;
     void doSave() override;
+    // The demo runs a formatter process: start it when the page is shown, not when
+    // the settings dialog loads all of its pages.
+    void showEvent(QShowEvent *event) override;
 
     // SettingsWidget interface
 };

@@ -2,14 +2,20 @@
 ver=2
 Name=TinyFileDialogs
 Name[zh_CN]=TinyFileDialogs
+Name[zh_TW]=TinyFileDialogs
+Name[ru_RU]=TinyFileDialogs
+Name[pt_BR]=TinyFileDialogs
 Icon=tinyfiledialogs.ico
 Description=Demo app for tinyfiledialogs
 Description[zh_CN]=tinyfiledialogs示例程序
-Name[ru_RU]=TinyFileDialogs
+Description[zh_TW]=tinyfiledialogs範例程式
 Description[ru_RU]=Демо-приложение с использованием TinyFileDialogs
+Description[pt_BR]=Aplicativo de demonstração do tinyfiledialogs
 Category=UI
 Category[zh_CN]=UI
+Category[zh_TW]=UI
 Category[ru_RU]=Интерфейс
+Category[pt_BR]=Interface
 
 [Unit0]
 CName=main.c

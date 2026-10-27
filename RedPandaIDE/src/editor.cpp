@@ -32,6 +32,14 @@
 #include <QScrollBar>
 #include <QScreen>
 #include <memory>
+#include <functional>
+#include <utility>
+#include <exception>
+#include <QPointer>
+#include <QMetaObject>
+#include <QRunnable>
+#include <QThreadPool>
+#include <QStringList>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
@@ -58,12 +66,68 @@
 #include "widgets/bookmarkmodel.h"
 #include "codesnippetsmanager.h"
 #include "debugger/debuggermodels.h"
+#include "debugger/breakpointanchor.h"
 #include "settings/editorsettings.h"
 #include "settings/codecompletionsettings.h"
 #include "colorscheme.h"
 #include <QAbstractTextDocumentLayout>
 
 using QSynedit::CharPos;
+
+namespace {
+
+class ReformatTask : public QRunnable
+{
+public:
+    explicit ReformatTask(std::function<void()> action)
+        : mAction{std::move(action)}
+    {
+    }
+
+    void run() override
+    {
+        mAction();
+    }
+
+private:
+    std::function<void()> mAction;
+};
+
+// The reformats of all the editors share one pool: a pool per editor keeps a thread
+// (and the queued work) for every open file, and destroying an editor would have to
+// wait for the running formatter, up to its timeout. A result that arrives after its
+// editor is gone is dropped through the QPointer captured by the task.
+struct ReformatThreadPool : QThreadPool
+{
+    ReformatThreadPool()
+    {
+        // each formatter runs a process: two concurrent ones are enough
+        setMaxThreadCount(2);
+    }
+};
+
+QThreadPool* reformatThreadPool()
+{
+    // Intentionally leaked: a QThreadPool destructor waits for its running tasks, up
+    // to the formatter timeout. On application exit the pool is cleared and waited
+    // for only briefly; a formatter still running is left to the process exit.
+    static QThreadPool* pool = new ReformatThreadPool();
+    static const bool shutdownHooked = []{
+        QCoreApplication* app = QCoreApplication::instance();
+        if (app) {
+            QObject::connect(app, &QCoreApplication::aboutToQuit, app, []{
+                QThreadPool* reformatPool = reformatThreadPool();
+                reformatPool->clear();
+                reformatPool->waitForDone(2000);
+            });
+        }
+        return true;
+    }();
+    Q_UNUSED(shutdownHooked);
+    return pool;
+}
+
+} // namespace
 
 static QSet<QString> CppTypeQualifiers {
     "const",
@@ -159,6 +223,12 @@ Editor::Editor(QWidget *parent):
 
     connect(this,&QSynEdit::statusChanged,this,&Editor::onStatusChanged);
 
+    // Any text edit (including a format or a reload) makes the previous breakpoint
+    // toggle no longer the last action: Ctrl+Z must then undo the text again.
+    connect(this, &QSynEdit::changed, this, [this]{
+        mLastActionWasBreakpoint = false;
+    });
+
     connect(this,&QSynEdit::gutterClicked,this,&Editor::onGutterClicked);
 
     setAttribute(Qt::WA_Hover,true);
@@ -190,6 +260,9 @@ Editor::Editor(QWidget *parent):
 
 Editor::~Editor() {
     //qDebug()<<"editor "<<mFilename<<" deleted";
+    // A reformat still running posts its result back to this editor through a
+    // QPointer, which is null now; the worker creates and destroys its formatter in
+    // its own thread, so there is nothing to wait for here (see reformat()).
     cleanAutoBackup();
 }
 
@@ -220,7 +293,34 @@ void Editor::loadFile(QString filename, bool parse) {
     //FileError should by catched by the caller of loadFile();
     QByteArray oldEditorEncoding = mEditorEncoding;
     QByteArray oldFileEncoding = mFileEncoding;
-    loadFromFile(filename,mEditorEncoding,mFileEncoding);
+    // Loading a file replaces the whole content of the document, and the line
+    // bookkeeping of the breakpoint/bookmark models would take that for "every
+    // line was deleted" and drop or shift the markers of the file. Remember the
+    // caret, the first displayed line and the markers as anchors, so they can be
+    // put back on the code they are on, and tell the models about the replacement
+    // (see isReplacingContent()). This also covers reloading the file that is
+    // already shown (after an external change, when the encoding is changed, ...).
+    CharPos oldCaret = caretXY();
+    int oldTopPos = topPos();
+    QMap<int,ReformatAnchor> anchors = anchorLines();
+    anchors.insert(oldCaret.line, lineAnchor(oldCaret.line));
+    anchors.insert(oldTopPos, lineAnchor(oldTopPos));
+    {
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
+        loadFromFile(filename,mEditorEncoding,mFileEncoding);
+    }
+    QMap<int,int> lineMap = remapLinesByAnchor(anchors);
+    // The models are told about the replacement before the caret is moved to its new
+    // line: the map is about the lines the markers were on before, while the caret the
+    // editor reports when it moves is recorded by the application
+    // (EditorManager::onEditorStatusChanged() -> CaretList::addCaret() -> the entry is
+    // already on its code). Remapping the history after that move would move that entry
+    // a second time (see CaretList::remapLines()).
+    onContentReplaced(lineMap);
+    setCaretXY(ensureCharPosValid(CharPos{oldCaret.ch,
+                                          lineMap.value(oldCaret.line, oldCaret.line)}));
+    setTopPos(lineMap.value(oldTopPos, oldTopPos));
     if (mEditorEncoding==ENCODING_AUTO_DETECT) {
         if (mFileEncoding==ENCODING_ASCII)
             mEditorEncoding=mEditorSettings->defaultEncoding();
@@ -274,8 +374,12 @@ bool Editor::save(bool force, bool doReparse) {
         return saveAs("", doReparse);
     }    
     try {
-        if (mEditorSettings->autoFormatWhenSaved()) {
-            reformat(false);
+        // A reformat the user started must be applied before the content is
+        // written, even when "format when saved" is off: the file must not be
+        // saved with the content that was formatted away, and the abandoned
+        // result must not mark the editor modified right after the save.
+        if (mEditorSettings->autoFormatWhenSaved() || mIsReformatting) {
+            reformat(false, false, false);
         } else if (mEditorSettings->removeTrailingSpacesWhenSaved()) {
             trimTrailingSpaces();
         }
@@ -374,13 +478,21 @@ bool Editor::saveAs(const QString &name, bool doCheckSyntax){
         mParser->invalidateFile(mFilename);
     }
 
-    if (mEditorSettings->autoFormatWhenSaved()) {
-        reformat(false);
+    // Take the name (and the type) the file is saved as before formatting: the
+    // formatter picks the language and the nearest configuration file from it. A new
+    // file saved as "notes.txt" must not be formatted as C++ because its old name was
+    // empty, and a file saved into another folder must be formatted with the
+    // ".clang-format" of that folder.
+    mFilename = newName;
+    setFileType(getFileType(mFilename));
+
+    // See save(): a reformat that is still running is completed synchronously
+    // before the file is written, instead of being silently abandoned.
+    if (mEditorSettings->autoFormatWhenSaved() || mIsReformatting) {
+        reformat(false, false, false);
     } else if (mEditorSettings->removeTrailingSpacesWhenSaved()) {
         trimTrailingSpaces();
     }
-    mFilename = newName;
-    setFileType(getFileType(mFilename));
     if (!syntaxer() || syntaxer()->language() != QSynedit::ProgrammingLanguage::CPP) {
         mSyntaxIssues.clear();
     }
@@ -504,6 +616,18 @@ bool Editor::inProject() const noexcept{
 
 bool Editor::isNew() const noexcept {
     return mIsNew;
+}
+
+bool Editor::isReplacingContent() const noexcept {
+    return mReplacingContentDepth>0;
+}
+
+bool Editor::isRestoringContentByUndoRedo() const noexcept {
+    return mContentRestoredByUndoRedo;
+}
+
+bool Editor::isUndoingOrRedoing() const noexcept {
+    return mUndoingOrRedoing;
 }
 
 void Editor::undoSymbolCompletion(const CharPos &pos)
@@ -4487,6 +4611,39 @@ void Editor::setGetMacroVarsFunc(const GetMacroVarsFunc &newGetMacroVarsFunc)
     mGetMacroVarsFunc = newGetMacroVarsFunc;
 }
 
+void Editor::setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc)
+{
+    mContentReplacedFunc = newContentReplacedFunc;
+}
+
+void Editor::setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc)
+{
+    mGetAnchorLinesFunc = newGetAnchorLinesFunc;
+}
+
+void Editor::setBreakpointHistoryFuncs(const BreakpointHistoryFunc &undoFunc,
+                                       const BreakpointHistoryFunc &redoFunc,
+                                       const BreakpointHistoryStateFunc &canUndoFunc,
+                                       const BreakpointHistoryStateFunc &canRedoFunc)
+{
+    mBreakpointUndoFunc = undoFunc;
+    mBreakpointRedoFunc = redoFunc;
+    mBreakpointCanUndoFunc = canUndoFunc;
+    mBreakpointCanRedoFunc = canRedoFunc;
+}
+
+bool Editor::canUndoBreakpoint() const
+{
+    return mLastActionWasBreakpoint && mBreakpointCanUndoFunc
+            && mBreakpointCanUndoFunc(this);
+}
+
+bool Editor::canRedoBreakpoint() const
+{
+    return mLastActionWasBreakpoint && mBreakpointCanRedoFunc
+            && mBreakpointCanRedoFunc(this);
+}
+
 const GetReformatterFunc &Editor::getReformatterFunc() const
 {
     return mGetReformatterFunc;
@@ -5134,60 +5291,454 @@ QString Editor::getPreviousWordAtPositionForCompleteFunctionDefinition(const Cha
     return result;
 }
 
-void Editor::reformat(bool doReparse)
+void Editor::reformat(bool doReparse, bool notify, bool asynchronous)
 {
-    if (readOnly())
+    // A save (the synchronous path) must not leave a running reformat behind: it
+    // would mark the editor modified after the file was written. An asynchronous
+    // request while one runs is simply ignored (the running result is still wanted).
+    auto abandonRunningReformat = [this]() {
+        if (mIsReformatting) {
+            ++mReformatGeneration;
+            mIsReformatting = false;
+        }
+    };
+    if (readOnly()) {
+        if (!asynchronous)
+            abandonRunningReformat();
         return;
-    if (!mGetReformatterFunc)
+    }
+    // astyle and clang-format only understand c/c++, and they fall back to
+    // c++ for any file name they don't know. Reformatting anything else
+    // (Makefile, *.txt, *.asm, ...) would silently destroy its content, so
+    // only c/c++ sources and headers are allowed here.
+    // Unsaved editors (no file name) are formatted as a new c++ file.
+    if (!isFormattableCppFile(mFileType)
+            && !(mFilename.isEmpty() && mFileType == FileType::None)) {
+        if (!asynchronous)
+            abandonRunningReformat();
         return;
-    std::unique_ptr<BaseReformatter> formatter = mGetReformatterFunc(this);
-    if (!formatter)
+    }
+    if (!mGetReformatterFunc) {
+        // Nothing can format the content, but a save must not leave a running
+        // reformat to mark the editor modified after the file was written.
+        if (!asynchronous)
+            abandonRunningReformat();
         return;
-    QString errorMessage;
-    bool isOk;
-    QString newContent = formatter->refomat(text(),errorMessage,isOk);
-    if (!isOk) {
-        if (!errorMessage.isEmpty()) {
-            QMessageBox::critical(this,
-                                  tr("Reformat Error"),
-                                  errorMessage);
+    }
+    if (mIsReformatting && asynchronous)
+        return;
+    // shared_ptr, so the formatter QObject stays alive while the worker runs but
+    // is still destroyed on the GUI thread: the result handler keeps the last
+    // reference, and a QObject must not be deleted from another thread.
+    std::shared_ptr<BaseReformatter> formatter = mGetReformatterFunc(this);
+    if (!formatter) {
+        if (mIsReformatting && !asynchronous) {
+            ++mReformatGeneration;
+            mIsReformatting = false;
         }
         return;
     }
-    if (newContent.isEmpty())
+
+    if (mIsReformatting) {
+        // A save needs the formatted content now: abandon the reformat that is
+        // running (its result is ignored through the generation below) and do
+        // the formatting synchronously. Skipping it would save the content
+        // without formatting, while the abandoned result would mark the editor
+        // modified right after the save.
+        ++mReformatGeneration;
+        mIsReformatting = false;
+        // A queued reformat is left to run: it is on the shared pool now, and the
+        // generation above makes its result stale anyway.
+    }
+
+    // The formatter (especially clang-format on a large file) can block for a
+    // while, so run it on a worker thread and apply the result back on the GUI
+    // thread. Only the text that is formatted is captured: the anchors that keep
+    // the markers on their code are built when the result is applied, from the
+    // content that was really formatted (see finishReformat()).
+    QString sourceText = text();
+    const quint64 generation = ++mReformatGeneration;
+    mIsReformatting = true;
+
+    if (!asynchronous) {
+        // The caller (the save path) needs the content reformatted *before* it
+        // continues, so run the formatter here on the GUI thread. Running it on
+        // a worker thread would let the file be written before the result is
+        // applied, leaving the saved file unformatted (and re-marking the editor
+        // as modified right after saving).
+        QString newContent;
+        QString errorMessage;
+        bool isOk = false;
+        try {
+            newContent = formatter->reformat(sourceText, errorMessage, isOk);
+        } catch (const std::exception &e) {
+            isOk = false;
+            errorMessage = tr("The formatter crashed: %1").arg(QString::fromLocal8Bit(e.what()));
+        } catch (...) {
+            isOk = false;
+            errorMessage = tr("The formatter crashed with an unknown error.");
+        }
+        finishReformat(newContent, errorMessage, isOk, sourceText, doReparse, notify,
+                       generation);
         return;
-    QSet<int> breakpointsBackup = mBreakpointLines;
-    QSet<int> bookmarksBackup = mBookmarkLines;
-    replaceContent(newContent, doReparse);
-    foreach(int line, breakpointsBackup) {
-        toggleBreakpoint(line);
     }
-    foreach(int line, bookmarksBackup) {
-        toggleBookmark(line);
+
+    QPointer<Editor> self = this;
+    // A formatter is a QObject and belongs to the thread that created it. The
+    // concrete formatters hand out a factory that builds an identical one from their
+    // plain settings, so the worker creates and destroys its own; the formatters that
+    // have no factory (the tests') are used as they are.
+    std::function<std::unique_ptr<BaseReformatter>()> workerFactory;
+    try {
+        workerFactory = formatter->workerFactory();
+    } catch (...) {
+        // fall back to the formatter created here if the factory itself fails
     }
+    auto runInWorker = [sourceText, doReparse, notify, self, generation](
+            BaseReformatter* workerFormatter) {
+        QString newContent;
+        QString errorMessage;
+        bool isOk = false;
+        if (!workerFormatter) {
+            errorMessage = Editor::tr("The formatter can't be started.");
+        } else {
+            // A throw inside the formatter would otherwise terminate the worker
+            // (std::terminate on an uncaught exception) and leave mIsReformatting
+            // stuck at true forever. Catch it and report the failure back.
+            try {
+                newContent = workerFormatter->reformat(sourceText, errorMessage, isOk);
+            } catch (const std::exception &e) {
+                isOk = false;
+                errorMessage = Editor::tr("The formatter crashed: %1")
+                        .arg(QString::fromLocal8Bit(e.what()));
+            } catch (...) {
+                isOk = false;
+                errorMessage = Editor::tr("The formatter crashed with an unknown error.");
+            }
+        }
+        // Post only the result: no formatter is captured, so nothing owned by a
+        // QObject is released in the worker thread.
+        QMetaObject::invokeMethod(self,
+                                  [self, newContent, errorMessage, isOk, sourceText,
+                                   doReparse, notify, generation]() {
+            if (self)
+                self->finishReformat(newContent, errorMessage, isOk, sourceText,
+                                     doReparse, notify, generation);
+        }, Qt::QueuedConnection);
+    };
+    try {
+        if (workerFactory) {
+            reformatThreadPool()->start(new ReformatTask(
+                [workerFactory, runInWorker]() {
+                    std::unique_ptr<BaseReformatter> workerFormatter;
+                    try {
+                        workerFormatter = workerFactory();
+                    } catch (...) {
+                        // runInWorker(nullptr) reports it back to the editor
+                    }
+                    runInWorker(workerFormatter.get());
+                }));
+        } else {
+            // no factory (a test formatter): use the one created on the GUI thread
+            reformatThreadPool()->start(new ReformatTask(
+                [formatter, runInWorker]() {
+                    runInWorker(formatter.get());
+                }));
+        }
+    } catch (const std::exception &e) {
+        // Starting the task failed; don't leave the editor stuck.
+        if (generation == mReformatGeneration)
+            mIsReformatting = false;
+        if (notify)
+            QMessageBox::critical(this, tr("Reformat Error"),
+                                  tr("Failed to start the formatter: %1")
+                                  .arg(QString::fromLocal8Bit(e.what())));
+    }
+}
+
+void Editor::finishReformat(const QString &newContent, const QString &errorMessage, bool isOk,
+                            const QString &sourceText, bool doReparse, bool notify,
+                            quint64 generation)
+{
+    // A newer reformat owns the editor now (the synchronous one a save starts,
+    // see reformat()): this result must not change its content or its flags.
+    if (generation != mReformatGeneration)
+        return;
+    // the editor may have become read-only (e.g. a debug session started) while
+    // the formatter was running; don't touch it in that case.
+    if (readOnly()) {
+        mIsReformatting = false;
+        return;
+    }
+    if (!isOk) {
+        if (!errorMessage.isEmpty()) {
+            // A reformat the user asked for reports its error in a dialog. The ones
+            // run by a save (and the automatic ones) must not block the save on a
+            // modal dialog: the error is logged, and the content is saved as it is.
+            if (notify)
+                QMessageBox::critical(this, tr("Reformat Error"), errorMessage);
+            else
+                qWarning() << "reformat failed:" << errorMessage;
+        }
+        mIsReformatting = false;
+        return;
+    }
+    if (newContent.isEmpty()) {
+        mIsReformatting = false;
+        return;
+    }
+    // The document may have been edited while the formatter was running on the
+    // worker thread. Applying the formatted snapshot would silently discard
+    // those edits, so bail out (and tell the user) if the text no longer matches
+    // what we formatted.
+    if (text() != sourceText) {
+        // automatic reformats (e.g. "format when saved") run without the user
+        // asking for them, so don't pop a modal dialog for those
+        if (notify)
+            QMessageBox::information(this, tr("Reformat"),
+                tr("The document was modified during formatting; the result was not applied."));
+        mIsReformatting = false;
+        return;
+    }
+    // The content is replaced; the caret, the first displayed line and the
+    // markers of the file follow the code they are on, and the models are told
+    // about it (see replaceContentAndRemap()).
+    replaceContentAndRemap(newContent, doReparse);
+    mIsReformatting = false;
+}
+
+// The text of a line, used as an anchor to find the line back after the content
+// has been changed. Whitespace is removed, because reformatting mostly changes
+// the indentation and the spacing between the tokens.
+QString Editor::lineNonWhitespace(int line) const
+{
+    if (line<0 || line>=document()->count())
+        return QString();
+    QString text = lineText(line);
+    QString result;
+    result.reserve(text.length());
+    foreach (QChar ch, text) {
+        if (!ch.isSpace())
+            result.append(ch);
+    }
+    return result;
+}
+
+ReformatAnchor Editor::lineAnchor(int line) const
+{
+    return EditorAnchors::lineAnchorForContent(document()->content(), line);
+}
+
+// See EditorAnchors::remapLines(): the matching is done there, on plain text.
+QMap<int,int> Editor::remapLinesByAnchor(const QMap<int,ReformatAnchor> &anchors) const
+{
+    return EditorAnchors::remapLines(anchors, document()->content());
+}
+
+// The anchors of the markers of this file: their lines are the ones the models
+// have (mirrored in mBreakpointLines/mBookmarkLines) and the anchors describe the
+// code they are on, so that remapLinesByAnchor() can find them back in the new
+// content.
+QMap<int,ReformatAnchor> Editor::markerAnchors() const
+{
+    QMap<int,ReformatAnchor> result;
+    foreach(int line, mBreakpointLines) {
+        result.insert(line, lineAnchor(line));
+    }
+    foreach(int line, mBookmarkLines) {
+        result.insert(line, lineAnchor(line));
+    }
+    return result;
+}
+
+// The markers, plus the lines the application holds outside of the models (the
+// history of the caret positions of this file, see CaretList::remapLines()). They
+// are moved with the same line map, so they must be anchored too, otherwise they
+// would be left on stale lines. Kept separate from markerAnchors() because the
+// caret history can be long and the undo/redo path (see runWholeContentChange())
+// only needs the markers to know whether anything moved at all.
+QMap<int,ReformatAnchor> Editor::anchorLines() const
+{
+    QMap<int,ReformatAnchor> result = markerAnchors();
+    if (mGetAnchorLinesFunc) {
+        foreach(int line, mGetAnchorLinesFunc()) {
+            result.insert(line, lineAnchor(line));
+        }
+    }
+    return result;
+}
+
+// Tells the models that the whole content of this file has been replaced. They
+// re-anchor the breakpoints on their code and move the bookmarks that the given
+// line map is about, then sync the marker sets of this editor back; the markers
+// are never dropped, even when they can't be found back.
+void Editor::onContentReplaced(const QMap<int,int> &markerLineMap)
+{
+    if (mContentReplacedFunc)
+        mContentReplacedFunc(mFilename, inProject(), content(), markerLineMap);
+}
+
+// Runs "action" with the markers of the file kept on their code. Used for the
+// undo/redo of a change that covered the whole content of the document (a code
+// formatting, a replacement with a tool output): QSynEdit applies such a change
+// like a plain text edit ("every line is deleted, then the text is written
+// back"), which would make the models drop the breakpoints and the bookmarks of
+// the file. The editor therefore keeps them out of their line bookkeeping and
+// puts the markers back on the code they are on; the caret and the selection are
+// still restored by QSynEdit.
+void Editor::runWholeContentChange(const std::function<void()> &action)
+{
+    // Without the callback the markers can't be put back on their code: leave the
+    // models doing their own bookkeeping, or they would stay on stale lines.
+    if (!mContentReplacedFunc) {
+        action();
+        return;
+    }
+    // The anchors must be taken on the old content: they are what the lines of the
+    // new one are matched against (see remapLinesByAnchor()). They cover the markers
+    // and the carets of the file (see anchorLines()). The map built from them
+    // indexes the whole document, so it is built only if a line doesn't hold the
+    // code it held before any more.
+    QMap<int,ReformatAnchor> anchors = anchorLines();
+    // Replacing the content can change the number of lines without touching the
+    // text of the lines the markers are on (a repeated block looks exactly the same
+    // before and after the change). The anchors alone can therefore look unchanged
+    // while every line below the edit has moved: the line count is compared too, so
+    // that such a change is always remapped.
+    const int oldLineCount = lineCount();
+    {
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
+        action();
+    }
+    // The lines a change moved the code away from now hold other code (a marker
+    // that stayed put on its code is left alone). Nothing moved means the models
+    // never touched the markers either (see isReplacingContent()) and the lines
+    // are still the ones the editor shows, so there is nothing to put back.
+    // The whole anchor is compared, not just the text of the line itself: a line
+    // that moved away while an identical one took its place would look unchanged
+    // otherwise, and the markers would be left on stale lines. remapLinesByAnchor()
+    // matches on the same anchors.
+    bool moved = lineCount()!=oldLineCount;
+    for (auto it=anchors.constBegin();!moved && it!=anchors.constEnd();++it) {
+        ReformatAnchor current = lineAnchor(it.key());
+        if (current.line!=it.value().line || current.context!=it.value().context) {
+            moved = true;
+            break;
+        }
+    }
+    if (!moved)
+        return;
+    // Undoing/redoing a change can give back the line a merge took away, and the
+    // models have to keep what they remembered of that merge while they are told
+    // where the markers went (see BookmarkModel::moveBookmarksInFile()).
+    mContentRestoredByUndoRedo = true;
+    // restore the flag even if a model throws while the markers are put back
+    auto restoredGuard = finally([this]{ mContentRestoredByUndoRedo = false; });
+    onContentReplaced(remapLinesByAnchor(anchors));
+}
+
+void Editor::doUndo()
+{
+    // A gutter breakpoint toggle is not a QSynEdit text change: route Ctrl+Z to the
+    // application-level breakpoint history while it is the last user action. If the
+    // history has nothing left, fall through to the text undo: otherwise the first
+    // Ctrl+Z would silently do nothing while the menu stays enabled by the text
+    // stack.
+    if (mLastActionWasBreakpoint) {
+        if (mBreakpointUndoFunc && mBreakpointUndoFunc(this))
+            return;
+        mLastActionWasBreakpoint = false;
+    }
+    // Tell the models that this is an undo, including the ordinary line-by-line
+    // ones: the breakpoint model uses it to restore the breakpoints a line
+    // deletion removed when that deletion itself is undone.
+    mUndoingOrRedoing = true;
+    auto undoGuard = finally([this]{ mUndoingOrRedoing = false; });
+    // A change that replaced the whole content (a formatting, the output of a tool)
+    // is applied by QSynEdit as "every line is deleted, then the text is written
+    // back": the models must not take that for a deletion of all their markers.
+    // Any other undo (a line inserted/removed by the user, the undo of a merge) is
+    // reported line by line as usual, so the markers follow the lines even when the
+    // code around them is repeated.
+    if (nextUndoIsWholeContent())
+        runWholeContentChange([this]{ QSynEdit::doUndo(); });
+    else
+        QSynEdit::doUndo();
+}
+
+void Editor::doRedo()
+{
+    // see doUndo()
+    if (mLastActionWasBreakpoint) {
+        if (mBreakpointRedoFunc && mBreakpointRedoFunc(this))
+            return;
+        mLastActionWasBreakpoint = false;
+    }
+    mUndoingOrRedoing = true;
+    auto redoGuard = finally([this]{ mUndoingOrRedoing = false; });
+    if (nextRedoIsWholeContent())
+        runWholeContentChange([this]{ QSynEdit::doRedo(); });
+    else
+        QSynEdit::doRedo();
 }
 
 void Editor::replaceContent(const QString &newContent, bool doReparse)
 {
+    // The whole document is replaced (the "replace the whole document with the
+    // tool output" action). This is not a plain line edit: the caret, the first
+    // displayed line and the markers follow the code they are on, and the models
+    // are told about the replacement (see replaceContentAndRemap()).
+    replaceContentAndRemap(newContent, doReparse);
+}
+
+QMap<int,int> Editor::replaceContentAndRemap(const QString &newContent, bool doReparse)
+{
     int oldTopPos = topPos();
     CharPos mOldCaret = caretXY();
+    // Keep the caret, the first displayed line and the markers of the file on the
+    // same code: their line numbers may change, so remember them as anchors and
+    // remap everything in a single pass.
+    QMap<int,ReformatAnchor> anchors = anchorLines();
+    anchors.insert(mOldCaret.line, lineAnchor(mOldCaret.line));
+    anchors.insert(oldTopPos, lineAnchor(oldTopPos));
 
     beginEditing();
+    // The undo items replaceAll() is about to add are the replacement of the whole
+    // document: marking them is what tells a later undo/redo that its line reports
+    // must not reach the models (see doUndo()).
+    beginWholeContentChange();
     QSynedit::EditorOptions oldOptions = getOptions();
     QSynedit::EditorOptions newOptions = oldOptions;
     newOptions.setFlag(QSynedit::EditorOption::AutoIndent,false);
     setOptions(newOptions);
-    replaceAll(newContent);
-    setCaretXY(ensureCharPosValid(mOldCaret));
-    setTopPos(oldTopPos);
+    {
+        // While the whole content is replaced, the models must not do their
+        // incremental line bookkeeping: they would take it for "every line was
+        // deleted" and drop or shift the markers of this file (see
+        // isReplacingContent()).
+        ++mReplacingContentDepth;
+        auto guard = finally([this]{ --mReplacingContentDepth; });
+        replaceAll(newContent);
+    }
+    QMap<int,int> lineMap = remapLinesByAnchor(anchors);
+    // the models move / re-anchor the markers of this file on the code they are on.
+    // They are told before the caret is moved to its new line: see loadFile().
+    onContentReplaced(lineMap);
+    setCaretXY(ensureCharPosValid(CharPos{mOldCaret.ch,
+                                          lineMap.value(mOldCaret.line, mOldCaret.line)}));
+    setTopPos(lineMap.value(oldTopPos, oldTopPos));
     setOptions(oldOptions);
     endEditing();
+    // the block is closed: the undo items of the replacement are in the list now
+    endWholeContentChange();
 
     if (doReparse) {
         reparse();
         checkSyntaxInBack();
         reparseTodo();
     }
+    return lineMap;
 }
 
 void Editor::checkSyntaxInBack()
@@ -5228,20 +5779,60 @@ void Editor::tab()
 
 void Editor::toggleBreakpoint(int line)
 {
+    mLastActionWasBreakpoint = true;
     if (hasBreakpoint(line)) {
         mBreakpointLines.remove(line);
         emit breakpointRemoved(this, line);
     } else {
-        mBreakpointLines.insert(line);
-        emit breakpointAdded(this, line);
+        int target = snappedBreakpointLine(line);
+        // Clicking an empty line next to a line that already has a breakpoint must
+        // not silently add a second one on that line.
+        if (!hasBreakpoint(target))
+            addBreakpoint(target);
+        line = target;
     }
 
     invalidateGutterLine(line);
     invalidateLine(line);
 }
 
+int Editor::snappedBreakpointLine(int line)
+{
+    if (line<0 || line>=lineCount())
+        return line;
+    const QStringList codeLines = breakpointCodeLines(content());
+    if (line<codeLines.count() && isBreakpointCandidateCode(codeLines[line]))
+        return line;
+    for (int next=line+1; next<codeLines.count(); ++next) {
+        if (isBreakpointCandidateCode(codeLines[next]))
+            return next;
+    }
+    for (int previous=line-1; previous>=0; --previous) {
+        if (isBreakpointCandidateCode(codeLines[previous]))
+            return previous;
+    }
+    return line;
+}
+
+void Editor::addBreakpoint(int line)
+{
+    line = snappedBreakpointLine(line);
+    mLastActionWasBreakpoint = true;
+    mBreakpointLines.insert(line);
+    // remember the code the breakpoint is set on (with its neighbours, to tell
+    // repeated code lines apart), so that it can follow it when the file
+    // changes (see BreakpointModel::reanchorBreakpoints())
+    emit breakpointAdded(this, line,
+                         breakpointContextFingerprint(lineNonWhitespace(line-1),
+                                                      lineNonWhitespace(line),
+                                                      lineNonWhitespace(line+1)));
+    invalidateGutterLine(line);
+    invalidateLine(line);
+}
+
 void Editor::clearBreakpoints()
 {
+    mLastActionWasBreakpoint = true;
     emit breakpointsCleared(this);
     mBreakpointLines.clear();
     invalidate();

@@ -1,14 +1,20 @@
 [Template]
 Ver = 3
 Name = Inline ASM
-Category = Assembly
-Description = A simple c program with inline assembly instructions
 Name[zh_CN] = 内联汇编
-Category[zh_CN] = 汇编
-Description[zh_CN] = 简单的C内联汇编程序示例
+Name[zh_TW] = 內聯彙編
 Name[ru_RU]=Встраиваемый ассемблер
-Description[ru_RU]=Простая Си-программа с встраиваемыми ассемблерными инструкциями
+Name[pt_BR] = ASM embutido
+Category = Assembly
+Category[zh_CN] = 汇编
+Category[zh_TW] = 組合語言
 Category[ru_RU]=Ассемблер
+Category[pt_BR] = Assembly
+Description = A simple c program with inline assembly instructions
+Description[zh_CN] = 简单的C内联汇编程序示例
+Description[zh_TW] = 簡單的C內聯彙編程式範例
+Description[ru_RU]=Простая Си-программа с встраиваемыми ассемблерными инструкциями
+Description[pt_BR] = Um programa simples em C com instruções de assembly embutidas
 Icon = app.ico
 
 

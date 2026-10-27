@@ -23,7 +23,16 @@
 class CodeFormatterSettings: public BaseSettings {
 public:
     explicit CodeFormatterSettings(SettingsPersistor* persistor);
+    // arguments for the formatter that is currently selected
     QStringList getArguments();
+    // arguments for artistic style (astyle)
+    QStringList getAstyleArguments();
+    // arguments for clang-format
+    QStringList getClangFormatArguments();
+
+    int formatterEngine() const;
+    void setFormatterEngine(int newFormatterEngine);
+
     int braceStyle() const;
     void setBraceStyle(int newBraceStyle);
 
@@ -147,7 +156,59 @@ public:
     bool squeezeWhitespace() const;
     void setSqueezeWhitespace(bool newSqueezeWhitespace);
 
+    // clang-format
+    int clangFormatStyle() const;
+    void setClangFormatStyle(int newClangFormatStyle);
+
+    bool clangFormatUseFallbackStyle() const;
+    void setClangFormatUseFallbackStyle(bool newUseFallbackStyle);
+
+    int clangFormatFallbackStyle() const;
+    void setClangFormatFallbackStyle(int newFallbackStyle);
+
+    bool clangFormatOverrideStyle() const;
+    void setClangFormatOverrideStyle(bool newOverrideStyle);
+
+    int clangFormatIndentWidth() const;
+    void setClangFormatIndentWidth(int newIndentWidth);
+
+    int clangFormatUseTab() const;
+    void setClangFormatUseTab(int newUseTab);
+
+    int clangFormatTabWidth() const;
+    void setClangFormatTabWidth(int newTabWidth);
+
+    bool clangFormatSetColumnLimit() const;
+    void setClangFormatSetColumnLimit(bool newSetColumnLimit);
+
+    int clangFormatColumnLimit() const;
+    void setClangFormatColumnLimit(int newColumnLimit);
+
+    bool clangFormatSortIncludes() const;
+    void setClangFormatSortIncludes(bool newSortIncludes);
+
+    bool clangFormatAlignConsecutiveAssignments() const;
+    void setClangFormatAlignConsecutiveAssignments(bool newAlignConsecutiveAssignments);
+
+    QString clangFormatExtraArguments() const;
+    void setClangFormatExtraArguments(const QString& newExtraArguments);
+
 private:
+    int mFormatterEngine;
+
+    int mClangFormatStyle;
+    bool mClangFormatUseFallbackStyle;
+    int mClangFormatFallbackStyle;
+    bool mClangFormatOverrideStyle;
+    int mClangFormatIndentWidth;
+    int mClangFormatUseTab;
+    int mClangFormatTabWidth;
+    bool mClangFormatSetColumnLimit;
+    int mClangFormatColumnLimit;
+    bool mClangFormatSortIncludes;
+    bool mClangFormatAlignConsecutiveAssignments;
+    QString mClangFormatExtraArguments;
+
     int mBraceStyle;
     int mIndentStyle;
     int mTabWidth;

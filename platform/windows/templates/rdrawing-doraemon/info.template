@@ -2,14 +2,20 @@
 ver=2
 Name=Doraemon
 Name[zh_CN]=哆啦A梦
+Name[zh_TW]=哆啦A夢
+Name[ru_RU]=Дораэмон
+Name[pt_BR]=Doraemon
 Icon=rdrawing-doraemon.ico
 Description=A simple doraemon app using rdrawing (https://github.com/royqh1979/raylib-drawing)
 Description[zh_CN]=使用rdrawing制作的哆啦A梦 (https://github.com/royqh1979/raylib-drawing)
-Name[ru_RU]=Дораэмон
+Description[zh_TW]=使用rdrawing製作的哆啦A夢 (https://github.com/royqh1979/raylib-drawing)
 Description[ru_RU]=Простое приложение Дораэмон с использованием rdrawing (https://github.com/royqh1979/raylib-drawing)
+Description[pt_BR]=Um aplicativo simples do Doraemon usando rdrawing (https://github.com/royqh1979/raylib-drawing)
 Category=Game
 Category[zh_CN]=游戏
+Category[zh_TW]=遊戲
 Category[ru_RU]=Игры
+Category[pt_BR]=Jogos
 
 [Unit0]
 CName=main.c

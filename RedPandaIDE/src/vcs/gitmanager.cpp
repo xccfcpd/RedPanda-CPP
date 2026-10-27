@@ -605,7 +605,11 @@ QString GitManager::runGit(const QString& workingFolder, const QStringList &args
                 args,
                 "",
                 false,
-                env);
+                true,
+                env,
+                // a fetch/clone/push can take minutes: wait for it instead of
+                // killing it after the default 30 s bound of the formatters
+                -1);
     output = escapeUTF8String(output.toUtf8());
 //    qDebug()<<output;
     emit gitCmdFinished(output);

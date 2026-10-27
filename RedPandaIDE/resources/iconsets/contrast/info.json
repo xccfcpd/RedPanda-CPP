@@ -1,6 +1,9 @@
 {
     "name":"Contrast",
     "name_zh_CN": "高对比",
+    "name_zh_TW": "高對比",
+    "name_ru_RU": "Высокая контрастность",
+    "name_pt_BR": "Alto contraste",
     "version": "1.0",
     "author": "Alan-CRL"
 }

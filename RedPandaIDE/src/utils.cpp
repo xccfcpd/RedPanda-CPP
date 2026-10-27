@@ -24,7 +24,9 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
                            const QByteArray &inputContent,
                            bool separateStderr,
                            bool inheritEnvironment,
-                           const QProcessEnvironment& env)
+                           const QProcessEnvironment& env,
+                           int timeoutMs,
+                           int* exitCode)
 {
     QProcess process;
     QByteArray standardOutput;
@@ -64,26 +66,58 @@ ProcessOutput runAndGetOutput(const QString &cmd, const QString& workingDir, con
         process.write(inputContent);
     }
     process.closeWriteChannel();
-    process.waitForFinished();
-    if (errorOccurred) {
+    // A negative timeout waits for the process to finish on its own: -1 is what asks
+    // QProcess for that. The default timeout is bounded (see utils.h), because these
+    // waits run on the GUI thread; only a caller that really needs it passes -1.
+    bool timedout = false;
+    if (timeoutMs >= 0) {
+        if (!process.waitForFinished(timeoutMs)) {
+            // Only a real timeout means the process is still running. A process that
+            // failed to start or crashed also makes the wait fail, and it must be
+            // reported (and handled) as that, not as a timeout.
+            timedout = process.error() == QProcess::Timedout;
+            if (timedout) {
+                process.kill();
+                // Don't let a process that ignores the kill add another 30 s to the
+                // timeout: the caller asked for a bound, so the wait after the kill
+                // is bounded too.
+                process.waitForFinished(1000);
+            }
+        }
+    } else {
+        process.waitForFinished(-1);
+    }
+    // drain what's left, in case the signals above didn't deliver everything
+    standardOutput.append(process.readAllStandardOutput());
+    if (separateStderr)
+        standardError.append(process.readAllStandardError());
+    if (exitCode != nullptr)
+        *exitCode = process.exitStatus() == QProcess::NormalExit ? process.exitCode() : -1;
+    if (timedout) {
+        errorMessage += QCoreApplication::translate(
+                    "Utils", "Timeout: the process doesn't finish in %1 ms!")
+                .arg(timeoutMs);
+    } else if (errorOccurred) {
         switch(process.error()) {
         case QProcess::FailedToStart:
-            errorMessage += "Failed to start process!";
+            errorMessage += QCoreApplication::translate(
+                        "Utils", "Failed to start process!");
             break;
         case QProcess::Crashed:
-            errorMessage += "Process crashed!";
+            errorMessage += QCoreApplication::translate(
+                        "Utils", "Process crashed!");
             break;
         case QProcess::Timedout:
-            errorMessage += "Timeout!";
+            errorMessage += QCoreApplication::translate("Utils", "Timeout!");
             break;
         case QProcess::ReadError:
-            errorMessage += "Read Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Read Error:");
             break;
         case QProcess::WriteError:
-            errorMessage += "Write Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Write Error:");
             break;
         case QProcess::UnknownError:
-            errorMessage += "Unknown Error:";
+            errorMessage += QCoreApplication::translate("Utils", "Unknown Error:");
             break;
         }
         errorMessage += process.errorString();
@@ -214,6 +248,27 @@ bool programExists(const QString &program)
         }
     }
     return false;
+}
+
+QString findProgramInPath(const QString &program)
+{
+    if (program.isEmpty()) {
+        return QString();
+    }
+    if (program.contains('/') || program.contains(QDir::separator())) {
+        return QFileInfo(program).isExecutable() ? program : QString();
+    }
+    QStringList searchPaths = getExecutableSearchPaths();
+    for (const QString &path : searchPaths) {
+        if (path.isEmpty()) {
+            continue;
+        }
+        QString filePath = path + QDir::separator() + program;
+        if (QFileInfo(filePath).isExecutable()) {
+            return filePath;
+        }
+    }
+    return QString();
 }
 
 QString findBundledOrSystemTool(const QString &subDir, const QString &program)

@@ -2,14 +2,20 @@
 ver=2
 Name=TCP Client
 Name[zh_CN]=TCP客户端
+Name[zh_TW]=TCP客戶端
+Name[ru_RU]=TCP-клиент
+Name[pt_BR]=Cliente TCP
 Icon=tcpclient.ico
 Description=A winsock2 tcp client
 Description[zh_CN]=基于Winsock2的TCP客户端程序示例
-Name[ru_RU]=TCP-клиент
+Description[zh_TW]=基於Winsock2的TCP客戶端程式範例
 Description[ru_RU]=Пример TCP-клиента на WinSock2
+Description[pt_BR]=Um cliente TCP com winsock2
 Category=Network
 Category[zh_CN]=网络
+Category[zh_TW]=網路
 Category[ru_RU]=Сеть
+Category[pt_BR]=Rede
 
 [Unit0]
 CName=main.c

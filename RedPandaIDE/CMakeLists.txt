@@ -7,6 +7,7 @@ target_qt_plain_cpp(RedPandaIDE
     src/autolinkmanager
     src/colorscheme
     src/customfileiconprovider
+    src/editoranchors
     src/projectoptions
     src/settings
     src/syntaxermanager
@@ -93,6 +94,7 @@ target_moc_classes(RedPandaIDE
     # reformatter
     src/reformatter/basereformatter
     src/reformatter/astyleformatter
+    src/reformatter/clangformatreformatter
     # settings dialog
     src/settingsdialog/settingswidget
     # widgets
@@ -225,6 +227,12 @@ target_qt_plain_cpp(test-editor
     src/settings/dirsettings
     src/settings/editorsettings
     src/settings/codecompletionsettings
+    src/settings/codeformattersettings
+    src/settings/debuggersettings
+
+    # debugger models (the breakpoints)
+    src/debugger/debuggermodels
+    test/test_settings_stub
 
     src/parser/cppparser
     src/parser/cpppreprocessor
@@ -242,15 +250,24 @@ target_qt_plain_cpp(test-editor
     src/utils/ui
 
     src/colorscheme
+    src/editoranchors
+    src/caretlist
     src/syntaxermanager
     src/iconsmanager
     src/systemconsts
     src/compiler/compilerinfo
     src/reformatter/basereformatter
+    src/reformatter/clangformatreformatter
+    src/reformatter/astyleformatter
     )
 
 target_moc_classes(test-editor
     src/editor
+    src/caretlist
+    src/debugger/debuggermodels
+    src/reformatter/basereformatter
+    src/reformatter/clangformatreformatter
+    src/reformatter/astyleformatter
 
     src/widgets/bookmarkmodel
     src/widgets/codecompletionlistview
@@ -264,6 +281,12 @@ target_moc_classes(test-editor
     #test
     test/test_editor_base
     test/test_editor_symbol_completion
+    test/test_editor_anchors
+    test/test_editor_replace_content
+    test/test_bookmark_remap
+    test/test_formatter_arguments
+    test/test_breakpoint_anchor
+    test/test_breakpoint_remap
 )
 target_include_directories(test-editor PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR})
@@ -558,11 +581,35 @@ target_embed_resources(RedPandaIDE
     RESOURCE_NAME colorschemes
     FILES ${resource_colorscheme_files})
 
-# app icon
+# app icon and Windows version information
 
 if(WIN32)
+    # The PE version resource must use four numeric components. The fourth one
+    # is the git revision count, when it is available and still fits the 16-bit
+    # field of VERSIONINFO; otherwise it stays 0. The display string can keep
+    # the full version (including the pre-release suffix).
+    set(REDPANDA_WINDOWS_BUILD 0)
+    if(APP_VERSION_BUILD MATCHES "^[0-9]+$")
+        if(APP_VERSION_BUILD LESS 65536)
+            set(REDPANDA_WINDOWS_BUILD ${APP_VERSION_BUILD})
+        endif()
+    endif()
+    set(REDPANDA_WINDOWS_FILEVERSION
+        "${APP_VERSION_MAJOR},${APP_VERSION_MINOR},${APP_VERSION_PATCH},${REDPANDA_WINDOWS_BUILD}")
+    # windres does not define _DEBUG like the C++ compiler does: pass the debug flag
+    # explicitly (a multi-config generator has no single build type, so it is off).
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(REDPANDA_WINDOWS_FILEFLAGS "VS_FF_DEBUG")
+    else()
+        set(REDPANDA_WINDOWS_FILEFLAGS "0x0L")
+    endif()
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/resources/windows_version.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/windows_version.rc"
+        @ONLY)
     target_sources(RedPandaIDE PRIVATE
-        resources/windows_icon.rc)
+        resources/windows_icon.rc
+        "${CMAKE_CURRENT_BINARY_DIR}/windows_version.rc")
 elseif(MACOS)
     set(app_icon ../platform/macos/RedPandaIDE.icns)
     set_source_files_properties(${app_icon}
