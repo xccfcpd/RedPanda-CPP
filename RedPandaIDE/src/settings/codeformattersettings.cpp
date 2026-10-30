@@ -1089,7 +1089,7 @@ void CodeFormatterSettings::doSave()
 
 void CodeFormatterSettings::doLoad()
 {
-    mFormatterEngine = intValue("formatter_engine", FormatterEngine::feAStyle);
+    mFormatterEngine = intValue("formatter_engine", FormatterEngine::feClangFormat);
 
     mClangFormatStyle = intValue("clang_format_style", ClangFormatStyle::cfsFile);
     mClangFormatUseFallbackStyle = boolValue("clang_format_use_fallback_style", false);
