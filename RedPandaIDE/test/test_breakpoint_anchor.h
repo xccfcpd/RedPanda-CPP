@@ -26,6 +26,7 @@ private slots:
     void test_reanchor_restoresSeveralBreakpointsAfterAMergeAndItsUndo();
     void test_reanchor_findsAShortLineMergedIntoAnother();
     void test_reanchor_findsAShortLineInsideALongerLine();
+    void test_reanchor_findsTheNearestDuplicateWhenTheLineDisappears();
     void test_reanchor_doesNothingWhenNothingMoved();
     void test_reanchor_readsAPlainFingerprint();
     void test_reanchor_scalesToALargeContent();

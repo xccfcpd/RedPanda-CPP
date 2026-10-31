@@ -586,6 +586,9 @@ private:
     // True while the last user action was a breakpoint toggle: Ctrl+Z/Ctrl+Y
     // must then be routed to the breakpoint history, not to the text undo stack.
     bool mLastActionWasBreakpoint = false;
+    // True when the last action undone was a breakpoint toggle: the next redo is
+    // that toggle, while the next undo is the text again.
+    bool mLastUndoWasBreakpoint = false;
     QSet<int> mBookmarkLines;
     int mActiveBreakpointLine;
     PCppParser mParser;

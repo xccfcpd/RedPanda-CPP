@@ -227,6 +227,7 @@ Editor::Editor(QWidget *parent):
     // toggle no longer the last action: Ctrl+Z must then undo the text again.
     connect(this, &QSynEdit::changed, this, [this]{
         mLastActionWasBreakpoint = false;
+        mLastUndoWasBreakpoint = false;
     });
 
     connect(this,&QSynEdit::gutterClicked,this,&Editor::onGutterClicked);
@@ -5646,10 +5647,16 @@ void Editor::doUndo()
     // Ctrl+Z would silently do nothing while the menu stays enabled by the text
     // stack.
     if (mLastActionWasBreakpoint) {
-        if (mBreakpointUndoFunc && mBreakpointUndoFunc(this))
-            return;
+        // Undoing the toggle makes the toggle no longer the last action: the next
+        // Ctrl+Z must undo the text again, not an older breakpoint toggle.
         mLastActionWasBreakpoint = false;
+        if (mBreakpointUndoFunc && mBreakpointUndoFunc(this)) {
+            // ...but Ctrl+Y right after it must redo that toggle.
+            mLastUndoWasBreakpoint = true;
+            return;
+        }
     }
+    mLastUndoWasBreakpoint = false;
     // Tell the models that this is an undo, including the ordinary line-by-line
     // ones: the breakpoint model uses it to restore the breakpoints a line
     // deletion removed when that deletion itself is undone.
@@ -5670,10 +5677,18 @@ void Editor::doUndo()
 void Editor::doRedo()
 {
     // see doUndo()
-    if (mLastActionWasBreakpoint) {
+    if (mLastUndoWasBreakpoint) {
+        // Right after undoing a toggle, Ctrl+Y redoes that toggle.
+        mLastUndoWasBreakpoint = false;
         if (mBreakpointRedoFunc && mBreakpointRedoFunc(this))
             return;
+    }
+    if (mLastActionWasBreakpoint) {
+        // Redoing the toggle makes it the last action again only for this step; a
+        // following Ctrl+Y must redo the text, like Ctrl+Z after an undo.
         mLastActionWasBreakpoint = false;
+        if (mBreakpointRedoFunc && mBreakpointRedoFunc(this))
+            return;
     }
     mUndoingOrRedoing = true;
     auto redoGuard = finally([this]{ mUndoingOrRedoing = false; });
@@ -5780,6 +5795,7 @@ void Editor::tab()
 void Editor::toggleBreakpoint(int line)
 {
     mLastActionWasBreakpoint = true;
+    mLastUndoWasBreakpoint = false;
     if (hasBreakpoint(line)) {
         mBreakpointLines.remove(line);
         emit breakpointRemoved(this, line);
@@ -5818,6 +5834,7 @@ int Editor::addBreakpoint(int line)
 {
     line = snappedBreakpointLine(line);
     mLastActionWasBreakpoint = true;
+    mLastUndoWasBreakpoint = false;
     mBreakpointLines.insert(line);
     // remember the code the breakpoint is set on (with its neighbours, to tell
     // repeated code lines apart), so that it can follow it when the file
@@ -5834,6 +5851,7 @@ int Editor::addBreakpoint(int line)
 void Editor::clearBreakpoints()
 {
     mLastActionWasBreakpoint = true;
+    mLastUndoWasBreakpoint = false;
     emit breakpointsCleared(this);
     mBreakpointLines.clear();
     invalidate();

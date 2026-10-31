@@ -363,6 +363,25 @@ void TestBreakpointAnchor::test_reanchor_findsAShortLineInsideALongerLine()
     QCOMPARE(undone.line,2);
 }
 
+// A formatter can collapse several identical lines into one line each, so the
+// line the breakpoint was on disappears. The duplicate code cannot be told
+// apart, but the breakpoint must stay visible: it goes to the nearest line
+// holding the code and keeps its anchor for undo.
+void TestBreakpointAnchor::test_reanchor_findsTheNearestDuplicateWhenTheLineDisappears()
+{
+    QStringList before({"int a() {","return 0;","}",
+                        "int b() {","return 0;","}",
+                        "int c() {","return 0;","}"});
+    QString anchor = contentContextFingerprint(before,4);
+    QStringList collapsed({"int a() { return 0; }",
+                           "int b() { return 0; }",
+                           "int c() { return 0; }"});
+    ReanchoredBreakpoint result = reanchorBreakpoint(collapsed,4,anchor);
+    QCOMPARE(result.line,2);
+    QCOMPARE(result.fingerprint,anchor);
+    QVERIFY(result.changed);
+}
+
 // A formatter can attach a short line to the line above it ("} else {"): the code is
 // still there, inside the longer line, and the breakpoint follows it instead of being
 // left on the old line number.

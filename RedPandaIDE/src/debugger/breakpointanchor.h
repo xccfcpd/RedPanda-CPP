@@ -290,6 +290,29 @@ inline int sharedPrefixLength(const QString& line, const QString& code)
     return best;
 }
 
+// The nearest line holding "code" inside it, without requiring a unique match.
+// Used only when the line the breakpoint was on has gone from the content (a
+// formatter collapsed or split it): with duplicate code the breakpoint cannot be
+// put back on the exact original line, but it must stay visible - the nearest
+// duplicate is better than a line past the end of the content.
+inline int findNearestLineContainingCode(const QStringList& content, const QString& code,
+                                         int nearLine)
+{
+    if (code.length()<2)
+        return -1;
+    int result = -1;
+    int minDistance = content.count()+1;
+    for (int line=0;line<content.count();line++) {
+        if (!contentFingerprint(content,line).contains(code))
+            continue;
+        const int distance = qAbs(line-nearLine);
+        if (distance<minDistance) {
+            minDistance = distance;
+            result = line;
+        }
+    }
+    return result;
+}
 // The line of the content holding most of the code, or -1 when no line does or when
 // the best one is not clearly ahead of the others. A line holding a couple of
 // characters of the code ("cout <<", a lone "}") recognizes nothing and is refused;
@@ -409,6 +432,25 @@ inline ReanchoredBreakpoint reanchorBreakpoint(const QStringList& content, int l
                 // and the anchor is kept - it is the memory of the code that puts the
                 // breakpoint back on its own line when the merge is undone.
                 return result;
+            }
+            if (newLine<0
+                    && (!lineIsInContent(line, content.count())
+                        || !isBreakpointCandidateCode(
+                               breakpointCodeWithoutComments(content[line])))) {
+                // The line the breakpoint was on is gone (a formatter collapsed or
+                // split it). With duplicate code an exact match is impossible, but
+                // the breakpoint must stay visible: put it on the nearest line that
+                // holds the code, and keep the anchor so undo puts it back on the
+                // original line.
+                const QString code = lineFingerprintOf(fingerprint);
+                newLine = findNearestLineByAnchor(content, code, line, false, false);
+                if (newLine<0)
+                    newLine = findNearestLineContainingCode(content, code, line);
+                if (newLine>=0) {
+                    result.line = newLine;
+                    result.changed = true;
+                    return result;
+                }
             }
         }
         if (newLine<0) {
