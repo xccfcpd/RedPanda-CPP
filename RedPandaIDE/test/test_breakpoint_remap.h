@@ -53,6 +53,11 @@ private slots:
     void test_mergeDuringUndoKeepsRemovedBreakpointHistory();
     void test_lineMoveDuringUndoKeepsRemovedBreakpointHistory();
     void test_editor_mergeThenFormatAndUndo();
+    void test_undoRedoUndoKeepsBothBreakpoints();
+    void test_projectBreakpointsSurviveUndo();
+    void test_sameLineConditionalBreakpointsBindSeparately();
+    void test_deleteAllAndUndoRestoresBreakpoints();
+    void test_largeFileManyBreakpointsReanchorQuickly();
     void test_editor_reformatUndoKeepsSeveralBreakpoints();
     void test_editor_reformatKeepsBreakpointAndBookmark();
     void test_editor_realFormattersKeepBreakpointAndBookmark();

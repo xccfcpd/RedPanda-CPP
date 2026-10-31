@@ -10,6 +10,7 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QElapsedTimer>
 #include <QTest>
 #include <QSignalSpy>
 #include <QVector>
@@ -1022,6 +1023,121 @@ void TestBreakpointRemap::test_editor_mergeThenFormatAndUndo()
 // A whole content replacement (a formatting) and its undo, through the real editor:
 // the replacement re-anchors both breakpoints, and the undo puts each one back on its
 // own line.
+void TestBreakpointRemap::test_undoRedoUndoKeepsBothBreakpoints()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    PBreakpoint first = addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    // undo: line 4 is removed, then the undo-finished re-anchor restores it
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    model.reanchorBreakpoints(filename, content, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(second->line, 4);
+
+    // redo: line 4 is removed again
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+
+    // undo again: it comes back
+    model.onFileInsertLines(filename, 4, 1, false, true);
+    model.reanchorBreakpoints(filename, content, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(first->line, 1);
+    QCOMPARE(second->line, 4);
+}
+
+void TestBreakpointRemap::test_projectBreakpointsSurviveUndo()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1, true);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4, true);
+
+    model.onFileDeleteLines(filename, 4, 1, true, true);
+    QCOMPARE(model.breakpoints(true).count(), 1);
+    model.reanchorBreakpoints(filename, content, true, true);
+    QCOMPARE(model.breakpoints(true).count(), 2);
+    QCOMPARE(second->line, 4);
+}
+
+void TestBreakpointRemap::test_sameLineConditionalBreakpointsBindSeparately()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"), QStringLiteral("int b;")});
+    BreakpointModel model;
+    PBreakpoint first = addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 1);
+    first->condition = QStringLiteral("i == 1");
+    second->condition = QStringLiteral("i == 2");
+
+    model.updateBreakpointNumber(filename, 1, 7, QStringLiteral("i == 2"));
+    QCOMPARE(second->number, 7);
+    QCOMPARE(first->number, -1);
+
+    model.updateBreakpointNumber(filename, 1, 8, QStringLiteral("i == 1"));
+    QCOMPARE(first->number, 8);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+}
+
+void TestBreakpointRemap::test_deleteAllAndUndoRestoresBreakpoints()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;")});
+    BreakpointModel model;
+    PBreakpoint first = addBreakpoint(model, filename, content, 0);
+    PBreakpoint second = addBreakpoint(model, filename, content, 2);
+
+    model.onFileDeleteLines(filename, 0, content.count(), false, true);
+    QCOMPARE(model.breakpoints(false).count(), 0);
+
+    // The content is empty while the undo is in progress: keep the records.
+    model.reanchorBreakpoints(filename, QStringList(), false, true);
+    QCOMPARE(model.breakpoints(false).count(), 0);
+
+    model.onFileInsertLines(filename, 0, content.count(), false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(first->line, 0);
+    QCOMPARE(second->line, 2);
+}
+
+void TestBreakpointRemap::test_largeFileManyBreakpointsReanchorQuickly()
+{
+    const QString filename = QStringLiteral("large.cpp");
+    QStringList content;
+    content.reserve(5000);
+    for (int i=0;i<5000;i++)
+        content.append(QStringLiteral("int value%1 = %1;").arg(i));
+    BreakpointModel model;
+    for (int i=0;i<50;i++)
+        addBreakpoint(model, filename, content, i*100);
+
+    QElapsedTimer timer;
+    timer.start();
+    model.reanchorBreakpoints(filename, content, false, false);
+    const qint64 elapsed = timer.elapsed();
+
+    QCOMPARE(model.breakpoints(false).count(), 50);
+    QVERIFY2(elapsed < 2000,
+             qPrintable(QStringLiteral("re-anchor of 5000 lines / 50 breakpoints took %1 ms")
+                        .arg(elapsed)));
+}
+
 void TestBreakpointRemap::test_editor_reformatUndoKeepsSeveralBreakpoints()
 {
     const QString filename = QStringLiteral("a.cpp");
