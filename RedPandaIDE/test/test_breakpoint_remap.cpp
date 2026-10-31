@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QTest>
 #include <QSignalSpy>
+#include <QVector>
 
 #include <memory>
 #include <utility>
@@ -373,6 +374,44 @@ void TestBreakpointRemap::test_updateBreakpointNumberUsesCondition()
     QCOMPARE(second->number, 22);
 }
 
+// A breakpoint can be resolved by the debugger to another line (an empty line, a
+// brace, a macro). The number must still be bound to the breakpoint of the user:
+// without it the breakpoint cannot be removed or conditioned.
+void TestBreakpointRemap::test_updateBreakpointNumberFallsBackToTheNearestLine()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QString(),
+                               QStringLiteral("work();"),
+                               QStringLiteral("int b;")});
+    BreakpointModel model;
+    PBreakpoint empty = addBreakpoint(model, filename, content, 1);
+    model.updateBreakpointNumber(filename, 2, 5, QString());
+    QCOMPARE(empty->number, 5);
+    // the line itself is not changed by the number report
+    QCOMPARE(empty->line, 1);
+}
+
+// Several breakpoints can be candidates for the same report: the condition from
+// GDB tells them apart before the distance does.
+void TestBreakpointRemap::test_updateBreakpointNumberUsesTheNearestConditionalBreakpoint()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("a;"), QStringLiteral("b;"),
+                               QStringLiteral("c;"), QStringLiteral("d;"),
+                               QStringLiteral("e;")});
+    BreakpointModel model;
+    PBreakpoint first = addBreakpoint(model, filename, content, 0);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+    first->condition = QStringLiteral("one");
+    second->condition = QStringLiteral("two");
+
+    // GDB resolved the requested line 3 to line 4, where the conditional breakpoint is
+    model.updateBreakpointNumber(filename, 3, 9, QStringLiteral("two"));
+    QCOMPARE(second->number, 9);
+    QCOMPARE(first->number, -1);
+}
+
 void TestBreakpointRemap::test_snapMigratesBothModelsAndKeepsDeletions()
 {
     const QString filename = QStringLiteral("a.cpp");
@@ -537,6 +576,22 @@ void TestBreakpointRemap::test_reanchorAfterAReflowKeepsSeveralBreakpoints()
 // The real editor and the real model together: two breakpoints on different lines, a
 // line merged between them, then Ctrl+Z. The line reports move the model, and the
 // split re-anchors every breakpoint; each one must be back on its own line.
+// addBreakpoint() returns the line the breakpoint was really put on: callers that
+// need to configure the new breakpoint (MainWindow::onAddBreakpoint()) must use that
+// line, not the line the caret was on.
+void TestBreakpointRemap::test_editor_addBreakpointReturnsTheSnappedLine()
+{
+    mEditor->clearBreakpoints();
+    mEditor->setContent({QStringLiteral("int main() {"),
+                         QString(),
+                         QStringLiteral("    work();"),
+                         QStringLiteral("}")});
+    const int line = mEditor->addBreakpoint(1);
+    QCOMPARE(line, 2);
+    QVERIFY(mEditor->hasBreakpoint(2));
+    QVERIFY(!mEditor->hasBreakpoint(1));
+}
+
 void TestBreakpointRemap::test_editor_mergeAndUndoKeepsSeveralBreakpoints()
 {
     const QString filename = QStringLiteral("a.cpp");
@@ -595,6 +650,206 @@ void TestBreakpointRemap::test_editor_mergeAndUndoKeepsSeveralBreakpoints()
     QCOMPARE(second->line, 4);
     QVERIFY(mEditor->hasBreakpoint(1));
     QVERIFY(mEditor->hasBreakpoint(4));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// The video case: several line breaks are deleted one after another, so the code
+// of two breakpoints ends up in the middle of one long line. Undoing the merges
+// one by one (Ctrl+Z after Ctrl+Z) must put each breakpoint back on its own line:
+// the anchor must not have been refreshed with the text of the merged line.
+void TestBreakpointRemap::test_editor_repeatedMergesAndTheirUndoKeepBreakpoints()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList original({
+        QStringLiteral("#include <iostream>"),
+        QStringLiteral("// #include <stdLib.h>"),
+        QStringLiteral("// #include <math.h>"),
+        QStringLiteral("using namespace std;"),
+        QStringLiteral("int main() {"),
+        QStringLiteral("    int i, j;"),
+        QStringLiteral("    for (i = 1; i < 10; i++) {"),
+        QStringLiteral("        for (j = 1; j <= i; j++) {"),
+        QStringLiteral("            cout << i << \"*\" << j << \"=\" << i * j << \" \";"),
+        QStringLiteral("        }"),
+        QStringLiteral("        cout << \"\\n\";"),
+        QStringLiteral("    }"),
+        QStringLiteral("}")
+    });
+    QStringList content = original;
+    BreakpointModel model;
+    PBreakpoint onCout = addBreakpoint(model, filename, content, 8);
+    PBreakpoint onNewline = addBreakpoint(model, filename, content, 10);
+
+    struct Merge {
+        int line;
+        int leftLength;
+    };
+    QVector<Merge> merges;
+    auto mergeNextLine = [&](int line) {
+        merges.append(Merge{line, static_cast<int>(content[line].length())});
+        content[line] += content[line + 1];
+        content.removeAt(line + 1);
+        model.onFileMergeLines(filename, line + 1, line, false);
+        model.onFileDeleteLines(filename, line + 1, 1, false);
+    };
+    // The line breaks are deleted from the bottom up, like in the video.
+    for (int line : {11, 10, 9, 8, 7, 6, 5})
+        mergeNextLine(line);
+
+    // Ctrl+Z for every merge, from the last one back to the first.
+    while (!merges.isEmpty()) {
+        const Merge merge = merges.takeLast();
+        const QString right = content[merge.line].mid(merge.leftLength);
+        content[merge.line] = content[merge.line].left(merge.leftLength);
+        content.insert(merge.line + 1, right);
+        model.onFileInsertLines(filename, merge.line + 1, 1, false, true);
+        model.reanchorBreakpoints(filename, content, false);
+    }
+
+    QCOMPARE(content, original);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(onCout->line, 8);
+    QCOMPARE(onNewline->line, 10);
+}
+
+// Deleting a multi-line selection joins the lines: the breakpoints whose lines are
+// removed are dropped (their code is gone) until the deletion is undone, and the one
+// on the line whose text is joined follows it. Undoing the deletion must bring all of
+// them back to their own lines.
+void TestBreakpointRemap::test_editor_multiLineDeleteAndUndoKeepsBreakpoints()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("a();"),
+                               QStringLiteral("b();"),
+                               QStringLiteral("c();"),
+                               QStringLiteral("d();")});
+    mEditor->setFilename(filename);
+    mEditor->setContent(content);
+    BreakpointModel model;
+    PBreakpoint onB = addBreakpoint(model, filename, content, 1);
+    PBreakpoint onC = addBreakpoint(model, filename, content, 2);
+    mEditor->resetBreakpoints(&model);
+
+    // what EditorManager does with the line signals of the editor
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesInserted, this,
+            [this, &model, &filename](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileInsertLines(filename, startLine, count, false,
+                                        mEditor->isUndoingOrRedoing());
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model, &filename](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileDeleteLines(filename, startLine, count, false);
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model, &filename](int removedLine, int intoLine) {
+                model.onFileMergeLines(filename, removedLine, intoLine, false);
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model, &filename](int, int) {
+                model.reanchorBreakpoints(filename, mEditor->content(), false);
+                mEditor->resetBreakpoints(&model);
+            });
+
+    // select from the end of "a();" to the start of "c();" and delete: "b();" is
+    // removed and the text of "c();" is joined to the first line
+    mEditor->setSelBeginEnd(QSynedit::CharPos{4, 0}, QSynedit::CharPos{0, 2});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content(), QStringList({QStringLiteral("a();c();"),
+                                              QStringLiteral("d();")}));
+    QCOMPARE(onC->line, 0);
+
+    // Ctrl+Z: the lines come back, and every breakpoint finds its own line
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), content);
+    QCOMPARE(onB->line, 1);
+    QCOMPARE(onC->line, 2);
+    QVERIFY(mEditor->hasBreakpoint(1));
+    QVERIFY(mEditor->hasBreakpoint(2));
+    disconnect(mEditor.get(), nullptr, this, nullptr);
+}
+
+// A manual merge followed by a formatting that splits the line back, then Ctrl+Z
+// twice: the format is undone first, the merge second. The breakpoint must stay on
+// its code through both steps.
+void TestBreakpointRemap::test_editor_mergeThenFormatAndUndo()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("keepMe();"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;")});
+    mEditor->setFilename(filename);
+    mEditor->setContent(content);
+    BreakpointModel model;
+    PBreakpoint breakpoint = addBreakpoint(model, filename, content, 1);
+    mEditor->resetBreakpoints(&model);
+
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesInserted, this,
+            [this, &model, &filename](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileInsertLines(filename, startLine, count, false,
+                                        mEditor->isUndoingOrRedoing());
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesDeleted, this,
+            [this, &model, &filename](int startLine, int count) {
+                if (mEditor->isReplacingContent())
+                    return;
+                model.onFileDeleteLines(filename, startLine, count, false);
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesMerged, this,
+            [this, &model, &filename](int removedLine, int intoLine) {
+                model.onFileMergeLines(filename, removedLine, intoLine, false);
+                mEditor->resetBreakpoints(&model);
+            });
+    connect(mEditor.get(), &QSynedit::QSynEdit::linesSplit, this,
+            [this, &model, &filename](int, int) {
+                model.reanchorBreakpoints(filename, mEditor->content(), false);
+                mEditor->resetBreakpoints(&model);
+            });
+    mEditor->setContentReplacedFunc([this, &model](const QString& filename, bool inProject,
+                                                   const QStringList& content,
+                                                   const QMap<int,int>&) {
+        model.reanchorBreakpoints(filename, content, inProject);
+        mEditor->resetBreakpoints(&model);
+    });
+
+    // join "keepMe();" with the line below it
+    mEditor->setSelBeginEnd(QSynedit::CharPos{(int)mEditor->content().at(1).length(), 1},
+                            QSynedit::CharPos{0, 2});
+    QTest::keyPress(mEditor.get(), Qt::Key_Delete);
+    QCOMPARE(mEditor->content().count(), 3);
+    QCOMPARE(mEditor->content().at(0), QStringLiteral("int a;"));
+    QCOMPARE(mEditor->content().at(1), QStringLiteral("keepMe();int b;"));
+    QCOMPARE(mEditor->content().at(2), QStringLiteral("int c;"));
+    QCOMPARE(breakpoint->line, 1);
+
+    // the formatter splits the joined line back and adds a comment
+    mEditor->replaceContent(QStringLiteral("int a;\nkeepMe();\nint b;\nint c;\n// formatted"));
+    QCOMPARE(mEditor->content().count(), 5);
+    QCOMPARE(breakpoint->line, 1);
+
+    // Ctrl+Z: undo the format, then the merge
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), QStringList({QStringLiteral("int a;"),
+                                              QStringLiteral("keepMe();int b;"),
+                                              QStringLiteral("int c;")}));
+    QCOMPARE(breakpoint->line, 1);
+    mEditor->undo();
+    QCOMPARE(mEditor->content(), content);
+    QCOMPARE(breakpoint->line, 1);
+    QVERIFY(mEditor->hasBreakpoint(1));
+
+    mEditor->setContentReplacedFunc(nullptr);
     disconnect(mEditor.get(), nullptr, this, nullptr);
 }
 

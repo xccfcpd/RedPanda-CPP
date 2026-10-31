@@ -63,6 +63,38 @@ inline bool lineIsInContent(int line, int lineCount)
 // of the code, a semicolon moved around) is neither of those: that line still is the
 // line of the code, and its new text is worth remembering - it is what makes a
 // forgotten anchor good again.
+
+// Whether text a line carries besides the code is only what a formatter may
+// attach to it: punctuation, braces, and the keywords that bind a statement to
+// the line above it. Anything else is the code of another line.
+inline bool breakpointTextIsFormatting(const QString& text)
+{
+    static const QStringList keywords = {
+        QStringLiteral("else"), QStringLiteral("do"), QStringLiteral("try"),
+        QStringLiteral("catch"), QStringLiteral("finally"),
+        QStringLiteral("case"), QStringLiteral("default"),
+        QStringLiteral("public"), QStringLiteral("private"),
+        QStringLiteral("protected"), QStringLiteral("template"),
+        QStringLiteral("typename")
+    };
+    QString token;
+    auto flushToken = [&token]() -> bool {
+        if (token.isEmpty())
+            return true;
+        bool isKeyword = keywords.contains(token);
+        token.clear();
+        return isKeyword;
+    };
+    for (const QChar c : text) {
+        if (c.isLetterOrNumber() || c == QLatin1Char('_')) {
+            token += c;
+        } else if (!flushToken()) {
+            return false;
+        }
+    }
+    return flushToken();
+}
+
 inline bool lineIsTheLineOfTheCode(const QString& lineFingerprint,
                                    const QString& fingerprint)
 {
@@ -72,6 +104,9 @@ inline bool lineIsTheLineOfTheCode(const QString& lineFingerprint,
     const QString& code = parts[1];
     if (lineFingerprint==code)
         return true;
+    if (code.contains(lineFingerprint))
+        // only a piece of the code is on that line (the line was split)
+        return false;
     // The line holds the code followed or preceded by more code.  It is a
     // continuation line joined with its neighbour only when the old neighbour's
     // text is in the joined line as well; a formatter that merely adds a prefix
@@ -82,11 +117,29 @@ inline bool lineIsTheLineOfTheCode(const QString& lineFingerprint,
     if (!parts[0].isEmpty() && lineFingerprint.endsWith(code)
             && lineFingerprint.contains(parts[0]))
         return false;
-    if (code.contains(lineFingerprint))
-        // only a piece of the code is on that line (the line was split)
+    const int pos = lineFingerprint.indexOf(code);
+    if (pos<0)
+        return true;
+    // More than one edit can join lines: after a second merge the code is
+    // neither at the beginning nor at the end of the joined line, and the
+    // neighbours around it are no longer the ones the fingerprint remembers.
+    // Whatever surrounds the code there, if it is not formatting, is the code
+    // of another line: the line is a merged one, so the anchor must be kept. It
+    // is what puts the breakpoint back on its own line when the merges are
+    // undone one by one, instead of leaving it to drift with every Ctrl+Z.
+    const QString prefix = lineFingerprint.left(pos);
+    const QString suffix = lineFingerprint.mid(pos+code.length());
+    // The text of a neighbouring line that was merged in, even when it is only a
+    // brace, is still the code of that line: the breakpoint keeps its anchor.
+    if (!prefix.isEmpty()
+            && ((!parts[0].isEmpty() && prefix.contains(parts[0]))
+                || !breakpointTextIsFormatting(prefix)))
         return false;
-    return !((!parts[0].isEmpty() && lineFingerprint.startsWith(parts[0]+code))
-          || (!parts[2].isEmpty() && lineFingerprint.endsWith(code+parts[2])));
+    if (!suffix.isEmpty()
+            && ((!parts[2].isEmpty() && suffix.contains(parts[2]))
+                || !breakpointTextIsFormatting(suffix)))
+        return false;
+    return true;
 }
 
 // The code of a line without its comments, keeping string and character
@@ -253,21 +306,38 @@ inline int findLineHoldingMostOfTheCode(const QStringList& content, const QStrin
         return -1;
     if (code.length()<minShared) {
         // A short line can be merged into another one by a formatter (clang-format
-        // and astyle attach "} else {", for instance). It is too short for the
-        // half-of-the-code rule below, but a unique substring is still a reliable
-        // anchor; an ambiguous one is not.
+        // and astyle attach "} else {" or join continuation lines, for instance).
+        // It is too short for the half-of-the-code rule below, but a unique
+        // occurrence is still a reliable anchor - also when the code is neither at
+        // the start nor at the end of the joined line, as happens after several
+        // merges in a row. A one/two character code is only accepted when it is
+        // delimited: it is too easy to find inside another identifier.
         int result = -1;
         for (int line=0;line<content.count();line++) {
             const QString lineCode = contentFingerprint(content,line);
-            // The code was merged into that line: it is at one of its ends, not in the
-            // middle of unrelated code. A unique match at a line boundary is a safe
-            // anchor; an embedded or ambiguous one is not.
-            if (lineCode.contains(code)
-                    && (lineCode.startsWith(code) || lineCode.endsWith(code))) {
-                if (result>=0)
-                    return -1;
-                result = line;
+            if (!lineCode.contains(code))
+                continue;
+            bool delimited = false;
+            int pos = lineCode.indexOf(code);
+            while (pos>=0) {
+                const bool leftOk = pos==0
+                        || !(lineCode.at(pos-1).isLetterOrNumber()
+                             || lineCode.at(pos-1)==QLatin1Char('_'));
+                const int after = pos + code.length();
+                const bool rightOk = after>=lineCode.length()
+                        || !(lineCode.at(after).isLetterOrNumber()
+                             || lineCode.at(after)==QLatin1Char('_'));
+                if (leftOk && rightOk) {
+                    delimited = true;
+                    break;
+                }
+                pos = lineCode.indexOf(code, pos+1);
             }
+            if (!delimited && code.length()<3)
+                continue;
+            if (result>=0)
+                return -1;
+            result = line;
         }
         return result;
     }

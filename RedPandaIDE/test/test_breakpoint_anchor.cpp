@@ -344,6 +344,25 @@ void TestBreakpointAnchor::test_lineIsInContent_rejectsALinePastTheEnd()
     QVERIFY(!lineIsInContent(content.count(),content.count()));
 }
 
+// A very short line (shorter than the "most of the code" threshold) can be joined
+// into the middle of a longer line when a formatter merges several lines. The
+// breakpoint must follow it there, not stay on its old line number - that line can
+// even be past the end of the formatted content.
+void TestBreakpointAnchor::test_reanchor_findsAShortLineInsideALongerLine()
+{
+    QStringList before({"p();","q();","x();","b();","c();"});
+    QString anchor = contentContextFingerprint(before,2);
+    QStringList merged({"p();","q();x();b();","c();"});
+    ReanchoredBreakpoint result = reanchorBreakpoint(merged,2,anchor);
+    QCOMPARE(result.line,1);
+    QCOMPARE(result.fingerprint,anchor);
+    QVERIFY(result.changed);
+    // undoing the format puts the line back on its own line
+    ReanchoredBreakpoint undone = reanchorBreakpoint(before,result.line,
+                                                     result.fingerprint);
+    QCOMPARE(undone.line,2);
+}
+
 // A formatter can attach a short line to the line above it ("} else {"): the code is
 // still there, inside the longer line, and the breakpoint follows it instead of being
 // left on the old line number.

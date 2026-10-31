@@ -366,29 +366,61 @@ void BreakpointModel::updateBreakpointNumber(const QString& filename, int line, 
                                              const QString& condition)
 {
     const QString wanted = normalizedBreakpointCondition(condition);
-    PBreakpoint firstMatch;
-    PBreakpoint firstUnnumbered;
-    PBreakpoint sameCondition;
+    PBreakpoint sameLineSameCondition;
+    PBreakpoint sameLineUnnumbered;
+    PBreakpoint sameLineAny;
+    PBreakpoint nearestSameCondition;
+    PBreakpoint nearestUnnumbered;
+    int nearestSameConditionDistance = 0;
+    int nearestUnnumberedDistance = 0;
     foreach (PBreakpoint bp, breakpoints(mIsForProject)) {
-        if (bp->filename != filename || bp->line != line)
+        if (bp->filename != filename)
             continue;
-        if (!firstMatch)
-            firstMatch = bp;
+        const bool conditionMatches =
+                normalizedBreakpointCondition(bp->condition) == wanted;
+        if (bp->line == line) {
+            if (!sameLineAny)
+                sameLineAny = bp;
+            if (bp->number < 0) {
+                if (!sameLineUnnumbered)
+                    sameLineUnnumbered = bp;
+                if (conditionMatches && !sameLineSameCondition)
+                    sameLineSameCondition = bp;
+            }
+            continue;
+        }
+        // The debugger can resolve a breakpoint to a line of its own: an empty
+        // line, a brace, a macro or a template moves it a few lines away. The
+        // report is still about the breakpoint the user set, so bind the number to
+        // the nearest unnumbered breakpoint of that file instead of dropping it -
+        // a breakpoint without a number cannot be removed or conditioned.
         if (bp->number >= 0)
             continue;
-        if (!firstUnnumbered)
-            firstUnnumbered = bp;
-        if (normalizedBreakpointCondition(bp->condition) == wanted) {
-            sameCondition = bp;
-            break;
+        const int distance = qAbs(bp->line - line);
+        if (conditionMatches
+                && (!nearestSameCondition
+                    || distance < nearestSameConditionDistance)) {
+            nearestSameCondition = bp;
+            nearestSameConditionDistance = distance;
+        }
+        if (!nearestUnnumbered || distance < nearestUnnumberedDistance) {
+            nearestUnnumbered = bp;
+            nearestUnnumberedDistance = distance;
         }
     }
-    if (sameCondition)
-        sameCondition->number = number;
-    else if (firstUnnumbered)
-        firstUnnumbered->number = number;
-    else if (firstMatch)
-        firstMatch->number = number;
+    PBreakpoint target;
+    if (sameLineSameCondition)
+        target = sameLineSameCondition;
+    else if (sameLineUnnumbered)
+        target = sameLineUnnumbered;
+    else if (sameLineAny)
+        target = sameLineAny;
+    else if (nearestSameCondition)
+        target = nearestSameCondition;
+    else if (nearestUnnumbered)
+        target = nearestUnnumbered;
+    if (target)
+        target->number = number;
 }
 
 void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject)

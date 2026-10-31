@@ -7170,7 +7170,7 @@ void MainWindow::onAddBreakpoint()
     Editor* editor = mEditorManager->getEditor();
     if (!editor)
         return;
-    const int line = editor->caretY();
+    const int caretLine = editor->caretY();
     bool isOk = false;
     const QString condition = QInputDialog::getText(
                 this, tr("Add Breakpoint"),
@@ -7178,7 +7178,10 @@ void MainWindow::onAddBreakpoint()
                 QLineEdit::Normal, QString(), &isOk);
     if (!isOk)
         return;
-    editor->addBreakpoint(line);
+    // An empty line or a brace is moved to the code line by addBreakpoint(); the
+    // breakpoint to configure is the one on the line it really uses, not the caret
+    // line.
+    const int line = editor->addBreakpoint(caretLine);
     // The breakpoint just added is the last one of this line/file.
     const QList<PBreakpoint>& breakpoints =
             mDebugger->breakpointModel()->breakpoints(editor->inProject());

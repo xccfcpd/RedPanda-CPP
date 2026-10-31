@@ -5814,7 +5814,7 @@ int Editor::snappedBreakpointLine(int line)
     return line;
 }
 
-void Editor::addBreakpoint(int line)
+int Editor::addBreakpoint(int line)
 {
     line = snappedBreakpointLine(line);
     mLastActionWasBreakpoint = true;
@@ -5828,6 +5828,7 @@ void Editor::addBreakpoint(int line)
                                                       lineNonWhitespace(line+1)));
     invalidateGutterLine(line);
     invalidateLine(line);
+    return line;
 }
 
 void Editor::clearBreakpoints()

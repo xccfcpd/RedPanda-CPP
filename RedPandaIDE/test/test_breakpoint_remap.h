@@ -29,6 +29,8 @@ private slots:
     void test_addBreakpointOnAnEmptyLineKeepsSlashString();
     void test_addBreakpointOnAnEmptyLineKeepsRawString();
     void test_updateBreakpointNumberUsesCondition();
+    void test_updateBreakpointNumberFallsBackToTheNearestLine();
+    void test_updateBreakpointNumberUsesTheNearestConditionalBreakpoint();
     void test_snapMigratesBothModelsAndKeepsDeletions();
     void test_snapOnlyNotifiesTheActiveModel();
     void test_snapKeepsOtherDeletedBreakpointHistory();
@@ -41,6 +43,10 @@ private slots:
     void test_reanchorKeepsTheAnchorsOfSplitContinuationLines();
     void test_reanchorKeepsBothIndependentBreakpointsOnACollision();
     void test_editor_mergeAndUndoKeepsSeveralBreakpoints();
+    void test_editor_addBreakpointReturnsTheSnappedLine();
+    void test_editor_repeatedMergesAndTheirUndoKeepBreakpoints();
+    void test_editor_multiLineDeleteAndUndoKeepsBreakpoints();
+    void test_editor_mergeThenFormatAndUndo();
     void test_editor_reformatUndoKeepsSeveralBreakpoints();
     void test_editor_reformatKeepsBreakpointAndBookmark();
     void test_editor_realFormattersKeepBreakpointAndBookmark();

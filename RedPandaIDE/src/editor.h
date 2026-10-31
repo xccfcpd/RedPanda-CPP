@@ -232,7 +232,10 @@ public:
     void toggleBreakpoint(int line);
     // Adds a breakpoint without toggling: a line can hold several breakpoints (with
     // different conditions), and the new one is not removed when one already exists.
-    void addBreakpoint(int line);
+    // An empty line (or a brace) is moved to the nearest code line; the return value
+    // is the line the breakpoint was really put on, so that the caller can address
+    // the breakpoint it just added (see MainWindow::onAddBreakpoint()).
+    int addBreakpoint(int line);
     // Empty lines have no executable code: a breakpoint set there is put on the
     // next non-empty line (or, at the end of the file, the previous one).
     int snappedBreakpointLine(int line);
