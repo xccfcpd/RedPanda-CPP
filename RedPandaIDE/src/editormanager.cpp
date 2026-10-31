@@ -100,7 +100,8 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
         // old content (reload, format, tool output).
         mLastBreakpointActionWasUnbound = false;
         clearBreakpointHistory(e);
-        pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject);
+        pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(filename, content, inProject,
+                                                                      e->isRestoringContentByUndoRedo());
         pMainWindow->bookmarkModel()->moveBookmarksInFile(filename, markerLineMap, content.count(), inProject,
                                                           e->isRestoringContentByUndoRedo());
         // The carets follow the same map: their line bookkeeping is skipped while
@@ -687,7 +688,8 @@ void EditorManager::onEditorLinesRemoved(int startLine, int count)
         return;
     }
     pMainWindow->caretList().onLinesDeleted(e,startLine,count);
-    pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
+    pMainWindow->debugger()->breakpointModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject(),
+                                                                 e->isUndoingOrRedoing());
     pMainWindow->bookmarkModel()->onFileDeleteLines(e->filename(),startLine,count,e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
@@ -730,7 +732,8 @@ void EditorManager::onEditorLinesSplit(int mergedLine, int newLine)
     // have no fingerprint to do that with, so the model puts back the ones it moved
     // onto the merged line when the merge was done.
     pMainWindow->caretList().onLinesSplit(e, mergedLine, newLine);
-    pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(e->filename(), e->content(), e->inProject());
+    pMainWindow->debugger()->breakpointModel()->reanchorBreakpoints(e->filename(), e->content(), e->inProject(),
+                                                                  e->isUndoingOrRedoing() || e->isRestoringContentByUndoRedo());
     pMainWindow->bookmarkModel()->onFileSplitLines(e->filename(), mergedLine, newLine, e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());

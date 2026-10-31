@@ -169,7 +169,8 @@ public:
     // fingerprint yet store the one of the line they are on, so that they can
     // be re-anchored from now on (also for config files written by older
     // versions).
-    void reanchorBreakpoints(const QString& filename, const QStringList& content, bool forProject);
+    void reanchorBreakpoints(const QString& filename, const QStringList& content, bool forProject,
+                             bool keepRemovedHistory = false);
     // Moving the breakpoints stored on an empty line (from an old config, for
     // instance) to the nearest line that can hold a breakpoint, and refreshing
     // their anchors.  Called when an editor shows the file.
@@ -184,7 +185,8 @@ public:
 public slots:
     void updateBreakpointNumber(const QString& filename, int line, int number, const QString& condition = QString());
     void invalidateAllBreakpointNumbers(); // call this when gdb is stopped
-    void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject);
+    void onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject,
+                           bool undoRedo = false);
     // undoRedo tells whether the insertion is the undo/redo of a line deletion:
     // only then are the breakpoints that deletion removed put back (see
     // onFileDeleteLines()). A plain insertion of a line at the same place must not

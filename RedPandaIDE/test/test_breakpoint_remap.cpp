@@ -775,6 +775,69 @@ void TestBreakpointRemap::test_editor_multiLineDeleteAndUndoKeepsBreakpoints()
     disconnect(mEditor.get(), nullptr, this, nullptr);
 }
 
+// A whole-content undo reports the deleted lines in several ranges. They all belong
+// to the same undo: the second report must not clear the breakpoint record of the
+// first one, or only the last breakpoint is put back.
+void TestBreakpointRemap::test_undoOfMultiRangeDeleteKeepsAllBreakpoints()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    PBreakpoint first = addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    // Ctrl+Z of a whole-content replacement: two deletion ranges of the same undo.
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    model.onFileDeleteLines(filename, 1, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 0);
+
+    // The insertion reports of the same undo put both lines back.
+    model.onFileInsertLines(filename, 1, 1, false, true);
+    model.onFileInsertLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(first->line, 1);
+    QCOMPARE(second->line, 4);
+}
+
+// During the undo of a whole-content replacement a line split can be reported
+// before the insertion that restores another breakpoint's line. Re-anchoring then
+// must keep the deletion record instead of clearing it.
+void TestBreakpointRemap::test_reanchorDuringUndoKeepsRemovedBreakpointHistory()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    const QStringList afterDelete({QStringLiteral("int a;"),
+                                   QStringLiteral("int b;"),
+                                   QStringLiteral("int c;"),
+                                   QStringLiteral("int e;"),
+                                   QStringLiteral("int f;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+
+    // A split report calls reanchorBreakpoints while the undo is still running.
+    model.reanchorBreakpoints(filename, afterDelete, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+
+    // The insertion report of the same undo still has the deleted breakpoint.
+    model.onFileInsertLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(second->line, 4);
+}
+
 // A manual merge followed by a formatting that splits the line back, then Ctrl+Z
 // twice: the format is undone first, the merge second. The breakpoint must stay on
 // its code through both steps.

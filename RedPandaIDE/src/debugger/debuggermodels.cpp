@@ -222,11 +222,15 @@ void BreakpointModel::renameBreakpointFilenames(const QString &oldFileName, cons
     }
 }
 
-void BreakpointModel::reanchorBreakpoints(const QString &filename, const QStringList &content, bool forProject)
+void BreakpointModel::reanchorBreakpoints(const QString &filename, const QStringList &content, bool forProject,
+                                          bool keepRemovedHistory)
 {
     // The content has been replaced: the line history of a deletion is about the
-    // old content and must not restore anything afterwards.
-    clearRemovedBreakpoints(filename, forProject);
+    // old content and must not restore anything afterwards. During the undo/redo of
+    // such a replacement the deletion reports are split in several ranges, though:
+    // the records of the ranges not restored yet must survive this call.
+    if (!keepRemovedHistory)
+        clearRemovedBreakpoints(filename, forProject);
     QList<PBreakpoint> & lst=forProject?mProjectBreakpoints:mBreakpoints;
     for (int i=0;i<lst.count();i++) {
         PBreakpoint breakpoint = lst[i];
@@ -423,11 +427,16 @@ void BreakpointModel::updateBreakpointNumber(const QString& filename, int line, 
         target->number = number;
 }
 
-void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject)
+void BreakpointModel::onFileDeleteLines(const QString& filename, int startLine, int count, bool forProject,
+                                        bool undoRedo)
 {
     // A later deletion supersedes the history of the previous one: only the line
-    // deletion the user is about to undo is remembered.
-    clearRemovedBreakpoints(filename, forProject);
+    // deletion the user is about to undo is remembered. An undo/redo of a whole
+    // content replacement can report several deletion ranges, though: they all
+    // belong to the same undo, so their records must accumulate instead of being
+    // cleared by the next range.
+    if (!undoRedo)
+        clearRemovedBreakpoints(filename, forProject);
     const QList<PBreakpoint> &list=breakpoints(forProject);
     QList<PBreakpoint> removed;
     for (int i = list.count()-1;i>=0;i--){
@@ -486,12 +495,14 @@ void BreakpointModel::onFileInsertLines(const QString& filename, int startLine, 
             }
             records.removeAt(i);
         }
-    }
-    // Any record left is stale: either this was a plain insertion (the breakpoint
-    // stays deleted), or the undo inserted another line than the deleted one.
-    for (int i=records.count()-1;i>=0;i--) {
-        if (records[i].forProject==forProject)
-            records.removeAt(i);
+        // Records not in this range belong to another deletion range of the same
+        // undo/redo: keep them for the insertion report that restores that range.
+    } else {
+        // A plain insertion makes every record stale: the breakpoint stays deleted.
+        for (int i=records.count()-1;i>=0;i--) {
+            if (records[i].forProject==forProject)
+                records.removeAt(i);
+        }
     }
     if (records.isEmpty())
         mRemovedBreakpoints.erase(it);
