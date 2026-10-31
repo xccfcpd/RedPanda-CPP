@@ -193,8 +193,10 @@ public slots:
     // bring back a breakpoint the user removed by deleting its line.
     void onFileInsertLines(const QString& filename, int startLine, int count,
                            bool forProject, bool undoRedo = false);
-    void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject);
-    void onFileMergeLines(const QString& filename, int removedLine, int intoLine, bool forProject);
+    void onFileLineMoved(const QString& filename, int fromLine, int toLine, bool forProject,
+                         bool keepRemovedHistory = false);
+    void onFileMergeLines(const QString& filename, int removedLine, int intoLine, bool forProject,
+                          bool keepRemovedHistory = false);
 private:
     bool isForProject() const;
     void setIsForProject(bool newIsForProject);

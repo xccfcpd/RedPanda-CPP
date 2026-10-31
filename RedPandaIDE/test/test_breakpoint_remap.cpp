@@ -805,8 +805,8 @@ void TestBreakpointRemap::test_undoOfMultiRangeDeleteKeepsAllBreakpoints()
 }
 
 // During the undo of a whole-content replacement a line split can be reported
-// before the insertion that restores another breakpoint's line. Re-anchoring then
-// must keep the deletion record instead of clearing it.
+// before any insertion report. Re-anchoring is then the place that puts the
+// pending deleted breakpoint back.
 void TestBreakpointRemap::test_reanchorDuringUndoKeepsRemovedBreakpointHistory()
 {
     const QString filename = QStringLiteral("a.cpp");
@@ -829,11 +829,114 @@ void TestBreakpointRemap::test_reanchorDuringUndoKeepsRemovedBreakpointHistory()
     QCOMPARE(model.breakpoints(false).count(), 1);
 
     // A split report calls reanchorBreakpoints while the undo is still running.
+    // The pending breakpoint is put back there; no insertion may be reported.
     model.reanchorBreakpoints(filename, afterDelete, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    // "int d;" is not in afterDelete any more: the restored breakpoint is
+    // re-anchored to the nearest line holding code (line 3), not left on line 4.
+    QCOMPARE(second->line, 3);
+}
+
+// If the undo restores the content through split/merge reports only, no insertion
+// is reported for the deleted line. Re-anchoring must put the pending breakpoint
+// back instead of leaving it in the removed-history forever.
+void TestBreakpointRemap::test_reanchorDuringUndoRestoresRemovedBreakpoint()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    model.onFileDeleteLines(filename, 4, 1, false, true);
     QCOMPARE(model.breakpoints(false).count(), 1);
 
-    // The insertion report of the same undo still has the deleted breakpoint.
-    model.onFileInsertLines(filename, 4, 1, false, true);
+    // No insertion report: the whole content was restored as split/merge reports,
+    // and re-anchoring is the last chance to put the breakpoint back.
+    model.reanchorBreakpoints(filename, content, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(second->line, 4);
+}
+
+// A formatting can make the content longer; after undoing it the recorded deleted
+// line can be beyond the restored content. The breakpoint must still be restored
+// (clamped) instead of being silently skipped.
+void TestBreakpointRemap::test_reanchorDuringUndoRestoresRecordBeyondTheContent()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    const QStringList shorter({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+    model.reanchorBreakpoints(filename, shorter, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QVERIFY(second->line >= 0);
+    QVERIFY(second->line < shorter.count());
+}
+
+// During the undo of a whole-content replacement a merge can be reported before
+// the pending deleted breakpoint is restored. The merge report must not clear the
+// deletion record.
+void TestBreakpointRemap::test_mergeDuringUndoKeepsRemovedBreakpointHistory()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+    model.onFileMergeLines(filename, 3, 2, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+
+    model.reanchorBreakpoints(filename, content, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 2);
+    QCOMPARE(second->line, 4);
+}
+
+// A line move reported during the undo must not clear the pending deletion record
+// either.
+void TestBreakpointRemap::test_lineMoveDuringUndoKeepsRemovedBreakpointHistory()
+{
+    const QString filename = QStringLiteral("a.cpp");
+    const QStringList content({QStringLiteral("int a;"),
+                               QStringLiteral("int b;"),
+                               QStringLiteral("int c;"),
+                               QStringLiteral("int d;"),
+                               QStringLiteral("int e;"),
+                               QStringLiteral("int f;")});
+    BreakpointModel model;
+    addBreakpoint(model, filename, content, 1);
+    PBreakpoint second = addBreakpoint(model, filename, content, 4);
+
+    model.onFileDeleteLines(filename, 4, 1, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+    model.onFileLineMoved(filename, 3, 2, false, true);
+    QCOMPARE(model.breakpoints(false).count(), 1);
+
+    model.reanchorBreakpoints(filename, content, false, true);
     QCOMPARE(model.breakpoints(false).count(), 2);
     QCOMPARE(second->line, 4);
 }

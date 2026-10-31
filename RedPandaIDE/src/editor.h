@@ -74,6 +74,11 @@ using GetCppParserFunc = std::function<PCppParser (Editor *)>;
 using ContentReplacedFunc = std::function<void (const QString& filename, bool inProject,
                                                 const QStringList& content,
                                                 const QMap<int,int>& markerLineMap)>;
+// Called when a text undo/redo has finished. EditorManager re-anchors the
+// breakpoints and restores the records of the lines the undo removed; some undo
+// steps report only line deletions and never an insertion, so this is the last
+// chance to put those breakpoints back.
+using UndoRedoFinishedFunc = std::function<void ()>;
 // Lines hold by the application outside of the breakpoint/bookmark models (the
 // history of the caret positions of the file, see CaretList). The editor anchors
 // them with the markers, so that they follow their code when the whole content is
@@ -384,6 +389,7 @@ public:
     void setGetMacroVarsFunc(const GetMacroVarsFunc &newGetMacroVarsFunc);
 
     void setContentReplacedFunc(const ContentReplacedFunc &newContentReplacedFunc);
+    void setUndoRedoFinishedFunc(const UndoRedoFinishedFunc &newUndoRedoFinishedFunc);
 
     void setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc);
 
@@ -638,6 +644,7 @@ private:
     GetReformatterFunc mGetReformatterFunc;
     GetMacroVarsFunc mGetMacroVarsFunc;
     ContentReplacedFunc mContentReplacedFunc;
+    UndoRedoFinishedFunc mUndoRedoFinishedFunc;
     GetAnchorLinesFunc mGetAnchorLinesFunc;
     GetCppParserFunc mGetCppParserFunc;
 #ifdef ENABLE_SDCC

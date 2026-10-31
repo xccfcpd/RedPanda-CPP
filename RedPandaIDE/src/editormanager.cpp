@@ -110,6 +110,14 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
         e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
         e->resetBookmarks(pMainWindow->bookmarkModel());
     });
+    // Some undo steps restore the content by reporting only line deletions and
+    // never the insertion of the deleted lines. Restore/re-anchor the recorded
+    // breakpoints once the text undo/redo has finished.
+    e->setUndoRedoFinishedFunc([this, e] {
+        auto model = pMainWindow->debugger()->breakpointModel();
+        model->reanchorBreakpoints(e->filename(), e->content(), e->inProject(), true);
+        e->resetBreakpoints(model.get());
+    });
     // The carets of the file follow the same line map (see CaretList::remapLines()):
     // the editor anchors their lines like the markers, so they are moved by the
     // replacement instead of being left on stale lines.
@@ -712,7 +720,8 @@ void EditorManager::onEditorLinesMerged(int removedLine, int intoLine)
     // that line may have to be pushed further down (see BookmarkModel::onFileMergeLines())
     // and the content, already merged, says how far the file goes.
     pMainWindow->caretList().onLinesMerged(e, removedLine, intoLine);
-    pMainWindow->debugger()->breakpointModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->inProject());
+    pMainWindow->debugger()->breakpointModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->inProject(),
+                                                                 e->isUndoingOrRedoing() || e->isRestoringContentByUndoRedo());
     pMainWindow->bookmarkModel()->onFileMergeLines(e->filename(), removedLine, intoLine, e->content().count(), e->inProject());
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
     e->resetBookmarks(pMainWindow->bookmarkModel());
@@ -748,7 +757,8 @@ void EditorManager::onEditorLineMoved(int fromLine, int toLine)
         return;
     }
     pMainWindow->caretList().onLinesMoved(e, fromLine, toLine);
-    pMainWindow->debugger()->breakpointModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
+    pMainWindow->debugger()->breakpointModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject(),
+                                                                e->isUndoingOrRedoing() || e->isRestoringContentByUndoRedo());
     pMainWindow->bookmarkModel()->onFileLineMoved(e->filename(),fromLine,toLine,e->inProject());
 
     e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());

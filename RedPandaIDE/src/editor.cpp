@@ -4617,6 +4617,11 @@ void Editor::setContentReplacedFunc(const ContentReplacedFunc &newContentReplace
     mContentReplacedFunc = newContentReplacedFunc;
 }
 
+void Editor::setUndoRedoFinishedFunc(const UndoRedoFinishedFunc &newUndoRedoFinishedFunc)
+{
+    mUndoRedoFinishedFunc = newUndoRedoFinishedFunc;
+}
+
 void Editor::setAnchorLinesFunc(const GetAnchorLinesFunc &newGetAnchorLinesFunc)
 {
     mGetAnchorLinesFunc = newGetAnchorLinesFunc;
@@ -5672,6 +5677,11 @@ void Editor::doUndo()
         runWholeContentChange([this]{ QSynEdit::doUndo(); });
     else
         QSynEdit::doUndo();
+    // Some undo steps report only line deletions and never the insertion of the
+    // lines they restore. This is the last chance to put the recorded breakpoints
+    // back and re-anchor them on the restored content.
+    if (mUndoRedoFinishedFunc)
+        mUndoRedoFinishedFunc();
 }
 
 void Editor::doRedo()
@@ -5696,6 +5706,8 @@ void Editor::doRedo()
         runWholeContentChange([this]{ QSynEdit::doRedo(); });
     else
         QSynEdit::doRedo();
+    if (mUndoRedoFinishedFunc)
+        mUndoRedoFinishedFunc();
 }
 
 void Editor::replaceContent(const QString &newContent, bool doReparse)

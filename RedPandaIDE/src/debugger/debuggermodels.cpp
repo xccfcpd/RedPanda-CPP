@@ -231,6 +231,34 @@ void BreakpointModel::reanchorBreakpoints(const QString &filename, const QString
     // the records of the ranges not restored yet must survive this call.
     if (!keepRemovedHistory)
         clearRemovedBreakpoints(filename, forProject);
+    else {
+        // The undo/redo may restore the content through split/merge reports only:
+        // put back the breakpoints whose deletion was recorded before the line
+        // reports were complete. Re-anchoring below then places them on their code.
+        auto removedIt = mRemovedBreakpoints.find(filename);
+        if (removedIt != mRemovedBreakpoints.end()) {
+            QList<RemovedBreakpoint>& records = removedIt.value();
+            for (int i = records.count()-1; i >= 0; --i) {
+                const RemovedBreakpoint& record = records[i];
+                if (record.forProject != forProject)
+                    continue;
+                if (record.line < 0 || content.isEmpty())
+                    continue;
+                // The recorded line belongs to the content before the undo: a
+                // formatting can have made it longer than the restored content.
+                // Clamp it so the breakpoint is not dropped; the re-anchor below
+                // finds its code again.
+                const int restoreLine = qBound(0, record.line, content.count()-1);
+                for (const PBreakpoint& breakpoint : record.breakpoints) {
+                    breakpoint->line = restoreLine;
+                    addBreakpoint(breakpoint, forProject);
+                }
+                records.removeAt(i);
+            }
+            if (records.isEmpty())
+                mRemovedBreakpoints.erase(removedIt);
+        }
+    }
     QList<PBreakpoint> & lst=forProject?mProjectBreakpoints:mBreakpoints;
     for (int i=0;i<lst.count();i++) {
         PBreakpoint breakpoint = lst[i];
@@ -537,11 +565,15 @@ void BreakpointModel::clearRemovedBreakpoints(const QString& filename, bool forP
         mRemovedBreakpoints.erase(it);
 }
 
-void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int toLine, bool forProject)
+void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int toLine, bool forProject,
+                                      bool keepRemovedHistory)
 {
     // The line history of a deletion is about the lines of the old content: a line
-    // move means the content changed, so it must not be used to restore anything.
-    clearRemovedBreakpoints(filename, forProject);
+    // move means the content changed, so it must not be used to restore anything
+    // afterwards. The line move can also be part of an undo/redo, though, and then
+    // the pending deletion records must survive (see reanchorBreakpoints()).
+    if (!keepRemovedHistory)
+        clearRemovedBreakpoints(filename, forProject);
     const QList<PBreakpoint> &list=breakpoints(forProject);
 
     for (int i = 0; i<list.count();i++){
@@ -568,12 +600,15 @@ void BreakpointModel::onFileLineMoved(const QString &filename, int fromLine, int
     }
 }
 
-void BreakpointModel::onFileMergeLines(const QString &filename, int removedLine, int intoLine, bool forProject)
+void BreakpointModel::onFileMergeLines(const QString &filename, int removedLine, int intoLine, bool forProject,
+                                       bool keepRemovedHistory)
 {
     // The line is removed (onFileDeleteLines() is called right after), but its text is
     // appended to the line it is merged into: a breakpoint set on it follows its code
-    // there instead of being dropped.
-    clearRemovedBreakpoints(filename, forProject);
+    // there instead of being dropped. During an undo/redo the pending deletion
+    // records must survive this report (see reanchorBreakpoints()).
+    if (!keepRemovedHistory)
+        clearRemovedBreakpoints(filename, forProject);
     const QList<PBreakpoint> &list=breakpoints(forProject);
 
     for (int i = 0; i<list.count();i++){
