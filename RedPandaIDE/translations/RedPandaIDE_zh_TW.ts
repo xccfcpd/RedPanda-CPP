@@ -7024,6 +7024,10 @@ p, li { white-space: pre-wrap; }
         <source>Filter project files (Esc clears)</source>
         <translation>過濾專案檔案（Esc 清除）</translation>
     </message>
+    <message>
+        <source>Ctrl+Alt+P</source>
+        <translation>Ctrl+Alt+P</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>

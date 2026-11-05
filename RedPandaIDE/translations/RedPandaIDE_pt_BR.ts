@@ -6953,6 +6953,10 @@
         <source>Filter project files (Esc clears)</source>
         <translation>Filtrar arquivos do projeto (Esc limpa)</translation>
     </message>
+    <message>
+        <source>Ctrl+Alt+P</source>
+        <translation>Ctrl+Alt+P</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>
