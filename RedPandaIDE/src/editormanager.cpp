@@ -1212,6 +1212,8 @@ bool EditorManager::closeAll(bool force) {
 //    });
     while (mLeftPageWidget->count()>0) {
         Editor* e = getEditor(0,mLeftPageWidget);
+        if (!e)     // the page can be gone while the tab is still there (see openedEditors())
+            break;
         if (e->parser())
             resetCppParser(e->parser());
         if (!closeEditor(e,false,force)) {
@@ -1220,6 +1222,8 @@ bool EditorManager::closeAll(bool force) {
     }
     while (mRightPageWidget->count()>0) {
         Editor* e = getEditor(0,mRightPageWidget);
+        if (!e)     // see above
+            break;
         if (e->parser())
             resetCppParser(e->parser());
         if (!closeEditor(e,false,force)) {
@@ -1231,14 +1235,7 @@ bool EditorManager::closeAll(bool force) {
 
 bool EditorManager::closeOthers(Editor *editor)
 {
-    QList<Editor*> editors;
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        editors.append(static_cast<Editor*>(mLeftPageWidget->widget(i)));
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        editors.append(static_cast<Editor*>(mRightPageWidget->widget(i)));
-    }
-    for (Editor* e: editors ) {
+    for (Editor* e: openedEditors()) {
         if (e!=editor) {
             if (!closeEditor(e,false,false)) {
                 return false;

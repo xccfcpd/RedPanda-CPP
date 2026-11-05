@@ -1870,7 +1870,7 @@ Editor* MainWindow::openFile(QString filename, bool activate, FileType fileType,
         Editor* oldEditor=nullptr;
         if (mEditorManager->pageCount()==1) {
             oldEditor = mEditorManager->getEditor(0);
-            if (!oldEditor->isNew() || oldEditor->modified()) {
+            if (oldEditor && (!oldEditor->isNew() || oldEditor->modified())) {
                 oldEditor = nullptr;
             }
         }
@@ -1941,7 +1941,7 @@ void MainWindow::openProject(QString filename, bool openFiles)
     } else {
         if (mEditorManager->pageCount()==1) {
             oldEditor = mEditorManager->getEditor(0);
-            if (!oldEditor->isNew() || oldEditor->modified()) {
+            if (oldEditor && (!oldEditor->isNew() || oldEditor->modified())) {
                 oldEditor = nullptr;
             }
         }
@@ -5385,6 +5385,11 @@ void MainWindow::onEditorTabContextMenu(QTabWidget* tabWidget, const QPoint &pos
     QMenu menu(this);
     QTabBar* tabBar = tabWidget->tabBar();
     Editor * editor = dynamic_cast<Editor *>(tabWidget->widget(index));
+    if (!editor) {
+        // The tab bar and the internal page list can disagree for a moment (see
+        // EditorManager::openedEditors()): the tab is there but its page is gone.
+        return;
+    }
     if (!switchHeaderSourceTarget(editor).isEmpty()) {
         menu.addAction(ui->actionSwitchHeaderSource);
         menu.addSeparator();
@@ -7729,6 +7734,8 @@ void MainWindow::showHideInfosTab(QWidget *widget, bool show)
             int insert = -1;
             for (int i=0;i<ui->tabExplorer->count();i++) {
                 QWidget * w=ui->tabExplorer->widget(i);
+                if (!w)
+                    continue;
                 PTabWidgetInfo infoW = mTabInfosData[w];
                 if (infoW->order>info->order) {
                     insert = i;
@@ -7762,6 +7769,8 @@ void MainWindow::showHideMessagesTab(QWidget *widget, bool show)
             int insert = -1;
             for (int i=0;i<ui->tabMessages->count();i++) {
                 QWidget * w=ui->tabMessages->widget(i);
+                if (!w)
+                    continue;
                 PTabWidgetInfo infoW = mTabMessagesData[w];
                 if (infoW->order>info->order) {
                     insert = i;
