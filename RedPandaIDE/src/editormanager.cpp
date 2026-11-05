@@ -89,6 +89,16 @@ Editor* EditorManager::newEditor(const QString& filename, const QByteArray& enco
 #endif
     e->setCodeSnippetsManager(pMainWindow->codeSnippetManager());
     e->setFileSystemWatcher(pMainWindow->fileSystemWatcher());
+    // The project tree marks the files with unsaved changes: repaint the row when
+    // the modification state of a project file flips.
+    connect(e, &QSynedit::QSynEdit::statusChanged, this,
+            [this, e](QSynedit::StatusChanges changes) {
+        if (!(changes & QSynedit::StatusChange::ModifyChanged))
+            return;
+        if (!e->inProject() || !pMainWindow || !pMainWindow->project())
+            return;
+        pMainWindow->project()->model()->refreshIcon(e->filename());
+    });
     // The whole content of an editor can be replaced at once (a file reloaded
     // from the disk, a reformat, the output of a tool): its breakpoints are then
     // re-anchored on the code they were set on and its bookmarks follow their

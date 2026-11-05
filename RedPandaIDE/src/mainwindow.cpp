@@ -21,6 +21,12 @@
 #include <QComboBox>
 #include <QDesktopServices>
 #include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QKeyEvent>
+#include <QUrl>
+#include <QDir>
+#include <QSet>
+#include <functional>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QJsonArray>
@@ -193,6 +199,17 @@ MainWindow::MainWindow(QWidget *parent)
     ui->projectView->setModel(mProjectProxyModel);
     delete m;
     mProjectProxyModel->setDynamicSortFilter(false);
+    // The project filter only hides files; their folders are kept by the recursive
+    // filtering, and dropping files from the explorer adds them to the project.
+    mProjectProxyModel->setRecursiveFilteringEnabled(true);
+    mProjectProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    connect(ui->txtProjectFilter, &QLineEdit::textChanged,
+            this, &MainWindow::onProjectFilterChanged);
+    connect(ui->projectView, &QTreeView::activated,
+            this, &MainWindow::onProjectViewItemActivated);
+    ui->txtProjectFilter->installEventFilter(this);
+    ui->projectView->installEventFilter(this);
+    ui->projectView->setAcceptDrops(true);
     ui->EditorTabsRight->setVisible(false);
 
     mVisitHistoryManager = std::make_shared<VisitHistoryManager>(
@@ -1954,9 +1971,7 @@ void MainWindow::openProject(QString filename, bool openFiles)
     mClassBrowserModel->beginUpdate();
     mProject = Project::load(filename,mEditorManager,mIconsManager.get(), &mFileSystemWatcher);
     updateProjectView();
-    ui->projectView->expand(
-                mProjectProxyModel->mapFromSource(
-                    mProject->model()->rootIndex()));
+    restoreProjectTreeState();
     //mVisitHistoryManager->removeProject(filename);
 
 //  // if project manager isn't open then open it
@@ -3245,6 +3260,43 @@ void MainWindow::createCustomActions()
     connect(mProject_SwitchCustomViewMode, &QAction::triggered,
             this, &MainWindow::onProjectSwitchCustomViewMode);
 
+    mProject_Refresh = createAction(
+                tr("Refresh"),
+                ui->projectView);
+    connect(mProject_Refresh, &QAction::triggered,
+            this, &MainWindow::onProjectRefresh);
+
+    mProject_Toggle_Build = createAction(
+                tr("Include in build"),
+                ui->projectView);
+    mProject_Toggle_Build->setCheckable(true);
+    connect(mProject_Toggle_Build, &QAction::triggered,
+            this, &MainWindow::onProjectToggleBuild);
+
+    mProject_Copy_Name = createAction(
+                tr("Copy File Name"),
+                ui->projectView);
+    connect(mProject_Copy_Name, &QAction::triggered,
+            this, &MainWindow::onProjectCopyFileName);
+    mProject_Copy_Relative_Path = createAction(
+                tr("Copy Relative Path"),
+                ui->projectView);
+    connect(mProject_Copy_Relative_Path, &QAction::triggered,
+            this, &MainWindow::onProjectCopyRelativePath);
+    mProject_Copy_Full_Path = createAction(
+                tr("Copy Full Path"),
+                ui->projectView);
+    connect(mProject_Copy_Full_Path, &QAction::triggered,
+            this, &MainWindow::onProjectCopyFullPath);
+
+    mProject_Focus_Filter = createAction(
+                tr("Filter Project Files"),
+                this,
+                QKeySequence(tr("Ctrl+Alt+P")),
+                Qt::WindowShortcut);
+    connect(mProject_Focus_Filter, &QAction::triggered,
+            this, &MainWindow::onProjectFocusFilter);
+
     //browser
     mClassBrowser_Sort_By_Type = createAction(
                 tr("Sort By Type"),
@@ -4077,6 +4129,14 @@ void MainWindow::onBreakpointsViewContextMenu(const QPoint &pos)
     menu.exec(ui->tblBreakpoints->mapToGlobal(pos));
 }
 
+// Defined next to the project tree helpers below; declared here because the
+// context menu that uses it appears earlier in the file.
+static PProjectUnit projectUnitFromProxyIndex(const QAbstractItemModel *proxyModel,
+                                              const QModelIndex &viewIndex);
+// The first file row of the (already filtered) project tree.
+static QModelIndex firstProjectUnitRow(const QAbstractItemModel *model,
+                                       const QModelIndex &parent);
+
 void MainWindow::onProjectViewContextMenu(const QPoint &pos)
 {
     if (!mProject)
@@ -4121,6 +4181,17 @@ void MainWindow::onProjectViewContextMenu(const QPoint &pos)
     if (onUnit && !multiSelection) {
         menu.addAction(mProject_Rename_Unit);
     }
+    if (onUnit) {
+        PProjectUnit currentUnit = projectUnitFromProxyIndex(
+                    mProjectProxyModel, ui->projectView->currentIndex());
+        if (currentUnit)
+            mProject_Toggle_Build->setChecked(currentUnit->compile());
+        menu.addAction(mProject_Toggle_Build);
+        QMenu* copyMenu = menu.addMenu(tr("Copy"));
+        copyMenu->addAction(mProject_Copy_Name);
+        copyMenu->addAction(mProject_Copy_Relative_Path);
+        copyMenu->addAction(mProject_Copy_Full_Path);
+    }
     menu.addSeparator();
 #ifdef ENABLE_VCS
     if (pSettings->vcs().gitOk()) {
@@ -4151,6 +4222,7 @@ void MainWindow::onProjectViewContextMenu(const QPoint &pos)
     } else {
         menu.addAction(mProject_SwitchCustomViewMode);
     }
+    menu.addAction(mProject_Refresh);
     menu.addAction(ui->actionProject_options);
     menu.addSeparator();
     menu.addAction(ui->actionClose_Project);
@@ -5167,6 +5239,258 @@ void MainWindow::onProjectRemoveFolder()
 
 }
 
+// The unit behind a row of the (proxy) project tree, or a null pointer when the
+// row is a folder.
+static PProjectUnit projectUnitFromProxyIndex(const QAbstractItemModel *proxyModel,
+                                              const QModelIndex &viewIndex)
+{
+    if (!proxyModel || !viewIndex.isValid())
+        return PProjectUnit();
+    const QSortFilterProxyModel *proxy =
+            qobject_cast<const QSortFilterProxyModel*>(proxyModel);
+    QModelIndex sourceIndex = proxy ? proxy->mapToSource(viewIndex) : viewIndex;
+    if (!sourceIndex.isValid())
+        return PProjectUnit();
+    ProjectModelNode *node = static_cast<ProjectModelNode*>(sourceIndex.internalPointer());
+    if (!node || !node->isUnit)
+        return PProjectUnit();
+    return node->pUnit.lock();
+}
+
+static QModelIndex firstProjectUnitRow(const QAbstractItemModel *model,
+                                       const QModelIndex &parent)
+{
+    if (!model)
+        return QModelIndex();
+    for (int i = 0; i < model->rowCount(parent); ++i) {
+        QModelIndex index = model->index(i, 0, parent);
+        if (projectUnitFromProxyIndex(model, index))
+            return index;
+        QModelIndex child = firstProjectUnitRow(model, index);
+        if (child.isValid())
+            return child;
+    }
+    return QModelIndex();
+}
+
+void MainWindow::onProjectFilterChanged(const QString &text)
+{
+    if (!mProjectProxyModel)
+        return;
+    mProjectProxyModel->setFilterFixedString(text);
+    if (!mProject)
+        return;
+    if (text.isEmpty()) {
+        // Restore the saved expansion instead of leaving every folder expanded.
+        ui->projectView->collapseAll();
+        restoreProjectTreeState();
+    } else {
+        ui->projectView->expandAll();
+    }
+}
+
+void MainWindow::onProjectViewItemActivated(const QModelIndex &index)
+{
+    // Enter/Return (and a double click) open the file under the cursor.
+    on_projectView_doubleClicked(index);
+}
+
+void MainWindow::saveProjectTreeState()
+{
+    if (!mProject || !ui->txtProjectFilter->text().isEmpty())
+        return;     // a filtered tree would store a partial state
+    QStringList expanded;
+    std::function<void(const PProjectModelNode&)> walk =
+            [this, &expanded, &walk](const PProjectModelNode& node) {
+        if (!node || node->isUnit)
+            return;
+        QModelIndex sourceIndex = mProject->model()->getNodeIndex(node.get());
+        QModelIndex index = mProjectProxyModel->mapFromSource(sourceIndex);
+        if (index.isValid() && ui->projectView->isExpanded(index))
+            expanded.append(mProject->getNodePath(node));
+        for (const PProjectModelNode& child: node->children)
+            walk(child);
+    };
+    walk(mProject->rootNode());
+
+    QFile file(changeFileExt(mProject->filename(), "tree"));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return;
+    file.write(QJsonDocument(QJsonArray::fromStringList(expanded))
+               .toJson(QJsonDocument::Indented));
+}
+
+void MainWindow::restoreProjectTreeState()
+{
+    if (!mProject)
+        return;
+    QModelIndex rootIndex = mProjectProxyModel->mapFromSource(
+                mProject->model()->rootIndex());
+    ui->projectView->expand(rootIndex);
+
+    QFile file(changeFileExt(mProject->filename(), "tree"));
+    if (!file.open(QIODevice::ReadOnly)) {
+        // First time the project is shown: open the whole tree, a collapsed one
+        // would only show three empty looking folders.
+        ui->projectView->expandAll();
+        return;
+    }
+    QSet<QString> expanded;
+    foreach (const QJsonValue& value, QJsonDocument::fromJson(file.readAll()).array())
+        expanded.insert(value.toString());
+    if (expanded.isEmpty())
+        return;
+
+    std::function<void(const PProjectModelNode&)> walk =
+            [this, &expanded, &walk](const PProjectModelNode& node) {
+        if (!node || node->isUnit)
+            return;
+        if (expanded.contains(mProject->getNodePath(node))) {
+            QModelIndex index = mProjectProxyModel->mapFromSource(
+                        mProject->model()->getNodeIndex(node.get()));
+            if (index.isValid())
+                ui->projectView->expand(index);
+        }
+        for (const PProjectModelNode& child: node->children)
+            walk(child);
+    };
+    walk(mProject->rootNode());
+}
+
+void MainWindow::onProjectCopyFileName()
+{
+    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
+                                                  ui->projectView->currentIndex());
+    if (!unit)
+        return;
+    QGuiApplication::clipboard()->setText(QFileInfo(unit->fileName()).fileName());
+}
+
+void MainWindow::onProjectCopyRelativePath()
+{
+    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
+                                                  ui->projectView->currentIndex());
+    if (!unit || !mProject)
+        return;
+    QGuiApplication::clipboard()->setText(
+                QDir(mProject->directory()).relativeFilePath(unit->fileName()));
+}
+
+void MainWindow::onProjectCopyFullPath()
+{
+    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
+                                                  ui->projectView->currentIndex());
+    if (!unit)
+        return;
+    QGuiApplication::clipboard()->setText(unit->fileName());
+}
+
+void MainWindow::onProjectRefresh()
+{
+    if (!mProject)
+        return;
+    // Rebuild the tree from the units (custom view) or from the disk (file system
+    // view), then put the expansion back: a rebuild collapses everything.
+    bool filtered = !ui->txtProjectFilter->text().isEmpty();
+    if (filtered)
+        ui->txtProjectFilter->clear();
+    mProject->rebuildNodes();
+    updateProjectView();
+    restoreProjectTreeState();
+}
+
+void MainWindow::onProjectToggleBuild()
+{
+    if (!mProject)
+        return;
+    QList<PProjectUnit> units;
+    QModelIndexList rows = ui->projectView->selectionModel()->selectedRows();
+    if (rows.isEmpty() && ui->projectView->currentIndex().isValid())
+        rows.append(ui->projectView->currentIndex());
+    foreach (const QModelIndex& index, rows) {
+        PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel, index);
+        if (unit && !units.contains(unit))
+            units.append(unit);
+    }
+    if (units.isEmpty())
+        return;
+    bool build = !units.first()->compile();
+    foreach (const PProjectUnit& unit, units) {
+        unit->setCompile(build);
+        mProject->model()->refreshIcon(unit->fileName());
+    }
+    mProject->setModified(true);
+    mProject->saveUnits();
+}
+
+void MainWindow::onProjectFocusFilter()
+{
+    ui->tabExplorer->setCurrentWidget(ui->tabProject);
+    ui->txtProjectFilter->setFocus(Qt::ShortcutFocusReason);
+    ui->txtProjectFilter->selectAll();
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->txtProjectFilter && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Escape) {
+            ui->txtProjectFilter->clear();
+            return true;
+        }
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+            // Enter in the filter opens the first file it matched: the usual
+            // "type a name, press Enter" workflow, without reaching for the mouse.
+            QModelIndex first = firstProjectUnitRow(mProjectProxyModel, QModelIndex());
+            if (first.isValid()) {
+                ui->projectView->setCurrentIndex(first);
+                on_projectView_doubleClicked(first);
+                return true;
+            }
+        }
+    } else if (watched == ui->projectView) {
+        if (event->type() == QEvent::DragEnter) {
+            QDragEnterEvent *dragEvent = static_cast<QDragEnterEvent*>(event);
+            if (dragEvent->mimeData()->hasUrls()) {
+                dragEvent->acceptProposedAction();
+                return true;
+            }
+        } else if (event->type() == QEvent::Drop) {
+            QDropEvent *dropEvent = static_cast<QDropEvent*>(event);
+            if (dropEvent->mimeData()->hasUrls() && mProject) {
+                QStringList files;
+                foreach (const QUrl& url, dropEvent->mimeData()->urls()) {
+                    if (!url.isLocalFile())
+                        continue;
+                    QFileInfo info(url.toLocalFile());
+                    if (info.isDir()) {
+                        foreach (const QFileInfo& child,
+                                 QDir(info.absoluteFilePath()).entryInfoList(QDir::Files))
+                            files.append(child.absoluteFilePath());
+                    } else if (info.isFile()) {
+                        files.append(info.absoluteFilePath());
+                    }
+                }
+                bool added = false;
+                foreach (const QString& fileName, files) {
+                    if (mProject->findUnit(fileName))
+                        continue;
+                    if (mProject->addUnit(fileName, mProject->rootNode()))
+                        added = true;
+                }
+                if (added) {
+                    mProject->saveAll();
+                    updateProjectView();
+                    restoreProjectTreeState();
+                }
+                dropEvent->acceptProposedAction();
+                return true;
+            }
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
+}
+
 void MainWindow::onProjectRenameFolder()
 {
     if (ui->projectView->currentIndex().isValid()) {
@@ -5530,6 +5854,8 @@ void MainWindow::prepareProjectForCompile()
 
 void MainWindow::closeProject(bool refreshEditor)
 {
+    // Remember which folders were expanded before the project is unloaded.
+    saveProjectTreeState();
     // A table-only breakpoint history must not survive into another project.
     mEditorManager->clearBreakpointHistories();
     // Stop executing program
@@ -7595,7 +7921,9 @@ void MainWindow::on_actionRemove_from_project_triggered()
         if (!folderNode)
             continue;
         PProjectUnit unit = folderNode->pUnit.lock();
-        units.append(unit);
+        // a multi selection can also contain folders, which have no unit
+        if (unit)
+            units.append(unit);
     }
     for(PProjectUnit& unit: units) {
         mProject->removeUnit(unit, true, removeFile);
@@ -8288,14 +8616,25 @@ void MainWindow::onProjectViewNodeRenamed()
 
 void MainWindow::setProjectViewCurrentNode(PProjectModelNode node)
 {
-    if (node) {
-        QModelIndex index = mProject->model()->getNodeIndex(node.get());
-        index = mProjectProxyModel->mapFromSource(index);
-        if (index.isValid()) {
-            ui->projectView->expand(index);
-            ui->projectView->setCurrentIndex(index);
-        }
+    if (!node || !mProject)
+        return;
+    QModelIndex sourceIndex = mProject->model()->getNodeIndex(node.get());
+    QModelIndex index = mProjectProxyModel->mapFromSource(sourceIndex);
+    if (!index.isValid() && !ui->txtProjectFilter->text().isEmpty()) {
+        // hidden by the filter: show everything again, then locate
+        ui->txtProjectFilter->clear();
+        index = mProjectProxyModel->mapFromSource(sourceIndex);
     }
+    if (!index.isValid())
+        return;
+    // expand the whole parent chain, otherwise the row stays invisible
+    QModelIndex parentIndex = index.parent();
+    while (parentIndex.isValid()) {
+        ui->projectView->expand(parentIndex);
+        parentIndex = parentIndex.parent();
+    }
+    ui->projectView->setCurrentIndex(index);
+    ui->projectView->scrollTo(index);
 }
 
 static void setDockTitlebarLocation(QDockWidget* dock, const Qt::DockWidgetArea &area) {

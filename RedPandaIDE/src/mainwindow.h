@@ -290,6 +290,11 @@ private:
     void prepareProjectForCompile();
     void closeProject(bool refreshEditor);
     void updateProjectView();
+    // Persists which folders of the project tree are expanded (a small json file
+    // next to the project), so that reopening a project looks like before.
+    void saveProjectTreeState();
+    void restoreProjectTreeState();
+
     CompileTarget getCompileTarget();
     bool debugInferiorhasBreakpoint();
     void stretchMessagesPanel(bool open);
@@ -434,6 +439,15 @@ private slots:
     void onProjectRenameFolder();
     void onProjectAddFolder();
     void onProjectRenameUnit();
+    // project tree: filter box, keyboard opening, copy path, refresh, build flags
+    void onProjectFilterChanged(const QString &text);
+    void onProjectViewItemActivated(const QModelIndex& index);
+    void onProjectCopyFileName();
+    void onProjectCopyRelativePath();
+    void onProjectCopyFullPath();
+    void onProjectRefresh();
+    void onProjectToggleBuild();
+    void onProjectFocusFilter();
     void onBreakpointRemove();
     void onAddBreakpoint();
     void onAddBookmark();
@@ -1008,6 +1022,12 @@ private:
     QAction * mProject_Remove_Folder;
     QAction * mProject_SwitchFileSystemViewMode;
     QAction * mProject_SwitchCustomViewMode;
+    QAction * mProject_Copy_Name;
+    QAction * mProject_Copy_Relative_Path;
+    QAction * mProject_Copy_Full_Path;
+    QAction * mProject_Refresh;
+    QAction * mProject_Toggle_Build;
+    QAction * mProject_Focus_Filter;
 
     //actions for class browser
     QAction * mClassBrowser_Sort_By_Type;
@@ -1080,6 +1100,9 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent *event) override;
+    // Esc clears the project filter; dropping files from the explorer adds them
+    // to the project.
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 
     // QObject interface

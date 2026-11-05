@@ -621,9 +621,22 @@
        <number>0</number>
       </property>
       <item>
+       <widget class="QLineEdit" name="txtProjectFilter">
+        <property name="toolTip">
+         <string>Filter project files (Esc clears)</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Filter files...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QTreeView" name="projectView">
         <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
+         <set>QAbstractItemView::EditKeyPressed</set>
         </property>
         <property name="dragEnabled">
          <bool>true</bool>

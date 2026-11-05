@@ -41,6 +41,8 @@
 #include <QJsonDocument>
 #include "customfileiconprovider.h"
 #include <QMimeData>
+#include <QApplication>
+#include <QPalette>
 #include "settings.h"
 #include "vcs/gitrepository.h"
 #include "utils/parser.h"
@@ -2606,9 +2608,40 @@ QVariant ProjectModel::data(const QModelIndex &index, int role) const
                 return QString("%1 [%2]").arg(p->text,branch);
         }
 #endif
+        // A file with unsaved changes is marked like in other IDEs: the tree then
+        // tells which of the (possibly many) project files still needs a save.
+        if (p->isUnit) {
+            PProjectUnit unit = p->pUnit.lock();
+            if (unit) {
+                Editor* e = mProject->editorList()->getOpenedEditor(unit->fileName());
+                if (e && e->modified())
+                    return p->text + " *";
+            }
+        }
         return p->text;
     } else if (role==Qt::EditRole) {
         return p->text;
+    } else if (role == Qt::ForegroundRole) {
+        // Files excluded from the build are dimmed, so that "why is this file not
+        // compiled?" can be answered from the tree itself.
+        if (p->isUnit) {
+            PProjectUnit unit = p->pUnit.lock();
+            if (unit && !unit->compile())
+                return QVariant(QApplication::palette().color(QPalette::Disabled,
+                                                             QPalette::WindowText));
+        }
+        return QVariant();
+    } else if (role == Qt::ToolTipRole) {
+        if (p->isUnit) {
+            PProjectUnit unit = p->pUnit.lock();
+            if (unit) {
+                QString tip = unit->fileName();
+                if (!unit->compile())
+                    tip += "\n" + tr("Excluded from build");
+                return tip;
+            }
+        }
+        return QVariant();
     } else if (role == Qt::DecorationRole) {
         QIcon icon;
         if (p->isUnit) {
@@ -2695,38 +2728,15 @@ bool ProjectModel::setData(const QModelIndex &index, const QVariant &value, int 
             QString oldName = unit->fileName();
             QString curDir = extractFilePath(oldName);
             newName = generateAbsolutePath(curDir,newName);
-            // Only continue if the user says so...
+            // Never delete an existing file just to free the target name: this path
+            // is reachable from the inline rename (F2) in the project tree, and a
+            // rename must not be able to destroy data.
             if (fileExists(newName) && newName.compare(oldName, PATH_SENSITIVITY)!=0) {
-                // don't remove when changing case for example
-                if (QMessageBox::question(nullptr,
-                                          tr("File exists"),
-                                          tr("File '%1' already exists. Delete it now?")
-                                          .arg(newName),
-                                          QMessageBox::Yes | QMessageBox::No,
-                                          QMessageBox::No) == QMessageBox::Yes) {
-                    // Close the target file...
-                    Editor * e=mProject->editorList()->getOpenedEditor(newName);
-                    if (e)
-                        mProject->editorList()->closeEditor(e);
-
-                    // Remove it from the current project...
-                    PProjectUnit unit = mProject->findUnit(newName);
-                    if (unit) {
-                        mProject->removeUnit(unit,false);
-                    }
-
-                    // All references to the file are removed. Delete the file from disk
-                    if (!QFile::remove(newName)) {
-                        QMessageBox::critical(nullptr,
-                                              tr("Remove failed"),
-                                              tr("Failed to remove file '%1'")
-                                              .arg(newName),
-                                              QMessageBox::Ok);
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+                QMessageBox::warning(nullptr,
+                                     tr("File exists"),
+                                     tr("A file named '%1' already exists.").arg(newName),
+                                     QMessageBox::Ok);
+                return false;
             }
             // Target filename does not exist anymore. Do a rename
             // change name in project file first (no actual file renaming on disk)
@@ -2775,9 +2785,9 @@ void ProjectModel::refreshIcon(const QModelIndex &index, bool update)
         return;
     if (update)
         mIconProvider->update();
-    QVector<int> roles;
-    roles.append(Qt::DecorationRole);
-    emit dataChanged(index,index, roles);
+    // All roles: the row also carries the "unsaved changes" marker and the
+    // "excluded from build" dimming, not only the icon.
+    emit dataChanged(index,index);
 }
 
 void ProjectModel::refreshIcon(const QString &filename)
@@ -3004,4 +3014,29 @@ bool ProjectModelSortFilterProxy::lessThan(const QModelIndex &source_left, const
     if (pLeft->priority!=pRight->priority)
         return pLeft->priority>pRight->priority;
     return QString::compare(pLeft->text, pRight->text)<0;
+}
+
+bool ProjectModelSortFilterProxy::filterAcceptsRow(int source_row,
+                                                   const QModelIndex &source_parent) const
+{
+    const QString needle = filterRegExp().pattern();
+    if (needle.isEmpty())
+        return true;
+    QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
+    if (!index.isValid())
+        return false;
+    ProjectModelNode* node = static_cast<ProjectModelNode*>(index.internalPointer());
+    if (!node)
+        return false;
+    // Folders are shown by the recursive filtering when one of their children
+    // matches; matching the folder name itself would keep every subtree visible.
+    if (!node->isUnit)
+        return false;
+    PProjectUnit unit = node->pUnit.lock();
+    Qt::CaseSensitivity cs = filterCaseSensitivity();
+    if (node->text.contains(needle, cs))
+        return true;
+    if (unit && unit->fileName().contains(needle, cs))
+        return true;
+    return false;
 }

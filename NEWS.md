@@ -1,4 +1,18 @@
 Red Panda C++ Version 3.5
+  - enhancement: The project manager has a filter box (Ctrl+Alt+P): it narrows the tree to the file names and paths that match, keeps the folders of a match visible, clears with Esc, and Enter opens the first match. The project tree now also follows the current editor by expanding the folders down to it.
+  - 增强：项目管理器新增过滤框（Ctrl+Alt+P）：按文件名与路径过滤，匹配项的父文件夹保持可见，Esc 清空，回车打开第一个匹配项。切换编辑器时，项目树会自动展开到该文件并选中。
+  - enhancement: Enter (or a double click) opens the file under the cursor in the project tree, so a project can be browsed without the mouse; files and folders can be renamed in place with F2, without opening a dialog.
+  - 增强：在项目树中按回车（或双击）即可打开光标处的文件，纯键盘也能浏览工程；文件和文件夹可以用 F2 就地重命名，无需打开对话框。
+  - fix: Renaming a project file could delete a file that already had the new name; the rename now refuses and reports the conflict instead.
+  - 修复：重命名工程文件时可能删除同名的已有文件；现在会拒绝该重命名并提示冲突。
+  - enhancement: The context menu of the project tree has "Copy file name / relative path / full path", "Refresh" (rebuild the tree from the project or from the disk) and "Include in build" for the selected files.
+  - 增强：项目树右键菜单新增「复制文件名 / 相对路径 / 完整路径」、「刷新」（重新从工程或磁盘构建树）以及「参与编译」，可对多个选中文件批量设置。
+  - enhancement: Source files excluded from the build are dimmed in the project tree and the tooltip says why; files with unsaved changes are marked with a trailing "*", and the mark is refreshed as the document is modified.
+  - 增强：被排除编译的源文件在项目树中置灰，悬停提示会说明原因；有未保存修改的文件在名称后显示 "*"，并随编辑状态实时刷新。
+  - enhancement: The folders expanded in the project tree are remembered per project (in a <project>.tree file next to the project) and restored when it is reopened; the first time a project is opened the whole tree is expanded. Files dragged from the file manager onto the tree are added to the project.
+  - 增强：项目树的展开状态按工程记忆（保存在工程旁的 <project>.tree 文件中），重新打开工程时恢复；首次打开工程会展开整棵树。从资源管理器拖到树上的文件会被加入工程。
+  - fix: Removing several selected entries from the project no longer passes folder rows (which have no unit) to the removal code.
+  - 修复：从工程中移除多个选中项时，不再把没有对应单元的文件夹行传给移除逻辑。
   - fix: The breakpoints of the files that are not part of a project are saved when the application is closed, and put back when it is started again and the file is reopened (as the breakpoints of the project files, which are stored in the debug file of the project).
   - 修复：非工程文件的断点在关闭程序时会被保存，重新启动并再次打开该文件时会恢复（与工程文件的断点一致，后者保存在工程的调试文件中）。
   - fix: Merging two lines (pressing Delete at the end of a line, or Backspace at the beginning of the next one) no longer drops the breakpoints, the bookmarks and the carets that are set on the line the text is merged on, and undoing the merge keeps them there.

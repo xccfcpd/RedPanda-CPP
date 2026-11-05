@@ -187,6 +187,10 @@ public:
     // QSortFilterProxyModel interface
 protected:
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const override;
+    // The project filter box searches file names (and their paths). Folders are
+    // kept by QSortFilterProxyModel::setRecursiveFilteringEnabled(true) when one
+    // of their children matches, so they are never accepted explicitly here.
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 };
 
 class ProjectTemplate;
