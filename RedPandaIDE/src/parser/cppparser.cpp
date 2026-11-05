@@ -575,7 +575,9 @@ PStatement CppParser::doFindStatementOf(const QString &fileName, const QStringLi
                    && memberOperator=="->"
                       ) {
             PStatement parentScope = ownerEvalStatement->typeStatement->parentScope.lock();
-            if (STLContainers.contains(parentScope->fullName)) {
+            // the statement tree is rebuilt on every reparse, so the weak parent can
+            // already be gone (typing while the parser runs)
+            if (parentScope && STLContainers.contains(parentScope->fullName)) {
                 QString typeName=doFindFirstTemplateParamOf(fileName,ownerEvalStatement->templateParams, parentScope);
                 PStatement typeStatement=doFindTypeDefinitionOf(fileName, typeName,parentScope);
                 if (typeStatement) {
@@ -583,7 +585,7 @@ PStatement CppParser::doFindStatementOf(const QString &fileName, const QStringLi
                 } else {
                     return PStatement();
                 }
-            } else if (STLMaps.contains(parentScope->fullName)) {
+            } else if (parentScope && STLMaps.contains(parentScope->fullName)) {
                 QString typeName=doFindTemplateParamOf(fileName,ownerEvalStatement->templateParams,1,parentScope);
             //                        qDebug()<<"typeName"<<typeName<<lastResult->baseStatement->type<<lastResult->baseStatement->command;
                 PStatement typeStatement=doFindTypeDefinitionOf(fileName, typeName,parentScope);
@@ -5395,7 +5397,10 @@ PEvalStatement CppParser::doEvalMemberAccess(const QString &fileName,
                         && STLIterators.contains(result->typeStatement->command)
                 ) {
                     PStatement parentScope = result->typeStatement->parentScope.lock();
-                    if (STLContainers.contains(parentScope->fullName)) {
+                    // stale statement tree after a reparse: the parent may be gone
+                    if (!parentScope) {
+                        result = PEvalStatement();
+                    } else if (STLContainers.contains(parentScope->fullName)) {
                         QString typeName=doFindFirstTemplateParamOf(fileName,result->templateParams, parentScope);
 //                        qDebug()<<"typeName"<<typeName<<lastResult->baseStatement->type<<lastResult->baseStatement->command;
                         PStatement typeStatement=doFindTypeDefinitionOf(fileName, typeName,parentScope);

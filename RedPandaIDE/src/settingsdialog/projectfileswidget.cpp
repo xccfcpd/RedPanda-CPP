@@ -50,6 +50,8 @@ void ProjectFilesWidget::doSave()
     for (int i=0;i<mUnits.count();i++) {
         PProjectUnit unitCopy = mUnits[i];
         PProjectUnit unit = pMainWindow->project()->findUnit(unitCopy->fileName());
+        if (!unit)      // the unit was removed/renamed while the dialog was open
+            continue;
         unit->setPriority(unitCopy->priority());
         unit->setCompile(unitCopy->compile());
         unit->setLink(unitCopy->link());

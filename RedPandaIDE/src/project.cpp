@@ -2938,7 +2938,8 @@ bool ProjectModel::dropMimeData(const QMimeData *data, Qt::DropAction action, in
         node->children.append(droppedNode);
         if (droppedNode->isUnit) {
             PProjectUnit unit = droppedNode->pUnit.lock();
-            unit->setFolder(mProject->getNodePath(node));
+            if (unit)   // the unit may be gone while the model node is still there
+                unit->setFolder(mProject->getNodePath(node));
         }
         endInsertRows();
         mProject->saveAll();

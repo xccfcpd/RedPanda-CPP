@@ -4173,7 +4173,8 @@ void MainWindow::onProjectViewContextMenu(const QPoint &pos)
                     break;
                 }
                 PProjectUnit pUnit=node->pUnit.lock();
-                if (mProject->model()->iconProvider()->VCSRepository()->isFileInRepository(
+                if (pUnit
+                        && mProject->model()->iconProvider()->VCSRepository()->isFileInRepository(
                             pUnit->fileName()
                             )
                         &&
@@ -4382,6 +4383,8 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
     menu.addAction(mProblem_GotoUrl);
     if (idx.isValid()) {
         POJProblem problem = mOJProblemSetModel->problem(idx.row());
+        if (!problem)   // the row no longer maps to a problem (model reloaded)
+            return;
         QMenu * menuSetAnswer = new QMenu(&menu);
         QActionGroup *actionGroup = new QActionGroup(menuSetAnswer);
         bool answerFound=false;
@@ -9795,6 +9798,8 @@ void MainWindow::on_actionGit_Add_Files_triggered()
                 continue;
             if (folderNode->isUnit) {
                 PProjectUnit unit = folderNode->pUnit.lock();
+                if (!unit)      // unit removed while the model node is still there
+                    continue;
                 QFileInfo info(unit->fileName());
                 QString output;
                 vcsManager.add(info.absolutePath(),info.fileName(),output);

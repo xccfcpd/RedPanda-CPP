@@ -237,6 +237,8 @@ void CompilerSetOptionWidget::on_cbCompilerSet_currentIndexChanged(int index)
 void CompilerSetOptionWidget::reloadCurrentCompilerSet()
 {
     PCompilerSet pSet = pSettings->compilerSets().defaultSet();
+    if (!pSet)      // no compiler set configured (none found, or all deleted)
+        return;
     loadCompilerSetSettings(pSet, ui);
 
     mBinDirWidget->setDirList(pSet->binDirs());
@@ -248,6 +250,8 @@ void CompilerSetOptionWidget::reloadCurrentCompilerSet()
 void CompilerSetOptionWidget::saveCurrentCompilerSet()
 {
     PCompilerSet pSet = pSettings->compilerSets().defaultSet();
+    if (!pSet)      // no compiler set configured: nothing to save
+        return;
 
     pSet->setUseCustomCompileParams(ui->chkUseCustomCompilerParams->isChecked());
     pSet->setCustomCompileParams(ui->txtCustomCompileParams->toPlainText().trimmed());
@@ -299,7 +303,7 @@ void CompilerSetOptionWidget::saveCurrentCompilerSet()
 QString CompilerSetOptionWidget::getBinDir()
 {
     PCompilerSet pSet = pSettings->compilerSets().defaultSet();
-    if (!pSet->binDirs().isEmpty())
+    if (pSet && !pSet->binDirs().isEmpty())
         return pSet->binDirs().front();
     if (!mBinDirWidget->dirList().isEmpty())
         return mBinDirWidget->dirList().first();

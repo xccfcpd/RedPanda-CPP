@@ -823,6 +823,8 @@ void CodeCompletionPopup::getCompletionFor(
                             || memberOperator == "->*")
                 ) {
                     PStatement parentScope = ownerStatement->typeStatement->parentScope.lock();
+                    if (!parentScope)   // stale statement tree (reparse while typing)
+                        return;
                     if (STLContainers.contains(parentScope->fullName)) {
                         QString typeName=mParser->findFirstTemplateParamOf(fileName,ownerStatement->templateParams, parentScope);
 //                        qDebug()<<"typeName"<<typeName<<lastResult->baseStatement->type<<lastResult->baseStatement->command;
