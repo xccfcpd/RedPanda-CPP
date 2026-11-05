@@ -989,14 +989,24 @@ bool EditorManager::closeEditor(Editor* editor, bool transferFocus, bool force) 
 //        //todo: activate & focus the previous editor
 //    }
 
+    // A project editor is closed through its unit: Project::closeUnit() looks the
+    // editor up by file name and closes it. When the unit is gone (the project was
+    // reloaded, the file left the project, the project folder is missing) that
+    // lookup finds nothing and the tab used to stay open - the user had to press
+    // close twice. Fall back to closing the tab as a plain editor then.
+    bool closed = false;
     if (editor->inProject() && pMainWindow->project()) {
         if (fileExists(pMainWindow->project()->directory())) {
             PProjectUnit unit = pMainWindow->project()->findUnit(editor);
-            pMainWindow->project()->closeUnit(unit);
+            if (unit && pMainWindow->project()->unitEditor(unit) == editor) {
+                pMainWindow->project()->closeUnit(unit);
+                closed = true;
+            }
         } else {
             editor->setInProject(false,false);
         }
-    } else {
+    }
+    if (!closed) {
         editor->setCppParser(nullptr);
         if (!editor->isNew() && pMainWindow->visitHistoryManager()->addFile(editor->filename())) {
             pMainWindow->rebuildOpenedFileHisotryMenu();
