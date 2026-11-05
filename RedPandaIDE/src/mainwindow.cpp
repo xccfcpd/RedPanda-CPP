@@ -5518,8 +5518,7 @@ void MainWindow::prepareProjectForCompile()
     if (!mProject->saveUnits())
         return;
     // Check if saves have been succesful
-    for (int i=0; i<mEditorManager->pageCount();i++) {
-        Editor * e= (*(mEditorManager))[i];
+    for (Editor * e: mEditorManager->openedEditors()) {
         if (e->inProject() && e->modified())
             return;
     }
