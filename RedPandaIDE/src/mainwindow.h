@@ -337,7 +337,11 @@ private:
 
     void doFilesViewRemoveFile(const QModelIndex& index);
 
-    void setProjectViewCurrentNode(std::shared_ptr<ProjectModelNode> node);
+    // Reveals a node of the project tree: expands its parent chain, selects and
+    // scrolls to it. clearFilter=true is for an explicit "locate" (drops a filter
+    // that hides the node), false for the automatic follow of the current editor.
+    void setProjectViewCurrentNode(std::shared_ptr<ProjectModelNode> node,
+                                   bool clearFilter = true);
     void setProjectViewCurrentUnit(std::shared_ptr<ProjectUnit> unit);
 
     void reparseNonProjectEditors();

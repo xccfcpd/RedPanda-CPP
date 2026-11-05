@@ -1820,14 +1820,11 @@ void MainWindow::setProjectCurrentFile(const QString &filename)
     if (!mProject)
         return;
     PProjectUnit unit = mProject->findUnit(filename);
-    if (!unit)
+    if (!unit || !unit->node())
         return;
-    QModelIndex index = mProject->model()->getNodeIndex(unit->node().get());
-    if (index.isValid()) {
-        index = mProjectProxyModel->mapFromSource(index);
-        ui->projectView->expand(index);
-        ui->projectView->setCurrentIndex(index);
-    }
+    // Same reveal as an explicit "locate", but without dropping an active filter:
+    // switching tabs should not undo what the user typed in the filter box.
+    setProjectViewCurrentNode(unit->node(), false);
 }
 
 void MainWindow::openFiles(const QStringList &files)
@@ -8614,14 +8611,18 @@ void MainWindow::onProjectViewNodeRenamed()
     updateProjectView();
 }
 
-void MainWindow::setProjectViewCurrentNode(PProjectModelNode node)
+void MainWindow::setProjectViewCurrentNode(PProjectModelNode node, bool clearFilter)
 {
     if (!node || !mProject)
         return;
     QModelIndex sourceIndex = mProject->model()->getNodeIndex(node.get());
     QModelIndex index = mProjectProxyModel->mapFromSource(sourceIndex);
-    if (!index.isValid() && !ui->txtProjectFilter->text().isEmpty()) {
-        // hidden by the filter: show everything again, then locate
+    if (!index.isValid()) {
+        // The row is hidden by the filter. An explicit "locate" drops the filter,
+        // the automatic follow of the current editor keeps it (the user asked for
+        // a filtered tree, do not silently undo that).
+        if (!clearFilter || ui->txtProjectFilter->text().isEmpty())
+            return;
         ui->txtProjectFilter->clear();
         index = mProjectProxyModel->mapFromSource(sourceIndex);
     }
