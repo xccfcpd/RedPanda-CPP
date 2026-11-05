@@ -113,11 +113,11 @@ void CompileArgumentsWidget::resetUI(PCompilerSet pSet, const QMap<QString,QStri
     QTabWidget* pTab = this;
     while (pTab->count()>0) {
         QWidget* p=pTab->widget(0);
-        if (p!=nullptr) {
-            pTab->removeTab(0);
-            p->setParent(nullptr);
-            delete p;
-        }
+        if (p==nullptr)     // a tab without a page would never clear the count
+            break;
+        pTab->removeTab(0);
+        p->setParent(nullptr);
+        delete p;
     }
     if (!pSet)
         return;
