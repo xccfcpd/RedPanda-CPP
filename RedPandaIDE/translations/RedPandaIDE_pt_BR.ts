@@ -6921,6 +6921,38 @@
         <source>Move Caret</source>
         <translation>Mover o cursor</translation>
     </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Atualizar</translation>
+    </message>
+    <message>
+        <source>Include in build</source>
+        <translation>Incluir na compilação</translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
+        <translation>Copiar nome do arquivo</translation>
+    </message>
+    <message>
+        <source>Copy Relative Path</source>
+        <translation>Copiar caminho relativo</translation>
+    </message>
+    <message>
+        <source>Copy Full Path</source>
+        <translation>Copiar caminho completo</translation>
+    </message>
+    <message>
+        <source>Filter Project Files</source>
+        <translation>Filtrar arquivos do projeto</translation>
+    </message>
+    <message>
+        <source>Filter files...</source>
+        <translation>Filtrar arquivos…</translation>
+    </message>
+    <message>
+        <source>Filter project files (Esc clears)</source>
+        <translation>Filtrar arquivos do projeto (Esc limpa)</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>
@@ -8002,6 +8034,14 @@
         <location line="+1"/>
         <source>Failed to rename file &apos;%1&apos; to &apos;%2&apos;</source>
         <translation>Falha ao renomear arquivo &apos;%1&apos; para &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <source>Excluded from build</source>
+        <translation>Excluído da compilação</translation>
+    </message>
+    <message>
+        <source>A file named &apos;%1&apos; already exists.</source>
+        <translation>Já existe um arquivo chamado &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>

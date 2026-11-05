@@ -6992,6 +6992,38 @@ p, li { white-space: pre-wrap; }
         <source>(%1 files per second)</source>
         <translation>(每秒%1個檔案)</translation>
     </message>
+    <message>
+        <source>Refresh</source>
+        <translation>重新整理</translation>
+    </message>
+    <message>
+        <source>Include in build</source>
+        <translation>參與編譯</translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
+        <translation>複製檔名</translation>
+    </message>
+    <message>
+        <source>Copy Relative Path</source>
+        <translation>複製相對路徑</translation>
+    </message>
+    <message>
+        <source>Copy Full Path</source>
+        <translation>複製完整路徑</translation>
+    </message>
+    <message>
+        <source>Filter Project Files</source>
+        <translation>過濾專案檔案</translation>
+    </message>
+    <message>
+        <source>Filter files...</source>
+        <translation>過濾檔案…</translation>
+    </message>
+    <message>
+        <source>Filter project files (Esc clears)</source>
+        <translation>過濾專案檔案（Esc 清除）</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>
@@ -8073,6 +8105,14 @@ p, li { white-space: pre-wrap; }
         <location line="+1"/>
         <source>Failed to rename file &apos;%1&apos; to &apos;%2&apos;</source>
         <translation>無法將檔案&apos;%1&apos;改名為&apos;%2&apos;</translation>
+    </message>
+    <message>
+        <source>Excluded from build</source>
+        <translation>不參與編譯</translation>
+    </message>
+    <message>
+        <source>A file named &apos;%1&apos; already exists.</source>
+        <translation>已存在名為「%1」的檔案。</translation>
     </message>
 </context>
 <context>

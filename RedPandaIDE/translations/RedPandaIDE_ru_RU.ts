@@ -6880,6 +6880,38 @@
         <source>Stop execution when the following variable is modified (it must be visible from the currect scope):</source>
         <translation>Остановать выполнение, если следующая переменная изменилась (она должна быть видима из текущей области видимости):</translation>
     </message>
+    <message>
+        <source>Refresh</source>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>Include in build</source>
+        <translation>Участвовать в сборке</translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
+        <translation>Копировать имя файла</translation>
+    </message>
+    <message>
+        <source>Copy Relative Path</source>
+        <translation>Копировать относительный путь</translation>
+    </message>
+    <message>
+        <source>Copy Full Path</source>
+        <translation>Копировать полный путь</translation>
+    </message>
+    <message>
+        <source>Filter Project Files</source>
+        <translation>Фильтр файлов проекта</translation>
+    </message>
+    <message>
+        <source>Filter files...</source>
+        <translation>Фильтр файлов…</translation>
+    </message>
+    <message>
+        <source>Filter project files (Esc clears)</source>
+        <translation>Фильтр файлов проекта (Esc — сброс)</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>
@@ -7949,6 +7981,14 @@
         <location filename="../src/project.cpp" line="2738"/>
         <source>Failed to rename file &apos;%1&apos; to &apos;%2&apos;</source>
         <translation>Не удалось переименовать файл &apos;%1&apos; в &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <source>Excluded from build</source>
+        <translation>Исключён из сборки</translation>
+    </message>
+    <message>
+        <source>A file named &apos;%1&apos; already exists.</source>
+        <translation>Файл с именем «%1» уже существует.</translation>
     </message>
 </context>
 <context>
