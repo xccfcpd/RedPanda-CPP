@@ -8041,6 +8041,8 @@ void MainWindow::reparseNonProjectEditors()
 
 QString MainWindow::switchHeaderSourceTarget(Editor *editor)
 {
+    if (!editor)    // no page (all tabs closed or the tab is being removed)
+        return QString();
     QString filename=editor->filename();
     if (isC_CPPHeaderFile(editor->fileType())) {
         QStringList lst;

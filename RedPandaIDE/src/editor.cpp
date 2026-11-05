@@ -3503,8 +3503,12 @@ void Editor::showCompletion(const QString& preWord,bool autoComplete, CodeComple
     mCompletionPopup->setLineHeightFactor(mEditorSettings->lineSpacing());
     // Redirect key presses to completion box if applicable
     //todo:
-    mCompletionPopup->setKeypressedCallback([this](QKeyEvent *event)->bool{
-        return onCompletionKeyPressed(event);
+    // The popup belongs to the main window and outlives this editor: a closed tab
+    // must not leave a callback that points into the destroyed editor (closing a
+    // tab while the list is visible would otherwise crash on the next key press).
+    QPointer<Editor> self = this;
+    mCompletionPopup->setKeypressedCallback([self](QKeyEvent *event)->bool{
+        return self ? self->onCompletionKeyPressed(event) : false;
     });
     mCompletionPopup->setParser(mParser);
     if (mParser) {
@@ -3585,8 +3589,10 @@ void Editor::showHeaderCompletion(bool autoComplete, bool forceShow)
     mHeaderCompletionPopup->setLineHeightFactor(mEditorSettings->lineSpacing());
 
     // Redirect key presses to completion box if applicable
-    mHeaderCompletionPopup->setKeypressedCallback([this](QKeyEvent* event)->bool{
-        return onHeaderCompletionKeyPressed(event);
+    // See the comment in showCodeCompletion(): the popup outlives the editor.
+    QPointer<Editor> self = this;
+    mHeaderCompletionPopup->setKeypressedCallback([self](QKeyEvent* event)->bool{
+        return self ? self->onHeaderCompletionKeyPressed(event) : false;
     });
     mHeaderCompletionPopup->setParser(mParser);
 
