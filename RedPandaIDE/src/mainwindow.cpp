@@ -1246,8 +1246,7 @@ void MainWindow::initDocks()
 
 void MainWindow::removeActiveBreakpoints()
 {
-    for (int i=0;i<mEditorManager->pageCount();i++) {
-        Editor* e= (*mEditorManager)[i];
+    for (Editor* e: mEditorManager->openedEditors()) {
         e->removeActiveBreakpoint();
     }
 }
@@ -2369,8 +2368,7 @@ bool MainWindow::parsing()
 {
     if (mProject && mProject->cppParser() && mProject->cppParser()->parsing())
         return true;
-    for(int i=0;i<mEditorManager->pageCount();i++) {
-        Editor * editor = (*mEditorManager)[i];
+    for (Editor * editor: mEditorManager->openedEditors()) {
         if (editor->parser() && editor->parser()->parsing())
             return true;
     }
@@ -2460,9 +2458,11 @@ bool MainWindow::compile(bool rebuild, CppCompileType compileType)
                 }
                 if (!mCompileSuccessionTask->isExecutable) {
                     QString targetFileName = QFileInfo(mCompileSuccessionTask->execName).absoluteFilePath();
-                    Editor *editor = mEditorManager->getOpenedEditor(targetFileName);
-                    if (editor) {
-                        mEditorManager->closeEditor(editor,false,true);
+                    // Do not shadow the 'editor' of the enclosing function: it is
+                    // used after this block and it is not the one closed here.
+                    Editor *outputEditor = mEditorManager->getOpenedEditor(targetFileName);
+                    if (outputEditor) {
+                        mEditorManager->closeEditor(outputEditor,false,true);
                     }
                 }
             }
@@ -3520,8 +3520,7 @@ bool MainWindow::saveLastOpens()
         rootObj["lastProject"]=mProject->filename();
     }
     QJsonArray filesArray;
-    for (int i=0;i<mEditorManager->pageCount();i++) {
-      Editor * editor = (*mEditorManager)[i];
+    for (Editor * editor: mEditorManager->openedEditors()) {
       QJsonObject fileObj;
       if (editor->isNew()) {
           if (!editor->modified())
@@ -4016,8 +4015,7 @@ void MainWindow::onAutoSaveTimeout()
         }
             break;
         case astAllOpennedFiles:
-            for (int i=0;i<mEditorManager->pageCount();i++) {
-                Editor *e = (*mEditorManager)[i];
+            for (Editor *e: mEditorManager->openedEditors()) {
                 doAutoSave(e);
                 updateCount++;
             }
@@ -4025,8 +4023,7 @@ void MainWindow::onAutoSaveTimeout()
         case astAllProjectFiles:
             if (!mProject)
                 return;
-            for (int i=0;i<mEditorManager->pageCount();i++) {
-                Editor *e = (*mEditorManager)[i];
+            for (Editor *e: mEditorManager->openedEditors()) {
                 if (!e->inProject())
                     return;
                 doAutoSave(e);
@@ -4389,8 +4386,7 @@ void MainWindow::onLstProblemSetContextMenu(const QPoint &pos)
         QActionGroup *actionGroup = new QActionGroup(menuSetAnswer);
         bool answerFound=false;
         menuSetAnswer->setTitle(tr("Set answer to..."));
-        for (int i=0;i<mEditorManager->pageCount();i++) {
-            Editor *e = (*mEditorManager)[i];
+        for (Editor *e: mEditorManager->openedEditors()) {
             QString filename = e->filename();
             QAction* action = new QAction(filename,menuSetAnswer);
             action->setCheckable(true);
@@ -4924,8 +4920,7 @@ void MainWindow::onBookmarkRemove()
 void MainWindow::onBookmarkRemoveAll()
 {
     mBookmarkModel->clear(mBookmarkModel->isForProject());
-    for (int i=0;i<mEditorManager->pageCount();i++) {
-        Editor * editor = (*mEditorManager)[i];
+    for (Editor * editor: mEditorManager->openedEditors()) {
         if (editor->inProject() == mBookmarkModel->isForProject())
             editor->clearBookmarks();
     }
@@ -7736,7 +7731,9 @@ void MainWindow::showHideInfosTab(QWidget *widget, bool show)
                 QWidget * w=ui->tabExplorer->widget(i);
                 if (!w)
                     continue;
-                PTabWidgetInfo infoW = mTabInfosData[w];
+                PTabWidgetInfo infoW = mTabInfosData.value(w);
+                if (!infoW)     // page not registered (see prepareTabInfosData())
+                    continue;
                 if (infoW->order>info->order) {
                     insert = i;
                     break;
@@ -7771,7 +7768,9 @@ void MainWindow::showHideMessagesTab(QWidget *widget, bool show)
                 QWidget * w=ui->tabMessages->widget(i);
                 if (!w)
                     continue;
-                PTabWidgetInfo infoW = mTabMessagesData[w];
+                PTabWidgetInfo infoW = mTabMessagesData.value(w);
+                if (!infoW)     // page not registered (see prepareTabMessagesData())
+                    continue;
                 if (infoW->order>info->order) {
                     insert = i;
                     break;
@@ -8023,8 +8022,7 @@ void MainWindow::reparseNonProjectEditors()
     if (pSettings->codeCompletion().shareParser()) {
         mEditorManager->resetSharedParsers();
     } else {
-        for (int i=0;i<mEditorManager->pageCount();i++) {
-            Editor* e=(*mEditorManager)[i];
+        for (Editor* e: mEditorManager->openedEditors()) {
             if (!e->inProject()) {
                 if (!pSettings->codeCompletion().shareParser()) {
                     resetCppParser(e->parser());
@@ -8032,8 +8030,7 @@ void MainWindow::reparseNonProjectEditors()
             }
         }
     }
-    for (int i=0;i<mEditorManager->pageCount();i++) {
-        Editor* e=(*mEditorManager)[i];
+    for (Editor* e: mEditorManager->openedEditors()) {
         if (!e->inProject()) {
             if (e->isVisible()) {
                 e->reparse();
@@ -8517,8 +8514,7 @@ void MainWindow::on_actionRename_Symbol_triggered()
     }
 
     if (editor->inProject() && mProject) {
-        for (int i=0;i<mEditorManager->pageCount();i++) {
-            Editor * e=(*mEditorManager)[i];
+        for (Editor * e: mEditorManager->openedEditors()) {
             if (e->modified())  {
                 //here we must reparse the file in sync, or rename may fail
                 CppParser::parseFileBlocking(mProject->cppParser(), editor->filename(), editor->inProject(), editor->contextFile(), false, false);

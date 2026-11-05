@@ -100,6 +100,10 @@ public:
 
     void getVisibleEditors(Editor*& left, Editor*& right) const;
     void updateLayout();
+    // The pages of the two tab widgets. QTabWidget::widget(i) returns nullptr while
+    // a tab is being removed: the page leaves the internal stack before the tab is
+    // removed from the tab bar, so count() and the pages disagree for a moment.
+    QList<Editor*> openedEditors() const;
 
     MainWindow * mainWindow();
 
@@ -163,10 +167,6 @@ private:
     QTabWidget* getFocusedPageControl() const;
     void showLayout(LayoutShowType layout);
     void doRemoveEditor(Editor* e);
-    // The pages of the two tab widgets. QTabWidget::widget(i) returns nullptr while
-    // a tab is being removed: the page leaves the internal stack before the tab is
-    // removed from the tab bar, so count() and the pages disagree for a moment.
-    QList<Editor*> openedEditors() const;
     // Queues one breakpoint refresh for the next event loop iteration:
     // callers may run inside QTabWidget::removeTab() (a page show event), where the
     // tab widget is inconsistent and a page can be a null pointer.

@@ -713,7 +713,9 @@ void Project::renameUnit(PProjectUnit& unit, const QString &newFileName)
         editor->rename(newFileName);
     }
     if (mParser)
-        CppParser::parseFileNonBlocking(mParser,newFileName,true, editor->contextFile());
+        // the unit is renamed even when its file is not open in an editor
+        CppParser::parseFileNonBlocking(mParser,newFileName,true,
+                                        editor ? editor->contextFile() : QString());
 
     internalRemoveUnit(unit,false,true);
 

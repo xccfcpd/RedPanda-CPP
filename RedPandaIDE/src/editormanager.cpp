@@ -1034,6 +1034,11 @@ bool EditorManager::swapEditor(Editor *editor)
     });
     //remember old index
     QTabWidget* fromPageControl = findPageControlForEditor(editor);
+    if (!fromPageControl) {
+        // The editor is not attached to a page control (it is being closed or was
+        // already moved): removing a tab by index would touch the wrong page.
+        return false;
+    }
     if (!editor->inProject() && pSettings->codeCompletion().shareParser()) {
         // setCppParser would invalidate file
         editor->setCppParser(nullptr);
