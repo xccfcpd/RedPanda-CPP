@@ -2593,6 +2593,19 @@ int ProjectModel::columnCount(const QModelIndex &) const
     return 1;
 }
 
+// A source file the user excluded from the build. Headers, resources and other
+// non-compilable units are never "excluded": they are simply not sources, and
+// dimming them would be noise.
+static bool isExcludedFromBuild(const ProjectModelNode *node)
+{
+    if (!node || !node->isUnit)
+        return false;
+    PProjectUnit unit = node->pUnit.lock();
+    if (!unit || unit->compile())
+        return false;
+    return isC_CPP_ASMSourceFile(getFileType(unit->fileName()));
+}
+
 QVariant ProjectModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -2622,21 +2635,20 @@ QVariant ProjectModel::data(const QModelIndex &index, int role) const
     } else if (role==Qt::EditRole) {
         return p->text;
     } else if (role == Qt::ForegroundRole) {
-        // Files excluded from the build are dimmed, so that "why is this file not
-        // compiled?" can be answered from the tree itself.
-        if (p->isUnit) {
-            PProjectUnit unit = p->pUnit.lock();
-            if (unit && !unit->compile())
-                return QVariant(QApplication::palette().color(QPalette::Disabled,
-                                                             QPalette::WindowText));
-        }
+        // Source files excluded from the build are dimmed, so that "why is this
+        // file not compiled?" can be answered from the tree itself. Headers,
+        // resources and the like are never compiled: dimming them would only be
+        // noise.
+        if (p->isUnit && isExcludedFromBuild(p))
+            return QVariant(QApplication::palette().color(QPalette::Disabled,
+                                                         QPalette::WindowText));
         return QVariant();
     } else if (role == Qt::ToolTipRole) {
         if (p->isUnit) {
             PProjectUnit unit = p->pUnit.lock();
             if (unit) {
                 QString tip = unit->fileName();
-                if (!unit->compile())
+                if (isExcludedFromBuild(p))
                     tip += "\n" + tr("Excluded from build");
                 return tip;
             }
