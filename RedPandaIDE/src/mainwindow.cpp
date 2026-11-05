@@ -5303,8 +5303,13 @@ void MainWindow::saveProjectTreeState()
             return;
         QModelIndex sourceIndex = mProject->model()->getNodeIndex(node.get());
         QModelIndex index = mProjectProxyModel->mapFromSource(sourceIndex);
-        if (index.isValid() && ui->projectView->isExpanded(index))
-            expanded.append(mProject->getNodePath(node));
+        if (index.isValid() && ui->projectView->isExpanded(index)) {
+            // the root node has an empty path and is always expanded: storing it
+            // would only add a meaningless "" entry to the file
+            QString path = mProject->getNodePath(node);
+            if (!path.isEmpty())
+                expanded.append(path);
+        }
         for (const PProjectModelNode& child: node->children)
             walk(child);
     };
