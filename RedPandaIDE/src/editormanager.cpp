@@ -29,6 +29,7 @@
 #include <QApplication>
 #include <QMetaObject>
 #include <QPointer>
+#include <QTimer>
 
 EditorManager::EditorManager(QTabWidget* leftPageWidget,
       QTabWidget* rightPageWidget,
@@ -605,7 +606,10 @@ void EditorManager::onEditorShown(Editor *e)
     if (!pMainWindow->debugger()->executing()) {
         pMainWindow->debugger()->breakpointModel()->snapBreakpointsToCode(
                     e->filename(), e->content(), e->inProject());
-        updateEditorBreakpoints();
+        // Not synchronously: this slot runs from Editor::showEvent(), which Qt
+        // emits while QTabWidget::removeTab() has already dropped the page of the
+        // closing editor from its stack but not yet its tab (see openedEditors()).
+        requestUpdateEditorBreakpoints();
     }
     // The breakpoint lists are different: a history recorded against the other
     // model must not be used to restore a breakpoint after the switch.
@@ -1052,8 +1056,7 @@ bool EditorManager::swapEditor(Editor *editor)
 
 void EditorManager::saveAll()
 {
-    for (int i=0;i<pageCount();i++) {
-        Editor * e= (*this)[i];
+    for (Editor * e: openedEditors()) {
         if (e->modified())
             e->save();
     }
@@ -1061,8 +1064,7 @@ void EditorManager::saveAll()
 
 bool EditorManager::saveAllForProject()
 {
-    for (int i=0;i<pageCount();i++) {
-        Editor * e= (*this)[i];
+    for (Editor * e: openedEditors()) {
         if (e->modified() && e->inProject()) {
             if (!e->save())
                 return false;
@@ -1073,8 +1075,7 @@ bool EditorManager::saveAllForProject()
 
 bool EditorManager::projectEditorsModified()
 {
-    for (int i=0;i<pageCount();i++) {
-        Editor * e= (*this)[i];
+    for (Editor * e: openedEditors()) {
         if (e->modified() && e->inProject()) {
             return true;
         }
@@ -1084,8 +1085,7 @@ bool EditorManager::projectEditorsModified()
 
 void EditorManager::clearProjectEditorsModified()
 {
-    for (int i=0;i<pageCount();i++) {
-        Editor * e= (*this)[i];
+    for (Editor * e: openedEditors()) {
         if (e->inProject()) {
             e->setModified(false);
         }
@@ -1109,39 +1109,21 @@ void EditorManager::endUpdate() {
 
 void EditorManager::applySettings()
 {
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mLeftPageWidget->widget(i));
+    for (Editor* e: openedEditors())
         e->applySettings();
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mRightPageWidget->widget(i));
-        e->applySettings();
-    }
 }
 
 void EditorManager::applyColorSchemes(const QString& name)
 {
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mLeftPageWidget->widget(i));
+    for (Editor* e: openedEditors())
         e->applyColorScheme(name);
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mRightPageWidget->widget(i));
-        e->applyColorScheme(name);
-    }
 }
 
 bool EditorManager::isFileOpened(const QString &fullfilepath) const
 {
     QFileInfo fileInfo(fullfilepath);
     QString filename = fileInfo.absoluteFilePath();
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mLeftPageWidget->widget(i));
-        if (e->filename().compare(filename)==0 || e->filename().compare(fullfilepath)==0)
-            return true;
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mRightPageWidget->widget(i));
+    for (Editor* e: openedEditors()) {
         if (e->filename().compare(filename)==0 || e->filename().compare(fullfilepath)==0)
             return true;
     }
@@ -1150,15 +1132,7 @@ bool EditorManager::isFileOpened(const QString &fullfilepath) const
 
 bool EditorManager::hasFilename(const QString &filename) const
 {
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mLeftPageWidget->widget(i));
-        QFileInfo fileInfo(e->filename());
-        QString name = fileInfo.fileName();
-        if (name.compare(filename, PATH_SENSITIVITY)==0 )
-            return true;
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor* e = static_cast<Editor*>(mRightPageWidget->widget(i));
+    for (Editor* e: openedEditors()) {
         QFileInfo fileInfo(e->filename());
         QString name = fileInfo.fileName();
         if (name.compare(filename, PATH_SENSITIVITY)==0 )
@@ -1367,27 +1341,59 @@ QTabWidget *EditorManager::findPageControlForEditor(Editor *e)
     return nullptr;
 }
 
+QList<Editor*> EditorManager::openedEditors() const
+{
+    QList<Editor*> editors;
+    // QTabWidget::widget(i) returns nullptr while a tab is being removed: the page
+    // leaves the internal QStackedWidget before the tab leaves the tab bar, so
+    // count() and the pages disagree for a moment. Never dereference such a page.
+    for (QTabWidget* pageWidget: {mLeftPageWidget, mRightPageWidget}) {
+        for (int i=0;i<pageWidget->count();i++) {
+            Editor* e = static_cast<Editor*>(pageWidget->widget(i));
+            if (e)
+                editors.append(e);
+        }
+    }
+    return editors;
+}
+
+void EditorManager::requestUpdateEditorBreakpoints()
+{
+    if (mUpdateEditorBreakpointsPending)
+        return;
+    mUpdateEditorBreakpointsPending = true;
+    // Deferred on purpose: a page shown by QTabWidget::removeTab() would otherwise
+    // walk the pages of a tab widget that is half updated (see openedEditors()).
+    QTimer::singleShot(0, this, [this]{
+        mUpdateEditorBreakpointsPending = false;
+        if (pMainWindow->isQuitting() || pMainWindow->isClosingAll())
+            return;
+        updateEditorBreakpoints();
+    });
+}
+
 void EditorManager::updateEditorBookmarks()
 {
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor * e = static_cast<Editor*>(mLeftPageWidget->widget(i));
+    for (Editor * e: openedEditors())
         e->resetBookmarks(pMainWindow->bookmarkModel());
-    }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor * e = static_cast<Editor*>(mRightPageWidget->widget(i));
-        e->resetBookmarks(pMainWindow->bookmarkModel());
-    }
 }
 
 void EditorManager::updateEditorBreakpoints()
 {
-    for (int i=0;i<mLeftPageWidget->count();i++) {
-        Editor * e = static_cast<Editor*>(mLeftPageWidget->widget(i));
-        e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    // Take the pages before refreshing: resetting a breakpoint repaints the gutter
+    // and the user can close an editor in between (QPointer notices the deletion).
+    QList<QPointer<Editor>> editors;
+    for (QTabWidget* pageWidget: {mLeftPageWidget, mRightPageWidget}) {
+        for (int i=0;i<pageWidget->count();i++) {
+            Editor* e = static_cast<Editor*>(pageWidget->widget(i));
+            if (e)
+                editors.append(e);
+        }
     }
-    for (int i=0;i<mRightPageWidget->count();i++) {
-        Editor * e = static_cast<Editor*>(mRightPageWidget->widget(i));
-        e->resetBreakpoints(pMainWindow->debugger()->breakpointModel().get());
+    std::shared_ptr<BreakpointModel> model = pMainWindow->debugger()->breakpointModel();
+    for (const QPointer<Editor>& e: editors) {
+        if (e)
+            e->resetBreakpoints(model.get());
     }
 }
 
