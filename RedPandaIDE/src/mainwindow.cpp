@@ -4150,7 +4150,11 @@ void MainWindow::onProjectViewContextMenu(const QPoint &pos)
         if (pNode) {
             onFolder = (!pNode->isUnit);
             onUnit = (pNode->isUnit);
-            onRoot = false;
+            // pointerToNode() also resolves the root node, so it has to be
+            // compared explicitly: otherwise the root was handled as a folder
+            // and the folder-only entries (add/rename/remove folder) were offered
+            // on it.
+            onRoot = (pNode.get() == mProject->rootNode().get());
             if (onFolder && !onRoot) {
                 folderEmpty = pNode->children.isEmpty();
             }
