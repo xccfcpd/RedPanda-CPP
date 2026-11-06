@@ -25,6 +25,7 @@
 #include <QKeyEvent>
 #include <QUrl>
 #include <QDir>
+#include <QDirIterator>
 #include <QSet>
 #include <functional>
 #include <QFileDialog>
@@ -5461,6 +5462,21 @@ void MainWindow::onProjectFocusFilter()
     ui->txtProjectFilter->selectAll();
 }
 
+// A folder of the project tree called `name` under `parent`, if there is one:
+// dragging a folder in must reuse an existing group instead of adding a second
+// one with the same name.
+static PProjectModelNode findChildProjectFolder(const PProjectModelNode& parent,
+                                                const QString& name)
+{
+    if (!parent)
+        return PProjectModelNode();
+    for (const PProjectModelNode& child: parent->children) {
+        if (child && !child->isUnit && child->text == name)
+            return child;
+    }
+    return PProjectModelNode();
+}
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == ui->txtProjectFilter && event->type() == QEvent::KeyPress) {
@@ -5489,17 +5505,34 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         } else if (event->type() == QEvent::Drop) {
             QDropEvent *dropEvent = static_cast<QDropEvent*>(event);
             if (dropEvent->mimeData()->hasUrls() && mProject) {
-                QStringList files;
+                // A dropped folder keeps its layout: its files carry the chain of
+                // folders (the dropped folder first) they have to be created in.
+                struct DropEntry {
+                    QString fileName;
+                    QStringList folders;
+                };
+                QList<DropEntry> entries;
+                bool droppedFolders = false;
                 foreach (const QUrl& url, dropEvent->mimeData()->urls()) {
                     if (!url.isLocalFile())
                         continue;
                     QFileInfo info(url.toLocalFile());
-                    if (info.isDir()) {
-                        foreach (const QFileInfo& child,
-                                 QDir(info.absoluteFilePath()).entryInfoList(QDir::Files))
-                            files.append(child.absoluteFilePath());
-                    } else if (info.isFile()) {
-                        files.append(info.absoluteFilePath());
+                    if (info.isFile()) {
+                        entries.append({info.absoluteFilePath(), QStringList()});
+                    } else if (info.isDir()) {
+                        droppedFolders = true;
+                        QDir rootDir(info.absoluteFilePath());
+                        QDirIterator iter(info.absoluteFilePath(), QDir::Files,
+                                          QDirIterator::Subdirectories);
+                        while (iter.hasNext()) {
+                            iter.next();
+                            QString relative = rootDir.relativeFilePath(
+                                        iter.fileInfo().absolutePath());
+                            QStringList folders(info.fileName());
+                            if (relative != "." && !relative.isEmpty())
+                                folders.append(relative.split('/', Qt::SkipEmptyParts));
+                            entries.append({iter.filePath(), folders});
+                        }
                     }
                 }
                 // Add the files to the folder under the cursor: dropping on a
@@ -5523,17 +5556,52 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 }
                 if (!targetNode)
                     targetNode = mProject->rootNode();
+                // The custom view can show the hierarchy of an external folder as
+                // groups; the file system view derives the folder of every file
+                // from its path and only mirrors the project directory.
+                const bool customView =
+                        (mProject->modelType() == ProjectModelType::Custom);
+                QList<PProjectModelNode> createdGroups;
                 bool added = false;
-                foreach (const QString& fileName, files) {
-                    if (mProject->findUnit(fileName))
+                foreach (const DropEntry& entry, entries) {
+                    if (mProject->findUnit(entry.fileName))
                         continue;
-                    if (mProject->addUnit(fileName, targetNode))
+                    PProjectModelNode parentNode = targetNode;
+                    if (customView) {
+                        foreach (const QString& folderName, entry.folders) {
+                            PProjectModelNode child =
+                                    findChildProjectFolder(parentNode, folderName);
+                            if (!child) {
+                                child = mProject->addFolder(parentNode, folderName);
+                                if (child)
+                                    createdGroups.append(child);
+                            }
+                            if (!child)
+                                break;
+                            parentNode = child;
+                        }
+                    }
+                    if (mProject->addUnit(entry.fileName, parentNode))
                         added = true;
                 }
                 if (added) {
                     mProject->saveAll();
                     updateProjectView();
                     restoreProjectTreeState();
+                    // show what was just added instead of leaving it collapsed
+                    foreach (const PProjectModelNode& group, createdGroups) {
+                        if (!group)
+                            continue;
+                        QModelIndex index = mProjectProxyModel->mapFromSource(
+                                    mProject->model()->getNodeIndex(group.get()));
+                        if (index.isValid())
+                            ui->projectView->expand(index);
+                    }
+                }
+                if (droppedFolders && !customView) {
+                    statusBar()->showMessage(
+                                tr("Files added by file type; the folder layout is "
+                                   "kept only in the custom view."), 8000);
                 }
                 dropEvent->acceptProposedAction();
                 return true;
