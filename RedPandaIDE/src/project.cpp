@@ -2327,6 +2327,10 @@ void Project::setName(const QString &newName)
         mName = newName;
         mRootNode->text = newName;
         setModified(true);
+        // the root row shows the project name: repaint it, otherwise the tree
+        // keeps the old name until the project is reopened
+        if (mModel && mRootNode)
+            mModel->refreshIcon(mModel->getNodeIndex(mRootNode.get()), false);
     }
 }
 
@@ -2695,7 +2699,10 @@ Qt::ItemFlags ProjectModel::flags(const QModelIndex &index) const
     if (!p)
         return Qt::NoItemFlags;
     if (p==mProject->rootNode().get())
-        return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable;
+        // The root shows the project name: renaming it here only changed the name
+        // in memory (the .dev file keeps its own name), so it is not editable any
+        // more. Use Project > Options > General to rename the project.
+        return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
     if (mProject && mProject->modelType() == ProjectModelType::FileSystem) {
         Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
         if (p->isUnit)

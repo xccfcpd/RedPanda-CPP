@@ -4201,7 +4201,10 @@ void MainWindow::onProjectViewContextMenu(const QPoint &pos)
         menu.addSeparator();
     }
 #endif
-    if (onFolder && mProject->modelType()==ProjectModelType::Custom) {
+    if (onFolder && !onRoot && mProject->modelType()==ProjectModelType::Custom) {
+        // A custom folder created at the root exists only in the tree: it is not a
+        // directory on the disk, so the file system view (and the project folder
+        // itself) never shows it. Adding folders inside a folder is kept.
         menu.addAction(mProject_Add_Folder);
         if (!onRoot) {
             menu.addAction(mProject_Rename_Folder);
@@ -5359,32 +5362,54 @@ void MainWindow::restoreProjectTreeState()
     walk(mProject->rootNode());
 }
 
+// The units behind every selected row of the project tree, in view order. The
+// copy commands work on the whole selection: a multi selection must not silently
+// copy only one of the selected files.
+static QList<PProjectUnit> selectedProjectUnits(const QAbstractItemModel *proxyModel,
+                                                QTreeView *view)
+{
+    QList<PProjectUnit> units;
+    if (!proxyModel || !view || !view->selectionModel())
+        return units;
+    QModelIndexList rows = view->selectionModel()->selectedRows();
+    if (rows.isEmpty() && view->currentIndex().isValid())
+        rows.append(view->currentIndex());
+    for (const QModelIndex& index: rows) {
+        PProjectUnit unit = projectUnitFromProxyIndex(proxyModel, index);
+        if (unit && !units.contains(unit))
+            units.append(unit);
+    }
+    return units;
+}
+
 void MainWindow::onProjectCopyFileName()
 {
-    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
-                                                  ui->projectView->currentIndex());
-    if (!unit)
-        return;
-    QGuiApplication::clipboard()->setText(QFileInfo(unit->fileName()).fileName());
+    QStringList names;
+    for (const PProjectUnit& unit: selectedProjectUnits(mProjectProxyModel, ui->projectView))
+        names.append(QFileInfo(unit->fileName()).fileName());
+    if (!names.isEmpty())
+        QGuiApplication::clipboard()->setText(names.join("\n"));
 }
 
 void MainWindow::onProjectCopyRelativePath()
 {
-    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
-                                                  ui->projectView->currentIndex());
-    if (!unit || !mProject)
+    if (!mProject)
         return;
-    QGuiApplication::clipboard()->setText(
-                QDir(mProject->directory()).relativeFilePath(unit->fileName()));
+    QStringList paths;
+    QDir dir(mProject->directory());
+    for (const PProjectUnit& unit: selectedProjectUnits(mProjectProxyModel, ui->projectView))
+        paths.append(dir.relativeFilePath(unit->fileName()));
+    if (!paths.isEmpty())
+        QGuiApplication::clipboard()->setText(paths.join("\n"));
 }
 
 void MainWindow::onProjectCopyFullPath()
 {
-    PProjectUnit unit = projectUnitFromProxyIndex(mProjectProxyModel,
-                                                  ui->projectView->currentIndex());
-    if (!unit)
-        return;
-    QGuiApplication::clipboard()->setText(unit->fileName());
+    QStringList paths;
+    for (const PProjectUnit& unit: selectedProjectUnits(mProjectProxyModel, ui->projectView))
+        paths.append(unit->fileName());
+    if (!paths.isEmpty())
+        QGuiApplication::clipboard()->setText(paths.join("\n"));
 }
 
 void MainWindow::onProjectRefresh()
