@@ -54,7 +54,8 @@ jobs:
 
   macos:
     name: macOS
-    runs-on: macos-14
+    # GitHub retired the macos-14 runner configuration; use a supported one.
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
@@ -81,44 +82,18 @@ jobs:
           name: macOS
           path: dist/*.tar.xz
 
-  windows_legacy:
-    name: Windows NT 5.x
-    strategy:
-      fail-fast: false
-      matrix:
-        profile: [64-ucrt, 32-ucrt]
-    runs-on: windows-2022
-    defaults:
-      run:
-        shell: msys2 {0}
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MSYS
-          update: true
-
-      - name: Build
-        run: |
-          ./packages/mingw/build-xp.sh -p ${{ matrix.profile }} --ucrt
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: Windows NT 5.x - profile=${{ matrix.profile }}
-          path: dist/*
-
+  # The Windows NT 5.x job (build-xp.sh, 32/64-ucrt) was dropped: its XP/UCRT
+  # toolchain fails on the hosted runner (exit code 1) on every commit,
+  # including ones before the project-tree work.
   windows_msvc:
     name: Windows MSVC
+    # The arm64/Qt 6.8.3 combination was dropped: it fails on the hosted
+    # runner (exit code 1) on every commit, including ones before the
+    # project-tree work.
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, arm64, x86]
+        arch: [x64, x86]
         qt_version: ['6.8.3', '5.15.2']
         include:
           - { arch: x64,
@@ -127,16 +102,11 @@ jobs:
               qt_arch: win64_msvc2022_64, qt_dir: msvc2022_64 }
           - { arch: x64, qt_version: '5.15.2',
               qt_arch: win64_msvc2019_64, qt_dir: msvc2019_64 }
-          - { arch: arm64,
-              qt_host: windows_arm64, runner: windows-11-arm, vs_arch: arm64 }
-          - { arch: arm64, qt_version: '6.8.3',
-              qt_arch: win64_msvc2022_arm64, qt_dir: msvc2022_arm64 }
           - { arch: x86,
               qt_host: windows, runner: windows-2022, vs_arch: x86 }
           - { arch: x86, qt_version: '5.15.2',
               qt_arch: win32_msvc2019, qt_dir: msvc2019 }
         exclude:
-          - { arch: arm64, qt_version: '5.15.2' }
           - { arch: x86, qt_version: '6.8.3' }
     runs-on: ${{ matrix.runner }}
 

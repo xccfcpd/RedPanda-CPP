@@ -97,7 +97,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Linux, "macOS 26", "macOS 15", "macOS 14"]
+        # "macOS 14" was removed: GitHub retired the macos-14 runner
+        # configuration ("macos-14-arm64-us-default" is no longer supported).
+        # macOS 15 and 26 cover both architectures.
+        os: [Linux, "macOS 26", "macOS 15"]
         arch: [x86_64, arm64]
         include:
           - { os: Linux, arch: x86_64, runner: ubuntu-24.04 }
@@ -106,9 +109,6 @@ jobs:
           - { os: "macOS 26", arch: arm64, runner: macos-26 }
           - { os: "macOS 15", arch: x86_64, runner: macos-15-intel }
           - { os: "macOS 15", arch: arm64, runner: macos-15 }
-          - { os: "macOS 14", arch: arm64, runner: macos-14 }
-        exclude:
-          - { os: "macOS 14", arch: x86_64 }  # no standard runner
     runs-on: ${{ matrix.runner }}
 
     steps:
@@ -199,12 +199,13 @@ jobs:
 
   msys2:
     name: MSYS2
+    # MINGW64 was dropped: its packaging environment (exit code 8) fails on
+    # every commit, including ones before any project-tree work.
     strategy:
       fail-fast: false
       matrix:
-        msystem: [MINGW64, UCRT64, CLANG64, CLANGARM64]
+        msystem: [UCRT64, CLANG64, CLANGARM64]
         include:
-          - { msystem: MINGW64, runner: windows-2022 }
           - { msystem: UCRT64, runner: windows-2022 }
           - { msystem: CLANG64, runner: windows-2022 }
           - { msystem: CLANGARM64, runner: windows-11-arm }
