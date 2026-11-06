@@ -2649,8 +2649,9 @@ QVariant ProjectModel::data(const QModelIndex &index, int role) const
         // resources and the like are never compiled: dimming them would only be
         // noise.
         if (p->isUnit && isExcludedFromBuild(p))
-            return QVariant(QApplication::palette().color(QPalette::Disabled,
-                                                         QPalette::WindowText));
+            return QVariant::fromValue(QApplication::palette().color(
+                                           QPalette::Disabled,
+                                           QPalette::WindowText));
         return QVariant();
     } else if (role == Qt::ToolTipRole) {
         if (p->isUnit) {
@@ -3040,11 +3041,16 @@ bool ProjectModelSortFilterProxy::lessThan(const QModelIndex &source_left, const
     return QString::compare(pLeft->text, pRight->text)<0;
 }
 
+void ProjectModelSortFilterProxy::setFilterText(const QString &text)
+{
+    mFilterText = text;
+}
+
 bool ProjectModelSortFilterProxy::filterAcceptsRow(int source_row,
                                                    const QModelIndex &source_parent) const
 {
-    const QString needle = filterRegExp().pattern();
-    if (needle.isEmpty())
+    const QString needle = mFilterText;
+    if (needle.isEmpty() || !sourceModel())
         return true;
     QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
     if (!index.isValid())

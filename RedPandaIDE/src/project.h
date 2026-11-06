@@ -184,6 +184,10 @@ class ProjectModelSortFilterProxy : public QSortFilterProxyModel
 
 public:
     explicit ProjectModelSortFilterProxy(QObject *parent = nullptr);
+    // The plain text typed in the filter box. filterAcceptsRow() uses this
+    // instead of filterRegExp()/filterRegularExpression(): those differ between
+    // Qt 5 and Qt 6, and their escaped pattern is not a plain substring.
+    void setFilterText(const QString &text);
     // QSortFilterProxyModel interface
 protected:
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const override;
@@ -191,6 +195,8 @@ protected:
     // kept by QSortFilterProxyModel::setRecursiveFilteringEnabled(true) when one
     // of their children matches, so they are never accepted explicitly here.
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
+private:
+    QString mFilterText;
 };
 
 class ProjectTemplate;

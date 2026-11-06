@@ -5283,6 +5283,9 @@ void MainWindow::onProjectFilterChanged(const QString &text)
 {
     if (!mProjectProxyModel)
         return;
+    // Keep the plain text for filterAcceptsRow(); setFilterFixedString() is
+    // still needed because it also invalidates the filtering in Qt 5 and Qt 6.
+    static_cast<ProjectModelSortFilterProxy*>(mProjectProxyModel)->setFilterText(text);
     mProjectProxyModel->setFilterFixedString(text);
     if (!mProject)
         return;
