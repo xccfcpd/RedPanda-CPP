@@ -1344,8 +1344,13 @@ PProjectUnit Project::internalAddUnit(const QString &inFileName, PProjectModelNo
         newUnit->setCompileCpp(false);
         newUnit->setLink(false);
     }
-    if (mOptions.modelType == ProjectModelType::FileSystem)
-        newUnit->setFolder(getNodePath(parentNode));
+    // Remember the group the unit was added to (the root gives an empty path).
+    // In the file system view the node was derived from the file's path above; in
+    // the custom view it is the folder the user added the file to. Without this
+    // the folder was only refreshed by updateFolders() on a rename/removal, so a
+    // file added to a custom folder went back to the root when the project was
+    // reopened.
+    newUnit->setFolder(getNodePath(parentNode));
     newUnit->setPriority(1000);
     newUnit->setOverrideBuildCmd(false);
     newUnit->setBuildCmd("");

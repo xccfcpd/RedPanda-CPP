@@ -5502,11 +5502,32 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                         files.append(info.absoluteFilePath());
                     }
                 }
+                // Add the files to the folder under the cursor: dropping on a
+                // folder puts them inside it, dropping on a file means the folder
+                // of that file, and dropping below the tree means the root. In the
+                // file system view the model replaces this by the folder that
+                // matches the file's path.
+                PProjectModelNode targetNode = mProject->rootNode();
+                QModelIndex dropIndex = ui->projectView->indexAt(dropEvent->pos());
+                if (dropIndex.isValid()) {
+                    QModelIndex sourceIndex = mProjectProxyModel->mapToSource(dropIndex);
+                    ProjectModelNode *node = static_cast<ProjectModelNode*>(
+                                sourceIndex.internalPointer());
+                    PProjectModelNode folderNode = mProject->pointerToNode(node);
+                    if (folderNode) {
+                        if (folderNode->isUnit)
+                            targetNode = folderNode->parent.lock();
+                        else
+                            targetNode = folderNode;
+                    }
+                }
+                if (!targetNode)
+                    targetNode = mProject->rootNode();
                 bool added = false;
                 foreach (const QString& fileName, files) {
                     if (mProject->findUnit(fileName))
                         continue;
-                    if (mProject->addUnit(fileName, mProject->rootNode()))
+                    if (mProject->addUnit(fileName, targetNode))
                         added = true;
                 }
                 if (added) {
