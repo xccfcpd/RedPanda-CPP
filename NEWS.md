@@ -1,4 +1,8 @@
 Red Panda C++ Version 3.5
+  - enhancement: A folder dropped on the project tree keeps its layout: the files it contains are added recursively, and in the custom view one group is created per folder (the dropped folder first), existing groups are reused and the new ones are expanded. In the file system view, which only mirrors the project directory, the status bar says that the layout is kept only in the custom view.
+  - 增强：把一个文件夹拖到项目树上时会保留它的层级：递归加入其中的文件，自定义视图下按目录自动创建分组（被拖的文件夹为第一级），已有分组复用、新建分组自动展开。文件系统视图只镜像工程目录，此时状态栏会提示层级仅在自定义视图中保留。
+  - fix: A file added to a custom folder is remembered in that folder; it used to be written with an empty group and went back to the root when the project was reopened. Dropped files are added to the folder under the cursor instead of always to the root.
+  - 修复：加到自定义文件夹里的文件会记住所在分组；以前写入的是空分组，重新打开工程后会回到根目录。拖入的文件会放进光标所在的分组，而不是一律放进根目录。
   - enhancement: The project manager has a filter box (Ctrl+Alt+P): it narrows the tree to the file names and paths that match, keeps the folders of a match visible, clears with Esc, and Enter opens the first match. The project tree now also follows the current editor by expanding the folders down to it.
   - 增强：项目管理器新增过滤框（Ctrl+Alt+P）：按文件名与路径过滤，匹配项的父文件夹保持可见，Esc 清空，回车打开第一个匹配项。切换编辑器时，项目树会自动展开到该文件并选中。
   - enhancement: Enter (or a double click) opens the file under the cursor in the project tree, so a project can be browsed without the mouse; files and folders can be renamed in place with F2, without opening a dialog.
