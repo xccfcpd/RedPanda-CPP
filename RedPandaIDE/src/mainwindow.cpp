@@ -5542,7 +5542,12 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 // file system view the model replaces this by the folder that
                 // matches the file's path.
                 PProjectModelNode targetNode = mProject->rootNode();
-                QModelIndex dropIndex = ui->projectView->indexAt(dropEvent->pos());
+#if QT_VERSION_MAJOR >= 6
+                const QPoint dropPos = dropEvent->position().toPoint();
+#else
+                const QPoint dropPos = dropEvent->pos();
+#endif
+                QModelIndex dropIndex = ui->projectView->indexAt(dropPos);
                 if (dropIndex.isValid()) {
                     QModelIndex sourceIndex = mProjectProxyModel->mapToSource(dropIndex);
                     ProjectModelNode *node = static_cast<ProjectModelNode*>(
