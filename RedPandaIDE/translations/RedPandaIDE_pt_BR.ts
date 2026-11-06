@@ -6957,6 +6957,10 @@
         <source>Ctrl+Alt+P</source>
         <translation>Ctrl+Alt+P</translation>
     </message>
+    <message>
+        <source>Files added by file type; the folder layout is kept only in the custom view.</source>
+        <translation>Arquivos adicionados por tipo; a estrutura de pastas é mantida apenas na visão personalizada.</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>

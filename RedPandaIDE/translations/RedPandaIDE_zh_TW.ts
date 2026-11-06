@@ -7028,6 +7028,10 @@ p, li { white-space: pre-wrap; }
         <source>Ctrl+Alt+P</source>
         <translation>Ctrl+Alt+P</translation>
     </message>
+    <message>
+        <source>Files added by file type; the folder layout is kept only in the custom view.</source>
+        <translation>檔案已依類型加入專案；資料夾階層僅在自訂檢視中保留。</translation>
+    </message>
 </context>
 <context>
     <name>MemoryModel</name>
