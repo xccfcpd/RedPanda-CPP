@@ -27,9 +27,26 @@
 #include "types.h"
 #include "qt_utils/utils.h"
 
+// GCC 14 at -O2/-O3 can partially inline searchForSegmentIdx and sink the
+// store of QList's size field past the inlined binary search, so the callee
+// reads an uninitialized size and indexes out of bounds (Qt 6 keeps size
+// inside QList, unlike Qt 5). Keep the function out of line on every Qt 6
+// toolchain as a cheap safeguard: MSVC uses __declspec, GCC/Clang (including
+// clang-cl) use __attribute__. Qt 5 keeps its original code generation
+// (e.g. Qt 5.15 + GCC 8.5 is completely unaffected).
+#if QT_VERSION_MAJOR >= 6 && (defined(__clang__) || defined(_MSC_VER) || (defined(__GNUC__) && __GNUC__ >= 14))
+#  if defined(_MSC_VER) && !defined(__clang__)
+#    define QSYNEDIT_NOINLINE __declspec(noinline)
+#  else
+#    define QSYNEDIT_NOINLINE __attribute__((noinline))
+#  endif
+#else
+#  define QSYNEDIT_NOINLINE
+#endif
+
 namespace QSynedit {
 
-int searchForSegmentIdx(const QList<int> &segList, int maxVal, int value);
+QSYNEDIT_NOINLINE int searchForSegmentIdx(const QList<int> &segList, int maxVal, int value);
 
 //calc length of each segments
 int calcSegmentInterval(const QList<int> &segList, int maxVal, int idx);

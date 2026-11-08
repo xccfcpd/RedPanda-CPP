@@ -1727,7 +1727,7 @@ BinaryFileError::BinaryFileError(const QString& reason):
 
 }
 
-int searchForSegmentIdx(const QList<int> &segList, int maxVal, int value)
+QSYNEDIT_NOINLINE int searchForSegmentIdx(const QList<int> &segList, int maxVal, int value)
 {
     if (value<0)
         return 0;
