@@ -45,6 +45,16 @@ void CompetitiveCompanionHandler::start()
     mThread->start();
     if (!mThread->waitStart()) {
         qDebug()<<"Failed to listen!";
+        // run() releases mStartSemaphore right after listen() fails, i.e. before it
+        // actually returns: tcpServer.close() and mStopSemaphore.release() still
+        // follow. Deleting the thread object here therefore races with the thread
+        // that is still running, and Qt turns that into
+        //   qFatal("QThread: Destroyed while thread is still running")
+        // which aborts the process. Under CPU contention (several instances
+        // starting at once, each losing the race for the listening port) that
+        // window is wide enough to be hit regularly, so wait for the thread to
+        // finish before destroying it.
+        mThread->wait();
         delete mThread;
         mThread = nullptr;
     }
@@ -156,6 +166,11 @@ void CompetitiveCompanionThread::onNewProblemConnection(QTcpSocket* clientConnec
 CompetitiveCompanionThread::CompetitiveCompanionThread(QObject *parent):
     QThread{parent},
     mStop{false},
+    // mBatchCount used to stay uninitialized: when the received JSON has no "batch"
+    // object, mBatchId and batchId are both empty, the assignment branch below is
+    // skipped, and the status bar reported a random number as the total
+    // ("received (1/3801136)").
+    mBatchCount{0},
     mBatchProblemsRecieved{0},
     mStartSemaphore{0},
     mStopSemaphore{0},
