@@ -1876,16 +1876,20 @@ QString CppSyntaxer::foldString(QString endLine)
 
 bool CppSyntaxer::CppSyntaxState::equals(const std::shared_ptr<SyntaxState> &s2) const
 {
-    if (SyntaxState::equals(s2)) {
-        std::shared_ptr<CppSyntaxState> cppS2 = std::dynamic_pointer_cast<CppSyntaxState>(s2);
-        return initialDCharSeq == cppS2->initialDCharSeq
-                && inAttribute == cppS2->inAttribute
-                && ancestorsForIf == cppS2->ancestorsForIf
-                && mergeWithNextLine == cppS2->mergeWithNextLine
-                && lastToken == cppS2->lastToken
-                && stateBeforeLastToken == cppS2->stateBeforeLastToken;
-    } else
+    if (!SyntaxState::equals(s2))
         return false;
+    std::shared_ptr<CppSyntaxState> cppS2 = std::dynamic_pointer_cast<CppSyntaxState>(s2);
+    // The base comparison above only rules out a null state; a state created by
+    // another syntaxer would still cast to null, so two states of different
+    // types are reported as unequal instead of being dereferenced.
+    if (!cppS2)
+        return false;
+    return initialDCharSeq == cppS2->initialDCharSeq
+            && inAttribute == cppS2->inAttribute
+            && ancestorsForIf == cppS2->ancestorsForIf
+            && mergeWithNextLine == cppS2->mergeWithNextLine
+            && lastToken == cppS2->lastToken
+            && stateBeforeLastToken == cppS2->stateBeforeLastToken;
 }
 
 }
