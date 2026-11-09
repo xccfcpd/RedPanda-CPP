@@ -3073,6 +3073,11 @@ void Editor::reparse()
 {
     if (!mInited)
         return;
+    // A huge document is not handed to the symbol parser either: the parser keeps
+    // its own QStringList copy of the file plus the statement tree, which doubles
+    // the memory the editor already needs just for the text.
+    if (largeFileMode())
+        return;
     if (!mCodeCompletionEnabled)
         return;
     if (!mParser)

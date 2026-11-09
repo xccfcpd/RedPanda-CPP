@@ -17,6 +17,92 @@
 #include "main.h"
 #include "utils/os.h"
 #include <QIcon>
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <cstdlib>
+#include <exception>
+
+// ---------------------------------------------------------------------------
+// Fatal-error reporting.
+//
+// The IDE can die through a fatal path that never shows a window: several
+// instances starting at the same time occasionally exit with the CRT fail-fast
+// code (0xC0000602 / STATUS_FATAL_APP_EXIT) and no message at all. A release
+// build has no console and WER only records the exception code, so there is
+// nothing to investigate afterwards. These handlers append the reason to
+// config/crash.log (or %TEMP% when the config folder is read-only) so the next
+// occurrence is diagnosable instead of invisible.
+// ---------------------------------------------------------------------------
+static QString fatalLogFilePath()
+{
+    QDir appDir(QCoreApplication::applicationDirPath());
+    QDir configDir(appDir.filePath(QStringLiteral("config")));
+    if (configDir.exists())
+        return configDir.filePath(QStringLiteral("crash.log"));
+    return QDir(QDir::tempPath()).filePath(QStringLiteral("redpanda-crash.log"));
+}
+
+static void logFatalMessage(const char *kind, const QString &detail)
+{
+    QFile file(fatalLogFilePath());
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return;
+    QTextStream stream(&file);
+    stream << QDateTime::currentDateTime().toString(Qt::ISODateWithMs)
+           << QStringLiteral(" [") << kind << QStringLiteral("] ")
+           << detail << '\n';
+    stream.flush();
+}
+
+static void redPandaTerminateHandler()
+{
+    QString detail = QStringLiteral("no active exception");
+    if (std::current_exception()) {
+        try {
+            std::rethrow_exception(std::current_exception());
+        } catch (const std::exception &e) {
+            detail = QString::fromLocal8Bit(e.what());
+        } catch (...) {
+            detail = QStringLiteral("unknown exception type");
+        }
+    }
+    logFatalMessage("std::terminate", detail);
+    std::_Exit(70);
+}
+
+static QtMessageHandler g_previousMessageHandler = nullptr;
+
+static void redPandaMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                                   const QString &message)
+{
+    if (type == QtCriticalMsg || type == QtFatalMsg) {
+        QString where;
+        if (context.file)
+            where = QStringLiteral(" (%1:%2)").arg(QString::fromUtf8(context.file)).arg(context.line);
+        logFatalMessage(type == QtFatalMsg ? "qFatal" : "qCritical", message + where);
+    }
+    if (g_previousMessageHandler)
+        g_previousMessageHandler(type, context, message);
+}
+
+#ifdef Q_OS_WIN
+static void redPandaInvalidParameterHandler(const wchar_t *expression, const wchar_t *function,
+                                            const wchar_t *file, unsigned int line, uintptr_t)
+{
+    logFatalMessage("crt-invalid-parameter",
+                    QStringLiteral("func=%1 expr=%2 at %3:%4")
+                        .arg(function ? QString::fromWCharArray(function)
+                                      : QStringLiteral("<unknown>"),
+                             expression ? QString::fromWCharArray(expression)
+                                        : QStringLiteral("<unknown>"),
+                             file ? QString::fromWCharArray(file)
+                                  : QStringLiteral("<unknown>"))
+                        .arg(line));
+    std::_Exit(71);
+}
+#endif
 
 #ifdef Q_OS_WIN
 static_assert(WM_APP_OPEN_FILE < 0xc000);
@@ -234,6 +320,14 @@ extern "C" int Q_DECL_EXPORT RedPandaIDE_main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+    // Install the fatal-error handlers before anything else can fail, so a silent
+    // fail-fast exit leaves a reason behind in config/crash.log.
+    std::set_terminate(redPandaTerminateHandler);
+    g_previousMessageHandler = qInstallMessageHandler(redPandaMessageHandler);
+#ifdef Q_OS_WIN
+    _set_invalid_parameter_handler(redPandaInvalidParameterHandler);
+#endif
+
 //#ifdef Q_OS_WINDOWS
 //    // Make title bar and palette follow system-wide dark mode setting on recent Windows releases.
 //    // Use freetype as the fontengine

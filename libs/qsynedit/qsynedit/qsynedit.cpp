@@ -3509,8 +3509,45 @@ int QSynEdit::reparseLines(int startLine, int endLine, bool toDocumentEnd)
     return line;
 }
 
+// A document counts as "large" when the per-line bookkeeping would dwarf the
+// text itself: one syntax-state object, one code-folding node and one glyph
+// table per line cost roughly 700-900 bytes per line plus 8-10 bytes per
+// character, i.e. 50-100x the size of a typical source file. A 50 MB file then
+// needs several GB of RAM, which is what makes the editor fail on 8 GB
+// machines. Above these limits the whole-document scan is skipped and tokens
+// are produced on demand for the visible lines only.
+static bool isLargeDocument(const Document *doc)
+{
+    if (!doc)
+        return false;
+    const int MAX_LINES = 300000;
+    const int MAX_CHARS = 8 * 1024 * 1024;
+    return doc->count() > MAX_LINES || doc->getTextLength() > MAX_CHARS;
+}
+
+bool QSynEdit::largeFileMode() const
+{
+    return mLargeFileMode;
+}
+
 void QSynEdit::reparseDocument()
 {
+    // Every caller (loadFromFile(), setContent()) lands here right after the
+    // text is in place, so the decision is taken from the document itself.
+    mLargeFileMode = isLargeDocument(mDocument.get());
+    if (mLargeFileMode) {
+        // Skip the full-document lex and the code-folding scan, but keep the
+        // per-line state non-null: every syntaxer dereferences it without a
+        // check. A single shared state object costs one allocation instead of
+        // one CppSyntaxState per line (the main memory amplifier), and the
+        // syntaxers only copy *out* of it, never mutate it.
+        mSyntaxer->resetState();
+        PSyntaxState emptyState = mSyntaxer->getState();
+        for (int i = 0; i < mDocument->count(); i++)
+            mDocument->setSyntaxState(i, emptyState);
+        invalidateLines(0, mDocument->count());
+        return;
+    }
     mSyntaxer->resetState();
     for (int i =0;i<mDocument->count();i++) {
         mSyntaxer->setLine(i, mDocument->getLine(i), mDocument->getLineSeq(i));

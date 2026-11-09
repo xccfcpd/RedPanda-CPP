@@ -422,6 +422,13 @@ public:
     void setContent(const QString& text);
     void setContent(const QStringList& text);
 
+    // True when the current document is too large to be lexed as a whole.
+    // In this mode the editor skips the full-document syntax scan (one syntax
+    // state object per line) and the code-folding scan, so memory stays
+    // proportional to the text instead of to the line count. Tokens are still
+    // produced on demand for the visible lines.
+    bool largeFileMode() const;
+
     QString selText() const;
     QStringList selContent() const;
     int selCount() const;
@@ -764,6 +771,7 @@ private:
     CodeFoldingOptions mCodeFolding;
     int mEditingCount;
     bool mUseCodeFolding;
+    bool mLargeFileMode = false;
     bool  mAlwaysShowCaret;
     CharPos mSelectionBegin;
     CharPos mSelectionEnd;
