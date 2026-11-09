@@ -1158,6 +1158,12 @@ bool LuaSyntaxer::isKeyword(const QString &word)
 
 void LuaSyntaxer::setState(const PSyntaxState& syntaxState)
 {
+    if (!syntaxState) {
+        // an unparsed line has no state; start from a clean one instead of
+        // dereferencing a null pointer
+        resetState();
+        return;
+    }
     mRange = *syntaxState;
     // current line's left / right parenthesis count should be reset before parsing each line
     mRange.blockStarted = 0;

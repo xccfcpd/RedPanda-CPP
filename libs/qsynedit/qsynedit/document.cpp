@@ -203,6 +203,10 @@ void Document::setSyntaxState(int line, const PSyntaxState& state)
 {
     QMutexLocker locker(&mMutex);
     Q_ASSERT(line >=0 && line < mLines.count());
+    // Q_ASSERT is compiled out in release builds, where an out-of-range line
+    // would index past mLines and corrupt memory instead of aborting.
+    if (line < 0 || line >= mLines.count())
+        return;
     mLines[line]->setSyntaxState(state);
 }
 

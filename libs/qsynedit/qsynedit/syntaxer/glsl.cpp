@@ -1378,6 +1378,12 @@ bool GLSLSyntaxer::isKeyword(const QString &word)
 
 void GLSLSyntaxer::setState(const PSyntaxState& rangeState)
 {
+    if (!rangeState) {
+        // an unparsed line has no state; start from a clean one instead of
+        // dereferencing a null pointer
+        resetState();
+        return;
+    }
     mRange = *rangeState;
     // current line's left / right parenthesis count should be reset before parsing each line
     mRange.lastUnindent=IndentInfo{IndentType::None,0, ""};

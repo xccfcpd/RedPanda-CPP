@@ -1796,6 +1796,14 @@ bool CppSyntaxer::isKeyword(const QString &word)
 void CppSyntaxer::setState(const PSyntaxState& rangeState)
 {
     std::shared_ptr<CppSyntaxState> cppState = std::dynamic_pointer_cast<CppSyntaxState>(rangeState);
+    if (!cppState) {
+        // A line that was never parsed has no state, and a state created by
+        // another syntaxer does not cast to CppSyntaxState. Both used to be
+        // dereferenced unconditionally, so any code path that stops filling
+        // every line's state (or a caller of this library) crashed here.
+        resetState();
+        return;
+    }
     mRange = *cppState;
     // current line's left / right parenthesis count should be reset before parsing each line
 }

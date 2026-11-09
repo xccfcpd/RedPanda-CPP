@@ -671,6 +671,12 @@ PSyntaxState MakefileSyntaxer::getState() const
 
 void MakefileSyntaxer::setState(const PSyntaxState & rangeState)
 {
+    if (!rangeState) {
+        // an unparsed line has no state; start from a clean one instead of
+        // dereferencing a null pointer
+        resetState();
+        return;
+    }
     mState = (RangeState)rangeState->state;
     mStates.clear();
     mHasTrailingSpaces = false;
