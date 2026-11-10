@@ -501,7 +501,7 @@ int main(int argc, char *argv[])
 //  - Language:     C++
 //  - Memory:       Share a single parser across all files
 //  - Theme:        Light ("default" in resources/themes/default.json)
-setTheme("default");
+setTheme("dark");
  
 pSettings->editor().setDefaultFileCpp(true);
 pSettings->codeCompletion().setShareParser(true);
