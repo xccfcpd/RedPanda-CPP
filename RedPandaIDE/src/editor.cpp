@@ -737,12 +737,22 @@ void Editor::keyPressEvent(QKeyEvent *event)
             ) {
         //setMouseTracking(true);
         handled=true;
+#if QT_VERSION_MAJOR >= 6
         QMouseEvent mouseEvent{
             QEvent::MouseMove,
-                    mapFromGlobal(QCursor::pos()),
-                    Qt::NoButton,
-                    Qt::NoButton,
-                    Qt::ControlModifier};
+            mapFromGlobal(QCursor::pos()),
+            QCursor::pos(),
+            Qt::NoButton,
+            Qt::NoButton,
+            Qt::ControlModifier};
+#else
+        QMouseEvent mouseEvent{
+            QEvent::MouseMove,
+            mapFromGlobal(QCursor::pos()),
+            Qt::NoButton,
+            Qt::NoButton,
+            Qt::ControlModifier};
+#endif
         mouseMoveEvent(&mouseEvent);
         return;
     }

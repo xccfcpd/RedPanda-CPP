@@ -33,15 +33,15 @@ EditorClipboardWidget::EditorClipboardWidget(ColorManager *colorManager, const Q
 #endif
 
     connect(ui->chkCopyRTFUseEditorColor,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
             &EditorClipboardWidget::onUseSchemeChanged);
     connect(ui->chkCopyHTMLUseEditorColor,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             this,
             &EditorClipboardWidget::onUseSchemeChanged);
     connect(ui->chkCopyHTMLWithLineNumber,
-            &QCheckBox::stateChanged,
+            &QCheckBox::toggled,
             ui->chkCopyHTMLRecalcLineNumber,
             &QCheckBox::setEnabled);
 }

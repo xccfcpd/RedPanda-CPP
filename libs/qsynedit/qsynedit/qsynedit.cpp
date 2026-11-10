@@ -6823,8 +6823,13 @@ void QSynEdit::dragEnterEvent(QDragEnterEvent *event)
         mDragCaretSave = caretXY();
         mDragSelBeginSave = selBegin();
         mDragSelEndSave = selEnd();
-        CharPos coord = displayToBufferPos(pixelsToNearestGlyphPos(event->pos().x(),
-                                                                        event->pos().y()));
+#if QT_VERSION_MAJOR >= 6
+        const QPoint dropPos = event->position().toPoint();
+#else
+        const QPoint dropPos = event->pos();
+#endif
+        CharPos coord = displayToBufferPos(pixelsToNearestGlyphPos(dropPos.x(),
+                                                                   dropPos.y()));
         internalSetCaretXY(coord);
         internalSetSelBegin(mDragSelBeginSave);
         internalSetSelEnd(mDragSelEndSave);
@@ -6838,8 +6843,13 @@ void QSynEdit::dropEvent(QDropEvent *event)
 {
     //mScrollTimer->stop();
 
-    CharPos coord = displayToBufferPos(pixelsToNearestGlyphPos(event->pos().x(),
-                                                                    event->pos().y()));
+#if QT_VERSION_MAJOR >= 6
+    const QPoint dropPos = event->position().toPoint();
+#else
+    const QPoint dropPos = event->pos();
+#endif
+    CharPos coord = displayToBufferPos(pixelsToNearestGlyphPos(dropPos.x(),
+                                                               dropPos.y()));
     if (
             (event->proposedAction() == Qt::DropAction::CopyAction
              && coord>mDragSelBeginSave && coord<mDragSelEndSave)
@@ -6934,7 +6944,11 @@ void QSynEdit::dropEvent(QDropEvent *event)
 
 void QSynEdit::dragMoveEvent(QDragMoveEvent *event)
 {
+#if QT_VERSION_MAJOR >= 6
+    if (event->modifiers() ==  Qt::ControlModifier) {
+#else
     if (event->keyboardModifiers() ==  Qt::ControlModifier) {
+#endif
         event->setDropAction(Qt::CopyAction);
     } else {
         event->setDropAction(Qt::MoveAction);

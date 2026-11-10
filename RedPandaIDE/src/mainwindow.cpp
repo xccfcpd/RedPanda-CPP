@@ -9769,6 +9769,15 @@ bool MainWindow::openningFiles() const
     return mOpenningFiles;
 }
 
+static QWidget *actionParentWidget(const QAction *action)
+{
+    for (QObject *object = action->parent(); object; object = object->parent()) {
+        if (QWidget *widget = qobject_cast<QWidget*>(object))
+            return widget;
+    }
+    return nullptr;
+}
+
 QList<QAction *> MainWindow::listShortCutableActions()
 {
     QList<QAction*> actions = findChildren<QAction *>(QString(), Qt::FindDirectChildrenOnly);
@@ -9776,7 +9785,7 @@ QList<QAction *> MainWindow::listShortCutableActions()
     QList<QAction*> result;
     foreach(QAction* action, actions) {
         if (action->shortcutContext() == Qt::WidgetShortcut
-                && action->parentWidget() == this)
+                && actionParentWidget(action) == this)
             continue;
         result.append(action);
     }

@@ -161,41 +161,41 @@ PColorScheme EditorColorSchemeWidget::getCurrentScheme()
 
 void EditorColorSchemeWidget::connectModificationSlots()
 {
-    connect(ui->cbBackground,&QCheckBox::stateChanged,
+    connect(ui->cbBackground,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onBackgroundChanged);
     connect(ui->colorBackground,&ColorEdit::colorChanged,
             this, &EditorColorSchemeWidget::onBackgroundChanged);
-    connect(ui->cbForeground,&QCheckBox::stateChanged,
+    connect(ui->cbForeground,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onForegroundChanged);
     connect(ui->colorForeground,&ColorEdit::colorChanged,
             this, &EditorColorSchemeWidget::onForegroundChanged);
-    connect(ui->cbBold,&QCheckBox::stateChanged,
+    connect(ui->cbBold,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    connect(ui->cbItalic,&QCheckBox::stateChanged,
+    connect(ui->cbItalic,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    connect(ui->cbStrikeout,&QCheckBox::stateChanged,
+    connect(ui->cbStrikeout,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    connect(ui->cbUnderlined,&QCheckBox::stateChanged,
+    connect(ui->cbUnderlined,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
 }
 
 void EditorColorSchemeWidget::disconnectModificationSlots()
 {
-    disconnect(ui->cbBackground,&QCheckBox::stateChanged,
+    disconnect(ui->cbBackground,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onBackgroundChanged);
     disconnect(ui->colorBackground,&ColorEdit::colorChanged,
             this, &EditorColorSchemeWidget::onBackgroundChanged);
-    disconnect(ui->cbForeground,&QCheckBox::stateChanged,
+    disconnect(ui->cbForeground,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onForegroundChanged);
     disconnect(ui->colorForeground,&ColorEdit::colorChanged,
             this, &EditorColorSchemeWidget::onForegroundChanged);
-    disconnect(ui->cbBold,&QCheckBox::stateChanged,
+    disconnect(ui->cbBold,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    disconnect(ui->cbItalic,&QCheckBox::stateChanged,
+    disconnect(ui->cbItalic,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    disconnect(ui->cbStrikeout,&QCheckBox::stateChanged,
+    disconnect(ui->cbStrikeout,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
-    disconnect(ui->cbUnderlined,&QCheckBox::stateChanged,
+    disconnect(ui->cbUnderlined,&QCheckBox::toggled,
             this, &EditorColorSchemeWidget::onFontStyleChanged);
 }
 
