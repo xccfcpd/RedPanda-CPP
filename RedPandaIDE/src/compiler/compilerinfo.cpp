@@ -3,8 +3,9 @@
 #include <QDebug>
 
 CompilerInfo::CompilerInfo(CompilerType type, const QString &name):
-    mType(type),
-    mName(name)
+    // keep the order of the member declarations (mName before mType)
+    mName(name),
+    mType(type)
 {
 }
 

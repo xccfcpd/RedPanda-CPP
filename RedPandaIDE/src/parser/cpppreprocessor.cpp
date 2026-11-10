@@ -524,7 +524,6 @@ QString CppPreprocessor::expandMacros(QString text, bool handleBuffer, const QSe
     QString newLine;
     ContentType currentType = ContentType::Other;
     int lenLine = text.length();
-    int prevI = 0;
     int i=0;
     int wordStart = 0;
     QString word;
@@ -534,7 +533,6 @@ QString CppPreprocessor::expandMacros(QString text, bool handleBuffer, const QSe
     while (i<lenLine) {
         QChar ch;
         if (!lastWordNotProcessed) {
-            prevI = i;
             ch=text[i];
         } else {
             ch=' ';
@@ -1292,7 +1290,7 @@ void CppPreprocessor::preprocessBuffer()
                 while(it!=s.constEnd() && (*it==' ' || *it=='\t'))
                     ++it; // skip spaces;
                 while(it!=s.constEnd()) {
-                    if (*it>='a' && *it<='z' || *it=='_')
+                    if ((*it>='a' && *it<='z') || *it=='_')
                         command.append(*it);
                     else
                         break;
