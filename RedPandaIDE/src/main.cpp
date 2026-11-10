@@ -352,7 +352,9 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication app(argc, argv);
-#if QT_VERSION_MAJOR >= 6
+#if QT_VERSION_MAJOR >= 6 && defined(Q_OS_LINUX)
+    // Qt 6 native file dialogs on KDE Plasma 6 can leave KIO sockets behind
+    // after an abnormal exit; use Qt's own dialog on Linux only.
     app.setAttribute(Qt::AA_DontUseNativeDialogs);
 #endif
 #if QT_VERSION_MAJOR < 6
